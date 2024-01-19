@@ -8,6 +8,7 @@ const router = require('./routes/index')
 const path = require('path')
 const PORT = process.env.PORT || 5001
 const app = express()
+
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({ limit: '10mb' }))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
@@ -16,7 +17,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static(path.resolve(__dirname, 'images')))
 app.use('/api', router)
-
+//TODO: ошибки ломают приложение сделай глобальный фильтр для ошибок
 const start = async () => {
     try {
         await sequelize.authenticate()

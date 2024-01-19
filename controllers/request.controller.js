@@ -51,6 +51,7 @@ class RequestController {
             quantity: 50,
             done: true,
         })
+        //TODO: Возвращать данные о созданном request
         return res.status(200).send('Request Created')
     }
 }

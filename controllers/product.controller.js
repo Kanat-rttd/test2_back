@@ -20,6 +20,7 @@ class ProductController {
             name: name,
             bakeryType: bakeryType,
         })
+        //TODO: На фронт можно вернуть сообщение с ключом message и новый продукт для взаимодействия
         return res.status(200).send('Product Created')
     }
 
