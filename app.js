@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const errorHandler = require('./filters/errorHandler')
 const sequelize = require('./config/db')
 const models = require('./models')
 const cors = require('cors')
@@ -17,6 +18,8 @@ app.use(express.json())
 app.use(express.static(path.resolve(__dirname, 'images')))
 app.use('/api', router)
 
+app.use(errorHandler)
+
 const start = async () => {
     try {
         await sequelize.authenticate()
@@ -26,4 +29,5 @@ const start = async () => {
         console.error(e.message)
     }
 }
+
 start()

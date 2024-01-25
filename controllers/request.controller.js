@@ -45,13 +45,13 @@ class RequestController {
     }
 
     async createRequest(req, res, next) {
-        await models.requests.create({
-            clientName: 'Bakhtiyar',
-            breadType: 'Домашний',
-            quantity: 50,
-            done: true,
-        })
-        return res.status(200).send('Request Created')
+        try {
+            await models.requests.bulkCreate(req.body)
+            return res.status(200).send('Request Created')
+        } catch (error) {
+            console.error(error)
+            return res.status(500).send('Internal Server Error')
+        }
     }
 }
 

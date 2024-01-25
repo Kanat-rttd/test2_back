@@ -1,6 +1,7 @@
 const models = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const tokenDecode = require('jwt-decode')
 
 class UserController {
     async getAll(req, res, next) {
@@ -12,11 +13,12 @@ class UserController {
     }
 
     async createUser(req, res, next) {
-        const { name, userClass, pass } = req.body
+        const { phone, name, userClass, pass } = req.body
 
         const hashedPass = await bcrypt.hash(pass, 10)
 
         await models.users.create({
+            phone,
             name,
             userClass,
             pass: hashedPass,
@@ -53,22 +55,46 @@ class UserController {
         const user = await models.users.findOne({ where: { phone } })
 
         if (!user) {
-            return res.status(401).send('Invalid credentials')
+            return res.status(401).send('Такого пользователя не существует')
         }
 
         const passCheck = await bcrypt.compare(pass, user.pass)
 
         if (!passCheck) {
-            return res.status(401).send('Invalid credentials')
+            return res.status(401).send('Неверный логин или пароль')
         }
 
         const token = jwt.sign(
-            { userId: user.id, phone: user.phone },
+            { userId: user.id, phone: user.phone, class: user.userClass },
             '1C6981FDFC9D65A5B68BCA02313AE8C0191D2A9559BFA37C5D4D5FF620D76D96',
             { expiresIn: '1h' },
         )
 
-        return res.status(200).json({ token })
+        return res.status(200).json({ token, status: 'success' })
+    }
+
+    async check(req, res, next) {
+        const authToken = req.header('Authorization')
+        if (!authToken) {
+            return res.status(401).json({ message: 'Токен отсутствует' })
+        }
+
+        const token = authToken.split(' ')[1]
+        const tokenData = tokenDecode.jwtDecode(token)
+
+        const user = await models.users.findByPk(tokenData.userId)
+
+        if (!user) {
+            return res.status(401).json({ message: 'Такого пользователя не существует' })
+        }
+
+        const currentTime = Math.floor(Date.now() / 1000)
+
+        if (!(currentTime < tokenData.exp)) {
+            return res.status(401).json({ message: 'Время сессий истекло' })
+        }
+
+        return res.json({ token })
     }
 }
 
