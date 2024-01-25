@@ -7,8 +7,7 @@ const orderDetails = sequelize.define('orderDetails', {
     orderId: { type: DataTypes.INTEGER },
     productId: { type: DataTypes.INTEGER },
     orderedQuantity: { type: DataTypes.INTEGER },
-    approvedQuantity: { type: DataTypes.INTEGER },
-    totalPrice: { type: DataTypes.INTEGER },
+    approvedQuantity: { type: DataTypes.INTEGER, defaultValue: 0 },
 })
 
 order.hasMany(orderDetails)
