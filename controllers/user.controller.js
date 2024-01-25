@@ -23,6 +23,7 @@ class UserController {
             userClass,
             pass: hashedPass,
         })
+        //TODO: возвращать данные о созданном пользователи
         return res.status(200).send('User Created')
     }
 

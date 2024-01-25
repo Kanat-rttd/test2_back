@@ -16,6 +16,7 @@ class ClientController {
 
     async createClient(req, res, next) {
         const { name, email } = req.body
+        //TODO: На фронт можно вернуть сообщение с ключом message и нового клиента для взаимодействия
         await models.clients.create({
             name: name,
             email: email,
@@ -38,6 +39,7 @@ class ClientController {
                 },
             },
         )
+        //TODO: На фронт можно вернуть сообщение с ключом message и нового клиента для взаимодействия
         return res.status(200).send('Client updated')
     }
 
