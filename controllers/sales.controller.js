@@ -4,7 +4,7 @@ const models = require('../models')
 class SalesController {
     async getAll(req, res, next) {
         const orders = await models.order.findAll({
-            attributes: ['id', 'clientId', 'totalPrice', 'createdAt'],
+            attributes: ['id', 'userId', 'totalPrice', 'createdAt'],
             include: [
                 {
                     model: models.orderDetails,
@@ -29,7 +29,7 @@ class SalesController {
         const sales = req.body
 
         const order = await models.order.create({
-            clientId: sales.clientId,
+            userId: sales.clientId,
             totalPrice: sales.products.reduce((acc, sale) => acc + sale.price, 0),
         })
 

@@ -9,6 +9,6 @@ module.exports = {
     baking: require('./baking.js'),
     user: require('./users.js'),
     order: require('./order.js'),
-    orderDetais: require('./orderDetails.js'),
+    orderDetails: require('./orderDetails.js'),
     individualPrices: require('./individualPrices.js'),
 }

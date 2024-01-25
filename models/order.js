@@ -6,7 +6,7 @@ const order = sequelize.define(
     'order',
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        clientId: { type: DataTypes.INTEGER },
+        userId: { type: DataTypes.INTEGER },
         statusId: { type: DataTypes.INTEGER, defaultValue: 0 },
         totalPrice: { type: DataTypes.INTEGER },
         editableUntil: { type: DataTypes.DATE },
