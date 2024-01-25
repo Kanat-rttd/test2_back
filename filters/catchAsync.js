@@ -1,5 +1,5 @@
 const { ValidationError } = require('sequelize')
-const ApiError = require('../helpers/ApiError')
+const AppError = require('../filters/appError')
 
 function catchAsync(controllerFunction) {
     return async (req, res, next) => {
@@ -8,10 +8,9 @@ function catchAsync(controllerFunction) {
         } catch (err) {
             if (err instanceof ValidationError) {
                 const errors = Object.values(err.errors).map((e) => e.message)
-                res.status(400).json({ message: errors[0] })
+                next(new AppError(errors[0], 400))
             } else {
-                next(ApiError.badRequest(err.message))
-                res.status(400).send('Application error contact support')
+                next(new AppError(err.message, 405))
             }
         }
     }

@@ -19,6 +19,8 @@ app.use(express.json())
 app.use(express.static(path.resolve(__dirname, 'images')))
 app.use('/api', router)
 
+app.use(errorHandler)
+
 const start = async () => {
     try {
         await sequelize.authenticate()
