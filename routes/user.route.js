@@ -1,12 +1,12 @@
 const { Router } = require('express')
 const Controller = require('../controllers/user.controller')
-
+const catchAsync = require('../filters/catchAsync')
 let router = Router()
 
-router.get('/', Controller.getAll)
-router.post('/', Controller.createUser)
-router.put('/:id', Controller.updateUser)
-router.post('/login', Controller.authenticateUser)
-router.get('/auth', Controller.check)
+router.get('/', catchAsync(Controller.getAll))
+router.post('/', catchAsync(Controller.createUser))
+router.put('/:id', catchAsync(Controller.updateUser))
+router.post('/login', catchAsync(Controller.authenticateUser))
+router.get('/auth', catchAsync(Controller.check))
 
 module.exports = router
