@@ -1,6 +1,6 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const clients = require('./clients')
+const users = require('./users')
 
 const order = sequelize.define(
     'order',
@@ -35,7 +35,7 @@ const order = sequelize.define(
     },
 )
 
-clients.hasMany(order)
-order.belongsTo(clients)
+users.hasMany(order)
+order.belongsTo(users)
 
 module.exports = order
