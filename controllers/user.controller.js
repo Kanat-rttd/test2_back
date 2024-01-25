@@ -95,7 +95,7 @@ class UserController {
             return res.status(401).json({ message: 'Время сессий истекло' })
         }
 
-        return res.json({ token })
+        res.json({ token })
     }
 }
 
