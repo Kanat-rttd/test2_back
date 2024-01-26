@@ -10,7 +10,7 @@ class SalesController {
             include: [
                 {
                     model: models.orderDetails,
-                    attributes: ['id', 'productId'],
+                    attributes: [['id', 'orderDetailsId'], 'productId'],
                     include: [
                         {
                             model: models.products,
