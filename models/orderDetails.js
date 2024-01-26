@@ -1,6 +1,7 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
 const order = require('./order')
+const products = require('./products')
 
 const orderDetails = sequelize.define('orderDetails', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -11,7 +12,9 @@ const orderDetails = sequelize.define('orderDetails', {
 })
 
 order.hasMany(orderDetails)
+products.hasMany(orderDetails)
 
+products.belongsTo(products)
 orderDetails.belongsTo(order)
 
 module.exports = orderDetails
