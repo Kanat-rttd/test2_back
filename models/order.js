@@ -1,6 +1,7 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
 const users = require('./users')
+const orderDetails = require('./orderDetails')
 
 const order = sequelize.define(
     'order',
@@ -36,6 +37,9 @@ const order = sequelize.define(
 )
 
 users.hasMany(order)
+order.hasMany(orderDetails)
+
+orderDetails.belongsTo(order)
 order.belongsTo(users)
 
 module.exports = order
