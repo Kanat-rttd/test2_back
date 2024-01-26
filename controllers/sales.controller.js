@@ -56,14 +56,13 @@ class SalesController {
         const today = new Date()
         today.setHours(11, 0, 0, 0)
 
-        // Update edited orders
-        const updatePromises = editedOrders.map(async (editedOrder) => {
-            const { orderId, sale } = editedOrder
+        const updatePromises = editedOrders.orderDetails.map(async (details) => {
             return models.orderDetails.update(
-                { sale },
+                { details },
                 {
                     where: {
-                        id: orderId,
+                        orderId: editedOrders.id,
+                        id: details.orderDetailsId,
                         editableUntil: {
                             [Op.lt]: today,
                         },
@@ -72,10 +71,11 @@ class SalesController {
             )
         })
 
-        const deletePromises = deletedOrderIds.map(async (orderId) => {
+        const deletePromises = deletedOrderIds.map(async (details) => {
             return models.orderDetails.destroy({
                 where: {
-                    id: orderId,
+                    orderId: deletedOrderIds.id,
+                    id: details.id,
                     editableUntil: {
                         [Op.lt]: today,
                     },
