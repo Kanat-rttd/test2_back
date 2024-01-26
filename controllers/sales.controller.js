@@ -1,5 +1,7 @@
 const { col } = require('../config/db')
 const models = require('../models')
+const { Op } = require('sequelize')
+const AppError = require('../filters/appError')
 
 class SalesController {
     async getAll(req, res, next) {
@@ -49,23 +51,55 @@ class SalesController {
 
     async editSale(req, res, next) {
         const { id } = req.params
-        const sale = req.body
+        const { editedOrders, deletedOrderIds } = req.body
 
-        await models.order.update(
-            {
-                sale,
-            },
-            {
-                where: {
-                    id,
+        const today = new Date()
+        today.setHours(11, 0, 0, 0)
+
+        // Update edited orders
+        const updatePromises = editedOrders.map(async (editedOrder) => {
+            const { orderId, sale } = editedOrder
+            return models.orderDetails.update(
+                { sale },
+                {
+                    where: {
+                        id: orderId,
+                        editableUntil: {
+                            [Op.lt]: today,
+                        },
+                    },
                 },
-            },
-        )
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Заказ успешно обновлен',
+            )
         })
+
+        const deletePromises = deletedOrderIds.map(async (orderId) => {
+            return models.orderDetails.destroy({
+                where: {
+                    id: orderId,
+                    editableUntil: {
+                        [Op.lt]: today,
+                    },
+                },
+            })
+        })
+
+        try {
+            const [updateResults, deleteResults] = await Promise.all([
+                Promise.all(updatePromises),
+                Promise.all(deletePromises),
+            ])
+
+            if (updateResults.some((result) => result[0] === 0) || deleteResults.some((result) => result === 0)) {
+                return next(new AppError('Нельзя изменить заказ', 400))
+            }
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Заказ успешно обновлен',
+            })
+        } catch (error) {
+            return next(new AppError('Ошибка при обновлении заказа', 500))
+        }
     }
 
     async deleteSale(req, res, next) {
