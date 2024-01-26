@@ -8,11 +8,11 @@ class SalesController {
             include: [
                 {
                     model: models.orderDetails,
-                    attributes: ['productId', 'price'],
+                    attributes: ['productId'],
                     include: [
                         {
                             model: models.products,
-                            attributes: ['name'],
+                            attributes: ['name', 'price'],
                         },
                     ],
                 },
