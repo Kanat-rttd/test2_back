@@ -11,6 +11,6 @@ const orderDetails = sequelize.define('orderDetails', {
     approvedQuantity: { type: DataTypes.INTEGER, defaultValue: 0 },
 })
 products.hasMany(orderDetails)
-products.belongsTo(products)
+orderDetails.belongsTo(products)
 
 module.exports = orderDetails
