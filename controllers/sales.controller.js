@@ -27,6 +27,32 @@ class SalesController {
         })
     }
 
+    async getOrderById(req, res, next) {
+        const { id } = req.params
+
+        const orders = await models.order.findOne({
+            attributes: ['id', 'userId', 'totalPrice', 'createdAt'],
+            include: [
+                {
+                    model: models.orderDetails,
+                    attributes: [['id', 'orderDetailsId'], 'productId', 'orderedQuantity'],
+                    include: [
+                        {
+                            model: models.products,
+                            attributes: ['name', 'price'],
+                        },
+                    ],
+                },
+            ],
+            where: { id: id },
+        })
+
+        res.status(200).json({
+            status: 'success',
+            data: orders,
+        })
+    }
+
     async createSale(req, res, next) {
         const sales = req.body
 

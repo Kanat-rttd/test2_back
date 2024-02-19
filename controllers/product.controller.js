@@ -4,7 +4,7 @@ const models = require('../models')
 class ProductController {
     async getAll(req, res, next) {
         const data = await models.products.findAll({
-            attributes: ['id', 'name', 'bakeryType'],
+            attributes: ['id', 'name', 'price'],
             where: {
                 isDeleted: {
                     [Op.ne]: 1,

@@ -35,6 +35,7 @@ const orderDetails = sequelize.define(
         },
     },
 )
+
 products.hasMany(orderDetails)
 orderDetails.belongsTo(products)
 
