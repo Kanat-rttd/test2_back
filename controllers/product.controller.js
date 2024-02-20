@@ -1,10 +1,15 @@
 const { Op } = require('sequelize')
 const models = require('../models')
-
 class ProductController {
     async getAll(req, res, next) {
         const data = await models.products.findAll({
             attributes: ['id', 'name', 'price'],
+            include: [
+                {
+                    attributes: ['facilityUnit'],
+                    model: models.bakingFacilityUnits,
+                },
+            ],
             where: {
                 isDeleted: {
                     [Op.ne]: 1,
@@ -15,12 +20,13 @@ class ProductController {
     }
 
     async createProduct(req, res, next) {
-        const { name, bakeryType } = req.body
+        const { name, bakingFacilityUnitId } = req.body
+        console.log(bakingFacilityUnitId)
         await models.products.create({
-            name: name,
-            bakeryType: bakeryType,
+            name,
+            bakingFacilityUnitId,
         })
-        //TODO: На фронт можно вернуть сообщение с ключом message и новый продукт для взаимодействия
+
         return res.status(200).send('Product Created')
     }
 
