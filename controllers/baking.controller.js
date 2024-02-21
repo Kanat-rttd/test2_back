@@ -2,21 +2,6 @@ const models = require('../models')
 const Sequelize = require('../config/db')
 
 class BakingController {
-    // async getAll(req, res, next) {
-    //     const data = await models.baking.findAll({
-    //         attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output'],
-    //         include: [
-    //             {
-    //                 attributes: ['name', 'id'],
-    //                 model: models.products,
-    //             },
-    //         ],
-    //     })
-
-    //     console.log(data)
-    //     return res.json(data)
-    // }
-
     async getAll(req, res, next) {
         try {
             const bakingData = await models.baking.findAll({
@@ -25,6 +10,12 @@ class BakingController {
                     {
                         attributes: ['name', 'id'],
                         model: models.products,
+                        include: [
+                            {
+                                attributes: ['facilityUnit', 'id'],
+                                model: models.bakingFacilityUnits,
+                            },
+                        ],
                     },
                 ],
             })
@@ -42,7 +33,7 @@ class BakingController {
 
             const data = {
                 bakingData,
-                totals: totals[0].toJSON(), // Получаем итоговые значения из первого элемента результата
+                totals: totals[0].toJSON(),
             }
 
             console.log(data)

@@ -15,6 +15,7 @@ const baking = sequelize.define('baking', {
 })
 
 product.hasMany(baking)
+
 baking.belongsTo(product)
 
 module.exports = baking
