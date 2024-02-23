@@ -12,6 +12,7 @@ const order = sequelize.define(
         totalPrice: { type: DataTypes.INTEGER },
         editableUntil: { type: DataTypes.DATE },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+        done: { type: DataTypes.INTEGER, defaultValue: 0 },
     },
     {
         hooks: {

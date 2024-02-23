@@ -6,17 +6,21 @@ const AppError = require('../filters/appError')
 class SalesController {
     async getAll(req, res, next) {
         const orders = await models.order.findAll({
-            attributes: ['id', 'userId', 'totalPrice', 'createdAt'],
+            attributes: ['id', 'userId', 'totalPrice', 'createdAt', 'done'],
             include: [
                 {
                     model: models.orderDetails,
-                    attributes: [['id', 'orderDetailsId'], 'productId'],
+                    attributes: [['id', 'orderDetailsId'], 'productId', 'orderedQuantity'],
                     include: [
                         {
                             model: models.products,
                             attributes: ['name', 'price'],
                         },
                     ],
+                },
+                {
+                    model: models.users,
+                    attributes: ['id', 'name'],
                 },
             ],
         })
@@ -143,6 +147,27 @@ class SalesController {
         res.status(200).json({
             status: 'success',
             message: 'Заказ успешно удален',
+        })
+    }
+
+    async setDoneStatus(req, res, next) {
+        const { id } = req.params
+        console.log(id)
+
+        await models.order.update(
+            {
+                done: 1,
+            },
+            {
+                where: {
+                    id,
+                },
+            },
+        )
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Заказ успешно обновлен',
         })
     }
 }

@@ -10,5 +10,6 @@ router.post('/', catchAsync(Controller.createSale))
 router.put('/:id', catchAsync(Controller.updateSale))
 router.delete('/:id', catchAsync(Controller.deleteSale))
 router.get('/:id', catchAsync(Controller.getOrderById))
+router.put('/status/:id', catchAsync(Controller.setDoneStatus))
 
 module.exports = router
