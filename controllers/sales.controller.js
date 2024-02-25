@@ -15,6 +15,12 @@ class SalesController {
                         {
                             model: models.products,
                             attributes: ['name', 'price'],
+                            include: [
+                                {
+                                    model: models.bakingFacilityUnits,
+                                    attributes: ['id', 'facilityUnit'],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -168,6 +174,49 @@ class SalesController {
         res.status(200).json({
             status: 'success',
             message: 'Заказ успешно обновлен',
+        })
+    }
+
+    async getByFacilityUnit(req, res, next) {
+        const { facilityUnitId } = req.body
+
+        const orders = await models.order.findAll({
+            attributes: ['id', 'userId', 'totalPrice', 'createdAt', 'done'],
+            include: [
+                {
+                    model: models.orderDetails,
+                    attributes: [['id', 'orderDetailsId'], 'productId', 'orderedQuantity'],
+                    include: [
+                        {
+                            model: models.products,
+                            attributes: ['name', 'price'],
+                            include: [
+                                {
+                                    model: models.bakingFacilityUnits,
+                                    attributes: ['id', 'facilityUnit'],
+                                    where: {
+                                        id: facilityUnitId,
+                                    },
+                                    as: 'bakingFacilityUnit',
+                                },
+                            ],
+                        },
+                    ],
+                    where: {},
+                },
+                {
+                    model: models.users,
+                    attributes: ['id', 'name'],
+                },
+            ],
+            where: {
+                '$orderDetails.product.bakingFacilityUnit.id$': facilityUnitId,
+            },
+        })
+
+        res.status(200).json({
+            status: 'success',
+            data: orders,
         })
     }
 }

@@ -25,6 +25,7 @@ class ClientController {
     }
 
     async updateClient(req, res, next) {
+        
         const { id } = req.params
         console.log(id)
         const { name, email } = req.body
