@@ -3,10 +3,10 @@ const models = require('../models')
 class ProductController {
     async getAll(req, res, next) {
         const data = await models.products.findAll({
-            attributes: ['id', 'name', 'price'],
+            attributes: ['id', 'name', 'price', 'costPrice', 'status'],
             include: [
                 {
-                    attributes: ['facilityUnit'],
+                    attributes: ['facilityUnit', 'id'],
                     model: models.bakingFacilityUnits,
                 },
             ],
@@ -20,24 +20,59 @@ class ProductController {
     }
 
     async createProduct(req, res, next) {
-        const { name, bakingFacilityUnitId } = req.body
-        console.log(bakingFacilityUnitId)
+        const { name, bakingFacilityUnitId, price, costPrice, status } = req.body
+
         await models.products.create({
             name,
             bakingFacilityUnitId,
+            price,
+            costPrice,
+            status,
         })
 
         return res.status(200).send('Product Created')
     }
 
+    async findByFilters(req, res, next) {
+        const { name, bakingFacilityUnitId, status } = req.body
+
+        const filter = {}
+        if (name) filter.name = name
+        if (bakingFacilityUnitId) filter.bakingFacilityUnitId = bakingFacilityUnitId
+        if (status) filter.status = status
+
+        try {
+            const result = await models.products.findAll({
+                attributes: ['id', 'name', 'price', 'costPrice', 'status'],
+                include: [
+                    {
+                        attributes: ['facilityUnit', 'id'],
+                        model: models.bakingFacilityUnits,
+                    },
+                ],
+                where: filter,
+            })
+            res.status(200).json({
+                status: 'success',
+                data: result,
+            })
+        } catch (error) {
+            console.error('Error finding clients:', error)
+            res.status(500).json({ error: 'Internal server error' })
+        }
+    }
+
     async updateProduct(req, res, next) {
         const { id } = req.params
         console.log(id)
-        const { name, bakeryType } = req.body
+        const { name, bakingFacilityUnitId, price, costPrice, status } = req.body
         await models.products.update(
             {
                 name,
-                bakeryType,
+                bakingFacilityUnitId,
+                price,
+                costPrice,
+                status,
             },
             {
                 where: {
@@ -60,7 +95,10 @@ class ProductController {
                 },
             },
         )
-        return res.status(200).json({ id: id })
+        return res.status(200).json({
+            status: 'success',
+            message: 'Product deleted',
+        })
     }
 }
 

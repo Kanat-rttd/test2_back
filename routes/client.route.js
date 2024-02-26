@@ -9,6 +9,6 @@ let router = Router()
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createClient))
 router.put('/:id', catchAsync(Controller.updateClient))
-router.delete('/:id', catchAsync(Controller.deleteClient))
+router.post('/find', catchAsync(Controller.findByFilters))
 
 module.exports = router

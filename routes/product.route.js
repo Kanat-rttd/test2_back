@@ -8,5 +8,6 @@ router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createProduct))
 router.put('/:id', catchAsync(Controller.updateProduct))
 router.delete('/:id', catchAsync(Controller.deleteProduct))
+router.post('/find', catchAsync(Controller.findByFilters))
 
 module.exports = router

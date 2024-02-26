@@ -12,4 +12,6 @@ module.exports = {
     orderDetails: require('./orderDetails.js'),
     individualPrices: require('./individualPrices.js'),
     bakingFacilityUnits: require('./bakeryFacilityUnits.js'),
+    goodsDispatch: require('./goodsDispatch.js'),
+    goodsDispatchDetails: require('./goodsDispatchDetails.js'),
 }
