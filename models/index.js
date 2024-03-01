@@ -14,4 +14,6 @@ module.exports = {
     bakingFacilityUnits: require('./bakeryFacilityUnits.js'),
     goodsDispatch: require('./goodsDispatch.js'),
     goodsDispatchDetails: require('./goodsDispatchDetails.js'),
+    finance: require('./finance.js'),
+    financeCategories: require('./financeCategories.js'),
 }

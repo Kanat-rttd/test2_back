@@ -100,6 +100,26 @@ class ProductController {
             message: 'Product deleted',
         })
     }
+
+    async getBreadNames(req, res, next) {
+        const products = await models.products.findAll({
+            attributes: ['id', 'name'],
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+            },
+        })
+
+        const data = products.map((product) => {
+            return {
+                id: product.id,
+                bread: product.name,
+            }
+        })
+
+        return res.json(data)
+    }
 }
 
 module.exports = new ProductController()

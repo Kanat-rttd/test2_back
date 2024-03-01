@@ -9,5 +9,6 @@ router.post('/', catchAsync(Controller.createProduct))
 router.put('/:id', catchAsync(Controller.updateProduct))
 router.delete('/:id', catchAsync(Controller.deleteProduct))
 router.post('/find', catchAsync(Controller.findByFilters))
+router.get('/bread', catchAsync(Controller.getBreadNames))
 
 module.exports = router

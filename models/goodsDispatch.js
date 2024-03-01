@@ -1,18 +1,19 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const users = require('./users')
+const clients = require('./clients')
 const goodsDispatchDetails = require('./goodsDispatchDetails')
 
 const goodsDispatch = sequelize.define('goodsDispatch', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    userId: { type: DataTypes.INTEGER },
+    clientId: { type: DataTypes.INTEGER },
+    dispatch: { type: DataTypes.INTEGER, defaultValue: 0 },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
-users.hasMany(goodsDispatch)
+clients.hasMany(goodsDispatch)
 goodsDispatch.hasMany(goodsDispatchDetails)
 
 goodsDispatchDetails.belongsTo(goodsDispatch)
-goodsDispatch.belongsTo(users)
+goodsDispatch.belongsTo(clients)
 
 module.exports = goodsDispatch
