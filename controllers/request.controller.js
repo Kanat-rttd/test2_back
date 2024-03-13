@@ -25,7 +25,7 @@ class RequestController {
         })
 
         const result = data.reduce((acc, row) => {
-            console.log(row)
+            // console.log(row)
             const existingClient = acc.find((item) => item.name === row.clientName && item.done === row.done)
 
             existingClient

@@ -5,37 +5,47 @@ const tokenDecode = require('jwt-decode')
 
 class UserController {
     async getAll(req, res, next) {
+        let whereCondition = {}
+        if (req.query.status !== '') {
+            whereCondition = req.query
+        }
+
         const data = await models.users.findAll({
-            attributes: ['id', 'name', 'userClass', 'phone'],
+            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status'],
+            where: whereCondition,
         })
-        console.log(data)
+
         return res.json(data)
     }
 
     async createUser(req, res, next) {
-        const { phone, name, userClass, pass } = req.body
+        const userData = req.body
 
-        const hashedPass = await bcrypt.hash(pass, 10)
+        const hashedPass = await bcrypt.hash(userData.pass, 10)
 
         await models.users.create({
-            phone,
-            name,
-            userClass,
+            name: userData.name,
+            userClass: userData.userClass,
+            surname: userData.surname,
+            phone: userData.phone,
             pass: hashedPass,
+            status: userData.status,
         })
-        //TODO: возвращать данные о созданном пользователи
+
         return res.status(200).send('User Created')
     }
 
     async updateUser(req, res, next) {
         const { id } = req.params
-        console.log(id)
-        const { name, pass, userClass, phone } = req.body
+        // console.log(id)
+        const { name, userClass, surname, phone, pass, status } = req.body
 
         const updateObj = {
             name,
             userClass,
             phone,
+            surname,
+            status,
         }
 
         if (pass !== undefined && pass !== null && pass !== '') {

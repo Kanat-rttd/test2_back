@@ -9,5 +9,6 @@ router.get('/', catchAsync(Controller.getAll))
 router.post('/arrival', catchAsync(Controller.createArrival))
 router.post('/consumption', catchAsync(Controller.createConsumption))
 router.post('/transfer', catchAsync(Controller.createTransfer))
+router.get('/report', catchAsync(Controller.getReportData))
 
 module.exports = router

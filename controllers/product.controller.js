@@ -50,7 +50,12 @@ class ProductController {
                         model: models.bakingFacilityUnits,
                     },
                 ],
-                where: filter,
+                where: {
+                    ...filter,
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                },
             })
             res.status(200).json({
                 status: 'success',
@@ -64,7 +69,7 @@ class ProductController {
 
     async updateProduct(req, res, next) {
         const { id } = req.params
-        console.log(id)
+        // console.log(id)
         const { name, bakingFacilityUnitId, price, costPrice, status } = req.body
         await models.products.update(
             {

@@ -36,7 +36,7 @@ class BakingController {
                 totals: totals[0].toJSON(),
             }
 
-            console.log(data)
+            //console.log(data)
             return res.json(data)
         } catch (error) {
             return next(error)

@@ -1,4 +1,5 @@
 // const models = require('../models')
+const { Op } = require('sequelize')
 
 // class IndividualPricesController {
 //     async getAll(req, res, next) {
@@ -43,7 +44,12 @@ class IndividualPricesController {
 
                     // Получаем данные о ценах для данного клиента
                     const individualPrices = await models.individualPrices.findAll({
-                        where: { clientId: client.id },
+                        where: {
+                            clientId: client.id,
+                            isDeleted: {
+                                [Op.ne]: 1,
+                            },
+                        },
                         attributes: ['id', 'price', 'createdAt'],
                         include: [
                             {
@@ -53,10 +59,14 @@ class IndividualPricesController {
                         ],
                     })
 
+                    // console.log(individualPrices)
+
                     // Добавляем информацию о ценах для клиента, если она есть
                     if (individualPrices.length > 0) {
+                        // console.log(individualPrices)
                         clientData.detail = individualPrices.map((price) => ({
-                            id: price.id,
+                            individualPriceId: price.id,
+                            id: price.product.id,
                             name: price.product.name,
                             price: price.price,
                             date: price.createdAt,
@@ -67,7 +77,7 @@ class IndividualPricesController {
                 }),
             )
 
-            console.log(data)
+            console.log(data[0].detail)
             return res.json(data)
         } catch (error) {
             console.error(error)
@@ -78,7 +88,7 @@ class IndividualPricesController {
     async createIndividualPrice(req, res, next) {
         const individualPriceData = req.body
 
-        console.log(individualPriceData)
+        // console.log(individualPriceData)
 
         await models.individualPrices.create({
             price: individualPriceData.detail[0].price,
@@ -87,6 +97,42 @@ class IndividualPricesController {
         })
 
         return res.status(200).send('IndividualPrice Created')
+    }
+
+    async updateIndividualPrice(req, res, next) {
+        const { id } = req.params
+
+        const individualPriceData = req.body
+
+        const updateObj = {
+            price: individualPriceData.detail[0].price,
+        }
+
+        // console.log(id, individualPriceData.detail[0].id, individualPriceData.detail[0].price)
+
+        await models.individualPrices.update(updateObj, {
+            where: {
+                productId: individualPriceData.detail[0].id,
+                clientId: id,
+            },
+        })
+
+        return res.status(200).send('Individual Price updated')
+    }
+
+    async deleteIndividualPrice(req, res, next) {
+        const { id } = req.params
+        await models.individualPrices.update(
+            {
+                isDeleted: true,
+            },
+            {
+                where: {
+                    id,
+                },
+            },
+        )
+        return res.status(200).send('Individual Price updated')
     }
 }
 

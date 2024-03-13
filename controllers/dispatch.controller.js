@@ -40,7 +40,7 @@ class DispatchController {
     async createDispatch(req, res, next) {
         const dispatchData = req.body
 
-        console.log(dispatchData)
+        // console.log(dispatchData)
 
         const dispatch = await models.goodsDispatch.create({
             clientId: dispatchData.userId,

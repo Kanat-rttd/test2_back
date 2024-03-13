@@ -8,7 +8,7 @@ const clients = sequelize.define('clients', {
     contact: { type: DataTypes.STRING },
     telegrammId: { type: DataTypes.STRING },
     password: { type: DataTypes.STRING },
-    status: { type: DataTypes.INTEGER },
+    status: { type: DataTypes.STRING },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 

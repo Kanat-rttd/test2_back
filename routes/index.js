@@ -10,6 +10,9 @@ const dispatchRouter = require('./dispatch.route')
 const individualPrices = require('./individualPrices.route')
 const finance = require('./finance.route')
 const financeCategories = require('./financeCategories.route')
+const providers = require('./providers.route')
+let rawMaterialsRouter = require('./rawMaterials.route')
+const productPurchaseRouter = require('./productPurchase.route')
 let router = Router()
 
 router.use('/user', userRouter)
@@ -23,5 +26,8 @@ router.use('/release', dispatchRouter)
 router.use('/inPrice', individualPrices)
 router.use('/finance', finance)
 router.use('/financeCategories', financeCategories)
+router.use('/providers', providers)
+router.use('/rawMaterials', rawMaterialsRouter)
+router.use('/productPurchase', productPurchaseRouter)
 
 module.exports = router

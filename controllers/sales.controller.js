@@ -158,7 +158,7 @@ class SalesController {
 
     async setDoneStatus(req, res, next) {
         const { id } = req.params
-        console.log(id)
+        // console.log(id)
 
         await models.order.update(
             {

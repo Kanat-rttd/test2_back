@@ -5,7 +5,7 @@ class BakeryFacilityUnitsController {
         const data = await models.bakingFacilityUnits.findAll({
             attributes: ['id', 'facilityUnit'],
         })
-        console.log(data)
+        //console.log(data)
         return res.json(data)
     }
 

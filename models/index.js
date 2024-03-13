@@ -16,4 +16,7 @@ module.exports = {
     goodsDispatchDetails: require('./goodsDispatchDetails.js'),
     finance: require('./finance.js'),
     financeCategories: require('./financeCategories.js'),
+    productPurchase: require('./productPurchase.js'),
+    providers: require('./providers.js'),
+    rawMaterials: require('./rawMaterials.js'),
 }

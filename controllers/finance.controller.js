@@ -1,17 +1,18 @@
 const models = require('../models')
+const sequelize = require('../config/db')
 
 class FinanceController {
     async getAll(req, res, next) {
         try {
             let { sortOrder } = req.query
-            console.log(sortOrder)
+            // console.log(sortOrder)
 
             sortOrder = sortOrder || ''
 
             const order = sortOrder === 'desc' ? [['date', 'DESC']] : [['date', 'ASC']]
 
             const data = await models.finance.findAll({
-                attributes: ['id', 'amount', 'date', 'category', 'clientId', 'account', 'comment'],
+                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'clientId', 'account', 'comment'],
                 order: order,
                 include: [
                     {
@@ -80,6 +81,58 @@ class FinanceController {
         })
 
         return res.status(200).send('Transfer Created')
+    }
+
+    async getReportData(req, res, next) {
+        const rawData = await models.finance.findAll({
+            attributes: ['amount', 'financeCategoryId', 'comment'],
+            include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
+        })
+
+        // Инициализация общей суммы
+        let initial = 0
+
+        // Инициализация объекта данных
+        const data = {
+            initial: 0,
+            defaultData: [],
+            data: {
+                operational: { total: 0, data: [] },
+                financial: { total: 0, data: [] },
+            },
+            balance: 0,
+        }
+
+        // Обработка данных из базы
+        rawData.forEach(({ amount, financeCategory }) => {
+            const { type, name } = financeCategory
+            const total = Number(amount)
+
+            // Обновление общей суммы
+            initial += total
+
+            // Определение категории и добавление данных в соответствующий раздел
+            if (type === 'Операционный') {
+                data.data.operational.total += total
+                data.data.operational.data.push({ name, total })
+            } else if (type === 'Финансовый') {
+                data.data.financial.total += total
+                data.data.financial.data.push({ name, total })
+            } else if (type === 'Обычный') {
+                data.defaultData.push({ name, total })
+            }
+        })
+
+        // Вычисление суммы для баланса (Переводы)
+        data.balance = rawData
+            .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
+            .reduce((acc, { amount }) => acc + Number(amount), 0)
+
+        // Выставление общей суммы
+        data.initial = initial
+
+        // Возвращение сформированных данных
+        return res.json(data)
     }
 }
 

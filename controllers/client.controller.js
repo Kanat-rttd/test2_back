@@ -4,14 +4,29 @@ const models = require('../models')
 const { model } = require('../config/db')
 
 class ClientController {
+    // async getAll(req, res, next) {
+    //     const data = await models.clients.findAll({
+    //         attributes: ['id', 'name', 'surname', 'contact', 'telegrammId', 'status'],
+    //         where: {
+    //             isDeleted: {
+    //                 [Op.ne]: 1,
+    //             },
+    //         },
+    //     })
+    //     return res.json(data)
+    // }
+
     async getAll(req, res, next) {
+        let filtersData = req.query.filters
+        const filter = {}
+
+        if (filtersData.name !== '') filter.name = filtersData.name
+        if (filtersData.telegrammId !== '') filter.telegrammId = filtersData.telegrammId
+        if (filtersData.status !== '') filter.status = filtersData.status
+
         const data = await models.clients.findAll({
             attributes: ['id', 'name', 'surname', 'contact', 'telegrammId', 'status'],
-            where: {
-                isDeleted: {
-                    [Op.ne]: 1,
-                },
-            },
+            where: filter,
         })
         return res.json(data)
     }
@@ -34,7 +49,7 @@ class ClientController {
 
     async updateClient(req, res, next) {
         const { id } = req.params
-        console.log(id)
+        // console.log(id)
         const { name, surname, contact, telegrammId, status, password } = req.body
 
         const updateObj = {
@@ -56,7 +71,7 @@ class ClientController {
                 id,
             },
         })
-        //TODO: На фронт можно вернуть сообщение с ключом message и нового клиента для взаимодействия
+
         return res.status(200).send('Client updated')
     }
 
@@ -78,7 +93,7 @@ class ClientController {
     async findByFilters(req, res, next) {
         const { name, telegrammId, status } = req.body
 
-        console.log(status)
+        // console.log(status)
 
         const filter = {}
         if (name) filter.name = name
