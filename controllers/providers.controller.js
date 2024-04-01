@@ -5,7 +5,7 @@ class ProvidersController {
         const data = await models.providers.findAll({
             attributes: ['id', 'name'],
         })
-        // console.log(data)
+
         return res.json(data)
     }
 }

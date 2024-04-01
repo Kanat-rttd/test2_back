@@ -20,9 +20,13 @@ class ClientController {
         let filtersData = req.query.filters
         const filter = {}
 
-        if (filtersData.name !== '') filter.name = filtersData.name
-        if (filtersData.telegrammId !== '') filter.telegrammId = filtersData.telegrammId
-        if (filtersData.status !== '') filter.status = filtersData.status
+        console.log()
+
+        if (Object.keys(filter).length !== 0) {
+            if (filtersData.name !== '') filter.name = filtersData.name
+            if (filtersData.telegrammId !== '') filter.telegrammId = filtersData.telegrammId
+            if (filtersData.status !== '') filter.status = filtersData.status
+        }
 
         const data = await models.clients.findAll({
             attributes: ['id', 'name', 'surname', 'contact', 'telegrammId', 'status'],

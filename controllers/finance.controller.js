@@ -1,4 +1,5 @@
 const models = require('../models')
+const { Op } = require('sequelize')
 const sequelize = require('../config/db')
 
 class FinanceController {
@@ -32,13 +33,17 @@ class FinanceController {
     async createArrival(req, res, next) {
         const { account, amount, financeCategoryId, clientId, comment, date } = req.body
 
+        const bodyData = req.body
+        console.log(bodyData)
+
         await models.finance.create({
-            account,
-            amount,
-            financeCategoryId,
-            clientId,
-            comment,
-            date,
+            account: bodyData.data.account,
+            amount: bodyData.data.amount,
+            financeCategoryId: bodyData.data.financeCategoryId,
+            clientId: bodyData.data.clientId,
+            comment: bodyData.data.comment,
+            date: bodyData.data.date,
+            invoiceNumber: bodyData.invoiceNumber,
         })
 
         return res.status(200).send('Arrival Created')
@@ -133,6 +138,44 @@ class FinanceController {
 
         // Возвращение сформированных данных
         return res.json(data)
+    }
+
+    async getFinanceAmountByInvoiceNumber(req, res, next) {
+        const { invoiceNumber } = req.params
+
+        try {
+            const result = await models.finance.findOne({
+                attributes: [[sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount']],
+                where: { invoiceNumber: invoiceNumber },
+            })
+
+            const totalAmount = result.dataValues.totalAmount || 0
+
+            return res.json({ totalAmount })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getAllTotalsWithInvoiceNumbers(req, res, next) {
+        try {
+            const results = await models.finance.findAll({
+                attributes: ['invoiceNumber', [sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount']],
+                where: { invoiceNumber: { [Op.ne]: null } },
+                group: ['invoiceNumber'],
+            })
+
+            const financeAmounts = results.map((result) => ({
+                invoiceNumber: result.invoiceNumber,
+                totalAmount: result.dataValues.totalAmount || 0,
+            }))
+
+            console.log(financeAmounts)
+
+            return res.json(financeAmounts)
+        } catch (error) {
+            next(error)
+        }
     }
 }
 

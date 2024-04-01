@@ -11,6 +11,7 @@ const finance = sequelize.define('finance', {
     clientId: { type: DataTypes.INTEGER },
     account: { type: DataTypes.STRING },
     comment: { type: DataTypes.STRING },
+    invoiceNumber: { type: DataTypes.INTEGER },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 

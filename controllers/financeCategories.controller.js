@@ -5,7 +5,6 @@ class FinanceCategories {
         const data = await models.financeCategories.findAll({
             attributes: ['id', 'name', 'type'],
         })
-        // console.log(data)
         return res.json(data)
     }
 }

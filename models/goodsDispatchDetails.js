@@ -8,6 +8,7 @@ const goodsDispatchDetails = sequelize.define('goodsDispatchDetails', {
     goodsDispatchId: { type: DataTypes.INTEGER },
     productId: { type: DataTypes.INTEGER },
     quantity: { type: DataTypes.INTEGER },
+    price: { type: DataTypes.STRING },
 })
 
 products.hasMany(goodsDispatchDetails)
