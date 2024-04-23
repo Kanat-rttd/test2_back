@@ -1,9 +1,35 @@
 const models = require('../models')
 const sequelize = require('../config/db')
+const { Op } = require('sequelize')
 
 class ProductPurchaseController {
     async getAllPruchases(req, res, next) {
         try {
+            const { startDate, endDate, providerId, rawMaterialId, paymentStatus } = req.query
+            console.log('Received query parameters:', startDate, endDate)
+
+            const dateFilterOptions = {}
+            const providerFilterOptions = {}
+            const rawMaterialFilterOptions = {}
+
+            if (startDate && endDate) {
+                dateFilterOptions.createdAt = {
+                    [Op.between]: [startDate, endDate],
+                }
+            }
+
+            if (providerId) {
+                providerFilterOptions.id = providerId
+            }
+
+            if (rawMaterialId) {
+                rawMaterialFilterOptions.id = rawMaterialId
+            }
+
+            if (paymentStatus) {
+                dateFilterOptions.status = paymentStatus
+            }
+
             const data = await models.productPurchase.findAll({
                 attributes: [
                     'id',
@@ -20,12 +46,17 @@ class ProductPurchaseController {
                     {
                         attributes: ['id', 'name'],
                         model: models.providers,
+                        where: providerFilterOptions,
+                        // required: true,
                     },
                     {
                         attributes: ['id', 'name'],
                         model: models.rawMaterials,
+                        where: rawMaterialFilterOptions,
+                        // required: true,
                     },
                 ],
+                where: dateFilterOptions,
             })
 
             let totalQuantity = 0
@@ -96,6 +127,39 @@ class ProductPurchaseController {
         })
 
         return res.status(200).send('Purchase updated')
+    }
+
+    async getDebtPurchases(req, res, next) {
+        const { providerId } = req.query
+        console.log('Received query parameters:', providerId)
+
+        const filterOptions = {}
+
+        if (providerId) {
+            filterOptions.id = providerId
+        }
+
+        const debts = await models.productPurchase.findAll({
+            attributes: [[sequelize.fn('SUM', sequelize.col('totalSum')), 'totalDebt']],
+            where: { status: 'Не оплачено', ...filterOptions },
+        })
+
+        const data = await models.productPurchase.findAll({
+            attributes: [[sequelize.fn('SUM', sequelize.col('totalSum')), 'totalDebt'], 'providerId'],
+            include: [
+                {
+                    attributes: ['id', 'name'],
+                    model: models.providers,
+                    where: filterOptions,
+                },
+            ],
+            where: { status: 'Не оплачено' },
+            group: ['providerId'],
+        })
+
+        const totalDebt = debts.length > 0 ? debts[0].dataValues.totalDebt : 0
+
+        return res.json({ totalDebt, data })
     }
 }
 

@@ -17,20 +17,17 @@ class ClientController {
     // }
 
     async getAll(req, res, next) {
-        let filtersData = req.query.filters
-        const filter = {}
+        const { name, telegrammId, status } = req.query
+        console.log('query Recieved', name, telegrammId, status)
+        let filterOptions = {}
 
-        console.log()
-
-        if (Object.keys(filter).length !== 0) {
-            if (filtersData.name !== '') filter.name = filtersData.name
-            if (filtersData.telegrammId !== '') filter.telegrammId = filtersData.telegrammId
-            if (filtersData.status !== '') filter.status = filtersData.status
-        }
+        if (name) filterOptions.name = name
+        if (telegrammId) filterOptions.telegrammId = telegrammId
+        if (status) filterOptions.status = status
 
         const data = await models.clients.findAll({
             attributes: ['id', 'name', 'surname', 'contact', 'telegrammId', 'status'],
-            where: filter,
+            where: filterOptions,
         })
         return res.json(data)
     }

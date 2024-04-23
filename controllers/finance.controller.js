@@ -52,13 +52,15 @@ class FinanceController {
     async createConsumption(req, res, next) {
         const { account, amount, financeCategoryId, clientId, comment, date } = req.body
 
+        const bodyData = req.body
+
         await models.finance.create({
-            account,
-            amount: amount * -1,
-            financeCategoryId,
-            clientId,
-            comment,
-            date,
+            account: bodyData.data.account,
+            amount: bodyData.data.amount * -1,
+            financeCategoryId: bodyData.data.financeCategoryId,
+            clientId: bodyData.data.clientId,
+            comment: bodyData.data.comment,
+            date: bodyData.data.date,
         })
 
         return res.status(200).send('Consumption Created')

@@ -5,6 +5,16 @@ const AppError = require('../filters/appError')
 
 class SalesController {
     async getAll(req, res, next) {
+        const { startDate, endDate } = req.query
+
+        const filterOptions = {}
+
+        if (startDate && endDate) {
+            filterOptions.createdAt = {
+                [Op.between]: [startDate, endDate],
+            }
+        }
+
         const orders = await models.order.findAll({
             attributes: ['id', 'userId', 'totalPrice', 'createdAt', 'done'],
             include: [
@@ -29,12 +39,10 @@ class SalesController {
                     attributes: ['id', 'name'],
                 },
             ],
+            where: filterOptions,
         })
 
-        res.status(200).json({
-            status: 'success',
-            data: orders,
-        })
+        res.status(200).json(orders)
     }
 
     async getOrderById(req, res, next) {

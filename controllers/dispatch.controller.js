@@ -7,20 +7,40 @@ const Sequelize = require('../config/db')
 
 class DispatchController {
     async getAll(req, res, next) {
+        const { startDate, endDate, facilityUnit } = req.query
+        console.log('Received query parameters:', startDate, endDate, facilityUnit)
+
+        const filterOptions = {}
+        const facilityOptions = {}
+        if (startDate && endDate) {
+            filterOptions.createdAt = {
+                [Op.between]: [startDate, endDate],
+            }
+        }
+
+        if (facilityUnit) {
+            facilityOptions.id = facilityUnit
+            // filterOptions['$goodsDispatchDetails.product.bakingFacilityUnit.id$'] = facilityUnit
+        }
+
         const dispatch = await models.goodsDispatch.findAll({
             attributes: ['id', 'clientId', 'createdAt', 'dispatch'],
             include: [
                 {
                     model: models.goodsDispatchDetails,
                     attributes: ['id', 'productId', 'quantity', 'price'],
+                    required: true,
                     include: [
                         {
                             model: models.products,
                             attributes: ['name', 'price'],
+                            required: true,
                             include: [
                                 {
                                     model: models.bakingFacilityUnits,
                                     attributes: ['id', 'facilityUnit'],
+                                    where: facilityOptions,
+                                    required: true,
                                 },
                             ],
                         },
@@ -31,9 +51,10 @@ class DispatchController {
                     attributes: ['id', 'name'],
                 },
             ],
+            where: filterOptions,
         })
 
-        // console.log(new Date().toLocaleTimeString())
+        // console.log(dispatch)
 
         res.status(200).json(dispatch)
     }
@@ -138,78 +159,24 @@ class DispatchController {
         res.status(200).json(result)
     }
 
-    //     async createDispatch(req, res, next) {
-    //         const dispatchData = req.body
+    async updateDispatch(req, res, next) {
+        const { id } = req.params
 
-    //         // Проверяем наличие записи для данного пользователя на текущий день
-    //         const existingDispatch = await models.goodsDispatch.findOne({
-    //             where: {
-    //                 clientId: dispatchData.userId,
-    //                 createdAt: {
-    //                     [Op.gte]: moment().startOf('day').toDate(), // Начало текущего дня
-    //                     [Op.lt]: moment().endOf('day').toDate(), // Конец текущего дня
-    //                 },
-    //             },
-    //         })
+        const { productId, quantity } = req.body
 
-    //         if (existingDispatch) {
-    //             // Если запись существует, обновляем её
-    //             await existingDispatch.update({
-    //                 dispatch: dispatchData.dispatch,
-    //             })
+        const updateObj = {
+            quantity,
+        }
 
-    //             // Обновляем детали отгрузки
-    //             await Promise.all(
-    //                 dispatchData.products.map(async (sale) => {
-    //                     const existingDetail = await models.goodsDispatchDetails.findOne({
-    //                         where: {
-    //                             goodsDispatchId: existingDispatch.id,
-    //                             productId: sale.id,
-    //                         },
-    //                     })
+        await models.goodsDispatchDetails.update(updateObj, {
+            where: {
+                id,
+                productId,
+            },
+        })
 
-    //                     if (existingDetail) {
-    //                         // Если деталь существует, добавляем к текущему количеству новое количество
-    //                         await existingDetail.update({
-    //                             quantity: existingDetail.quantity + sale.quantity,
-    //                         })
-    //                     } else {
-    //                         // Если деталь не существует, создаем новую
-    //                         await models.goodsDispatchDetails.create({
-    //                             goodsDispatchId: existingDispatch.id,
-    //                             productId: sale.id,
-    //                             quantity: sale.quantity,
-    //                         })
-    //                     }
-    //                 }),
-    //             )
-
-    //             res.status(200).json({
-    //                 status: 'success',
-    //                 message: 'Заказ успешно обновлен',
-    //             })
-    //         } else {
-    //             // Если запись не существует, создаем новую
-    //             const dispatch = await models.goodsDispatch.create({
-    //                 clientId: dispatchData.userId,
-    //                 dispatch: dispatchData.dispatch,
-    //             })
-
-    //             // Создаем детали отгрузки для новой записи
-    //             const dispatchDetails = dispatchData.products.map((sale) => ({
-    //                 goodsDispatchId: dispatch.id,
-    //                 productId: sale.id,
-    //                 quantity: sale.quantity,
-    //             }))
-
-    //             await models.goodsDispatchDetails.bulkCreate(dispatchDetails)
-
-    //             res.status(200).json({
-    //                 status: 'success',
-    //                 message: 'Заказ успешно создан',
-    //             })
-    //         }
-    //     }
+        return res.status(200).send('Dispatch updated')
+    }
 }
 
 module.exports = new DispatchController()

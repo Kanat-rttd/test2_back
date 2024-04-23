@@ -9,5 +9,6 @@ let router = Router()
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createDispatch))
 router.get('/invoice', catchAsync(Controller.getInvoiceData))
+router.put('/:id', catchAsync(Controller.updateDispatch))
 
 module.exports = router

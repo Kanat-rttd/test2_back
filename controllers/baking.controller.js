@@ -1,9 +1,20 @@
 const models = require('../models')
+const { Op } = require('sequelize')
 const Sequelize = require('../config/db')
 
 class BakingController {
     async getAll(req, res, next) {
         try {
+            const { startDate, endDate } = req.query
+            console.log('Received query parameters:', startDate, endDate)
+
+            const filterOptions = {}
+            if (startDate && endDate) {
+                filterOptions.createdAt = {
+                    [Op.between]: [startDate, endDate],
+                }
+            }
+
             const bakingData = await models.baking.findAll({
                 attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output'],
                 include: [
@@ -18,6 +29,7 @@ class BakingController {
                         ],
                     },
                 ],
+                where: filterOptions,
             })
 
             const totals = await models.baking.findAll({
@@ -29,6 +41,7 @@ class BakingController {
                     [Sequelize.literal('SUM(butter)'), 'totalButter'],
                     [Sequelize.literal('SUM(output)'), 'totalOutput'],
                 ],
+                where: filterOptions,
             })
 
             const data = {

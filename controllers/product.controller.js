@@ -2,18 +2,30 @@ const { Op } = require('sequelize')
 const models = require('../models')
 class ProductController {
     async getAll(req, res, next) {
+        const { name, bakingFacilityUnitId, status } = req.query
+        console.log('query Recieved', name, bakingFacilityUnitId, status)
+        let filterOptions = {}
+
+        let filterFacility = {}
+
+        if (name) filterOptions.name = name
+        if (bakingFacilityUnitId) filterFacility.id = bakingFacilityUnitId
+        if (status) filterOptions.status = status
+
         const data = await models.products.findAll({
             attributes: ['id', 'name', 'price', 'costPrice', 'status'],
             include: [
                 {
                     attributes: ['facilityUnit', 'id'],
                     model: models.bakingFacilityUnits,
+                    where: filterFacility,
                 },
             ],
             where: {
                 isDeleted: {
                     [Op.ne]: 1,
                 },
+                ...filterOptions,
             },
         })
         return res.json(data)

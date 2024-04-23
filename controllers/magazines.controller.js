@@ -2,14 +2,26 @@ const models = require('../models')
 
 class MagazinesController {
     async getAll(req, res, next) {
+        const { name, clientId, status } = req.query
+        console.log('query Recieved', name, clientId, status)
+        let filterOptions = {}
+
+        let filterClient = {}
+
+        if (name) filterOptions.name = name
+        if (clientId) filterClient.id = clientId
+        if (status) filterOptions.status = status
+
         const data = await models.magazines.findAll({
             attributes: ['id', 'name', 'clientId', 'status'],
             include: [
                 {
                     attributes: ['id', 'name'],
                     model: models.clients,
+                    where: filterClient,
                 },
             ],
+            where: filterOptions,
         })
         return res.json(data)
     }

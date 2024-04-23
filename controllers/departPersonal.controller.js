@@ -1,0 +1,56 @@
+const models = require('../models')
+
+class DepartPersonalController {
+    async getAll(req, res, next) {
+        const { status } = req.query
+        console.log('query Recieved', status)
+        let filterOptions = {}
+        if (status) {
+            filterOptions.status = status
+        }
+
+        const data = await models.departPersonal.findAll({
+            attributes: ['id', 'name', 'surname', 'status', 'userClass', 'fixSalary'],
+            where: filterOptions,
+        })
+
+        return res.json(data)
+    }
+
+    async createDepartPersonal(req, res, next) {
+        const departPersonalData = req.body
+
+        await models.departPersonal.create({
+            name: departPersonalData.name,
+            surname: departPersonalData.surname,
+            status: departPersonalData.status,
+            userClass: departPersonalData.userClass,
+            fixSalary: departPersonalData.fixSalary,
+        })
+
+        return res.status(200).send('Personal Created')
+    }
+
+    async updateDepartPersonal(req, res, next) {
+        const { id } = req.params
+
+        const { name, userClass, surname, status, fixSalary } = req.body
+
+        const updateObj = {
+            name,
+            surname,
+            status,
+            userClass,
+            fixSalary,
+        }
+
+        await models.departPersonal.update(updateObj, {
+            where: {
+                id,
+            },
+        })
+        return res.status(200).send('Personal updated')
+    }
+}
+
+module.exports = new DepartPersonalController()

@@ -5,14 +5,16 @@ const tokenDecode = require('jwt-decode')
 
 class UserController {
     async getAll(req, res, next) {
-        let whereCondition = {}
-        if (req.query.status !== '') {
-            whereCondition = req.query
+        const { status } = req.query
+        console.log('query Recieved', status)
+        let filterOptions = {}
+        if (status) {
+            filterOptions.status = status
         }
 
         const data = await models.users.findAll({
-            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status'],
-            where: whereCondition,
+            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary'],
+            where: filterOptions,
         })
 
         return res.json(data)
@@ -30,6 +32,7 @@ class UserController {
             phone: userData.phone,
             pass: hashedPass,
             status: userData.status,
+            fixSalary: userData.fixSalary,
         })
 
         return res.status(200).send('User Created')
@@ -38,7 +41,7 @@ class UserController {
     async updateUser(req, res, next) {
         const { id } = req.params
         // console.log(id)
-        const { name, userClass, surname, phone, pass, status } = req.body
+        const { name, userClass, surname, phone, pass, status, fixSalary } = req.body
 
         const updateObj = {
             name,
@@ -46,6 +49,7 @@ class UserController {
             phone,
             surname,
             status,
+            fixSalary,
         }
 
         if (pass !== undefined && pass !== null && pass !== '') {

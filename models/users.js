@@ -11,6 +11,7 @@ const users = sequelize.define(
         surname: { type: DataTypes.STRING },
         permission: { type: DataTypes.STRING },
         status: { type: DataTypes.STRING },
+        fixSalary: { type: DataTypes.STRING },
         pass: { type: DataTypes.STRING, require: true },
         userClass: { type: DataTypes.STRING },
     },
