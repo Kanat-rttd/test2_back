@@ -69,7 +69,7 @@ class IndividualPricesController {
                             id: price.product.id,
                             name: price.product.name,
                             price: price.price,
-                            date: price.createdAt,
+                            date: price.updatedAt,
                         }))
                     }
 
