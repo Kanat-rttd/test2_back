@@ -65,6 +65,17 @@ class UserController {
         return res.status(200).send('User updated')
     }
 
+    async deleteUser(req, res) {
+        const { id } = req.params
+
+        const deletedUser = await models.users.destroy({
+            where: {
+                id,
+            },
+        })
+        return res.json({ message: 'Пользователь успешно удален', data: deletedUser })
+    }
+
     async authenticateUser(req, res, next) {
         const { phone, pass } = req.body
         const user = await models.users.findOne({ where: { phone } })
