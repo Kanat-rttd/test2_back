@@ -1,5 +1,4 @@
-import { ValidationError, UniqueConstraintError } from 'sequelize'
-import ApiError from './ApiError.js'
+const { ValidationError, UniqueConstraintError } = require('sequelize')
 
 function errorHandler(fn) {
     return (req, res, next) => {
@@ -14,7 +13,6 @@ function errorHandler(fn) {
                 const errors = Object.values(err.errors).map((e) => e.message)
                 res.status(400).json({ message: errors[0] })
             } else {
-                next(ApiError.badRequest(err.message))
                 res.status(400).send({ message: err.message })
             }
         })
