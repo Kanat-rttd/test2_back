@@ -23,7 +23,7 @@ const clients = sequelize.define(
             },
             {
                 unique: true,
-                fields: ['clientName'],
+                fields: ['name'],
                 name: 'client_name_unique_constraint',
                 msg: 'Пользователь с таким именем уже существует',
             },
