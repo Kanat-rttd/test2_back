@@ -112,6 +112,16 @@ class ProductController {
                 },
             },
         )
+        await models.individualPrices.update(
+            {
+                isDeleted: true,
+            },
+            {
+                where: {
+                    productId: id,
+                },
+            },
+        )
         return res.status(200).json({
             status: 'success',
             message: 'Product deleted',
