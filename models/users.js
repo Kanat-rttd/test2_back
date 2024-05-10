@@ -16,6 +16,20 @@ const users = sequelize.define(
         userClass: { type: DataTypes.STRING },
     },
     {
+        indexes: [
+            {
+                unique: true,
+                fields: ['phone'],
+                name: 'phone_unique_constraint',
+                msg: 'Пользователь с таким телефоном уже существует',
+            },
+            {
+                unique: true,
+                fields: ['name'],
+                name: 'name_unique_constraint',
+                msg: 'Пользователь с таким именем уже существует',
+            },
+        ],
         hooks: {
             afterSync: async function (options) {
                 // this = Model
