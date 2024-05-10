@@ -50,7 +50,7 @@ class IndividualPricesController {
                                 [Op.ne]: 1,
                             },
                         },
-                        attributes: ['id', 'price', 'createdAt'],
+                        attributes: ['id', 'price', 'updatedAt'],
                         include: [
                             {
                                 model: models.products,
