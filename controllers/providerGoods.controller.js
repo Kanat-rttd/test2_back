@@ -39,6 +39,39 @@ class ProviderGoodsController {
             message: 'Поставщик товары успешно созданы',
         })
     }
+
+    async updateProviderGoods(req, res) {
+        const { id } = req.params
+        const { bakery: places, goods, providerId, status, unitOfMeasure } = req.body
+
+        const data = places.map((place) => ({
+            place: place.label,
+            goods,
+            providerId,
+            status,
+            unitOfMeasure,
+        }))
+
+        for (const providerGood of data) {
+            await models.providerGoods.update(providerGood, {
+                where: {
+                    id,
+                },
+            })
+        }
+        return res.status(200).json({ message: 'Поставщик товары успешно обновлен' })
+    }
+
+    async deleteProviderGoods(req, res) {
+        const { id } = req.params
+
+        const deletedProviderGoods = await models.providerGoods.destroy({
+            where: {
+                id,
+            },
+        })
+        return res.json({ message: 'Поставщик товара успешно удален', data: deletedProviderGoods })
+    }
 }
 
 module.exports = new ProviderGoodsController()

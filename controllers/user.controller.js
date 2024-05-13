@@ -13,7 +13,7 @@ class UserController {
         }
 
         const data = await models.users.findAll({
-            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary'],
+            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary', 'permission'],
             where: filterOptions,
         })
 
@@ -27,8 +27,9 @@ class UserController {
 
         await models.users.create({
             name: userData.name,
-            userClass: userData.userClass,
             surname: userData.surname,
+            userClass: userData.userClass,
+            permission: userData.permission,
             phone: userData.phone,
             pass: hashedPass,
             status: userData.status,
@@ -41,13 +42,14 @@ class UserController {
     async updateUser(req, res, next) {
         const { id } = req.params
         // console.log(id)
-        const { name, userClass, surname, phone, pass, status, fixSalary } = req.body
+        const { name, userClass, surname, phone, pass, status, fixSalary, permission } = req.body
 
         const updateObj = {
             name,
             userClass,
             phone,
             surname,
+            permission,
             status,
             fixSalary,
         }
@@ -93,7 +95,7 @@ class UserController {
         const token = jwt.sign(
             { userId: user.id, phone: user.phone, class: user.userClass },
             '1C6981FDFC9D65A5B68BCA02313AE8C0191D2A9559BFA37C5D4D5FF620D76D96',
-            { expiresIn: '1h' },
+            { expiresIn: '12h' },
         )
 
         return res.status(200).json({ token, status: 'success' })
