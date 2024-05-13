@@ -8,5 +8,6 @@ let router = Router()
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createOverPrice))
 router.put('/:id', catchAsync(Controller.updateOverPrice))
+router.delete('/:id', catchAsync(Controller.delOverPrice))
 
 module.exports = router
