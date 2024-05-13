@@ -9,5 +9,6 @@ router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createOverPrice))
 router.put('/:id', catchAsync(Controller.updateOverPrice))
 router.delete('/:id', catchAsync(Controller.delOverPrice))
+router.get('/clientFilter', catchAsync(Controller.getClientsForFilter))
 
 module.exports = router
