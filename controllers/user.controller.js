@@ -27,8 +27,9 @@ class UserController {
 
         await models.users.create({
             name: userData.name,
-            userClass: userData.userClass,
             surname: userData.surname,
+            userClass: userData.userClass,
+            permission: userData.permission,
             phone: userData.phone,
             pass: hashedPass,
             status: userData.status,
@@ -41,13 +42,14 @@ class UserController {
     async updateUser(req, res, next) {
         const { id } = req.params
         // console.log(id)
-        const { name, userClass, surname, phone, pass, status, fixSalary } = req.body
+        const { name, userClass, surname, phone, pass, status, fixSalary, permission } = req.body
 
         const updateObj = {
             name,
             userClass,
             phone,
             surname,
+            permission,
             status,
             fixSalary,
         }
