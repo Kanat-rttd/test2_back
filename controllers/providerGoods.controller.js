@@ -52,12 +52,17 @@ class ProviderGoodsController {
             unitOfMeasure,
         }))
         console.log(data)
-        await models.providerGoods.update(data, {
-            where: {
-                id,
-            },
-        })
-        return res.status(200).send('Поставщик товары успешно обновлен')
+
+        for (const providerGood of data) {
+            console.log(data)
+            const updated = await models.providerGoods.update(providerGood, {
+                where: {
+                    id,
+                },
+            })
+            console.log(updated)
+        }
+        return res.status(200).json({ message: 'Поставщик товары успешно обновлен' })
     }
 
     async deleteProviderGoods(req, res) {
