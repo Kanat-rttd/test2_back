@@ -13,7 +13,7 @@ class UserController {
         }
 
         const data = await models.users.findAll({
-            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary'],
+            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary', 'permission'],
             where: filterOptions,
         })
 
