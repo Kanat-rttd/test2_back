@@ -6,7 +6,7 @@ function catchAsync(controllerFunction) {
         try {
             await controllerFunction(req, res, next)
         } catch (err) {
-            console.log(err)
+            console.log(err, 'oshibka')
             if (err instanceof ValidationError) {
                 const errors = Object.values(err.errors).map((e) => e.message)
                 next(new AppError(errors[0], 400))

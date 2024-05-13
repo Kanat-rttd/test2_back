@@ -3,7 +3,7 @@ const { ValidationError, UniqueConstraintError } = require('sequelize')
 function errorHandler(fn) {
     return (req, res, next) => {
         Promise.resolve(fn(req, res, next)).catch((err) => {
-            console.log(err)
+            console.log('oshibka,', err)
             console.log(err.message)
             if (err instanceof UniqueConstraintError) {
                 let customMessage = 'Ошибка уникальности данных'

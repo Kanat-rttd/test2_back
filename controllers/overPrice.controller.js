@@ -5,11 +5,26 @@ const sequelize = require('../config/db')
 class OverPriceController {
     async getAll(req, res, next) {
         try {
-            const { name } = req.query
-            console.log('query Recieved', name)
+            const { name, startDate, endDate } = req.query
+            console.log('query Recieved', name, startDate, endDate)
             let filterOptions = {}
+            let filterOptionsDate = {}
             if (name) {
                 filterOptions.name = name
+            }
+
+            if (startDate && endDate) {
+                const startYear = new Date(startDate).getFullYear()
+                const startMonth = new Date(startDate).getMonth() + 1
+                const endYear = new Date(endDate).getFullYear()
+                const endMonth = new Date(endDate).getMonth() + 1
+
+                filterOptionsDate.year = {
+                    [Op.and]: [{ [Op.gte]: startYear }, { [Op.lte]: endYear }],
+                }
+                filterOptionsDate.month = {
+                    [Op.and]: [{ [Op.gte]: startMonth }, { [Op.lte]: endMonth }],
+                }
             }
 
             const data = await models.overPrice.findAll({
@@ -21,6 +36,7 @@ class OverPriceController {
                         where: filterOptions,
                     },
                 ],
+                where: filterOptionsDate,
             })
 
             return res.json(data)
@@ -41,16 +57,16 @@ class OverPriceController {
         })
 
         if (existingRecord) {
-            throw new Error('Only one record per name per month is allowed')
+            res.status(400).send({ message: 'Для одного реализатора в одном месяце должна быть только одна запись' })
+        } else {
+            await models.overPrice.create({
+                price: overPriceData.data.price,
+                clientId: overPriceData.data.clientId,
+                month: overPriceData.data.month,
+                year: overPriceData.data.year,
+            })
+            return res.status(200).send('OverPrice Created')
         }
-
-        // await models.overPrice.create({
-        //     price: overPriceData.data.price,
-        //     clientId: overPriceData.data.clientId,
-        //     month: overPriceData.data.month,
-        //     year: overPriceData.data.year,
-        // })
-        // return res.status(200).send('OverPrice Created')
     }
 
     async updateOverPrice(req, res, next) {
