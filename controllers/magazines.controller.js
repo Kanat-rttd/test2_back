@@ -59,20 +59,24 @@ class MagazinesController {
         return res.status(200).send('Magazine updated')
     }
 
-    // async deleteMagazine(req, res, next) {
-    //     const { id } = req.params
-    //     await models.magazines.update(
-    //         {
-    //             isDeleted: true,
-    //         },
-    //         {
-    //             where: {
-    //                 id,
-    //             },
-    //         },
-    //     )
-    //     return res.status(200).json({ id: id })
-    // }
+    async deleteMagazine(req, res, next) {
+        const { id } = req.params
+        await models.magazines.update(
+            {
+                isDeleted: true,
+            },
+            {
+                where: {
+                    id,
+                },
+            },
+        )
+        // return res.status(200).json({ id: id })
+        return res.status(200).json({
+            status: 'success',
+            message: 'Magazine deleted',
+        })
+    }
 }
 
 module.exports = new MagazinesController()
