@@ -93,7 +93,7 @@ class UserController {
         const token = jwt.sign(
             { userId: user.id, phone: user.phone, class: user.userClass },
             '1C6981FDFC9D65A5B68BCA02313AE8C0191D2A9559BFA37C5D4D5FF620D76D96',
-            { expiresIn: '1h' },
+            { expiresIn: '24h' },
         )
 
         return res.status(200).json({ token, status: 'success' })

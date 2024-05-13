@@ -42,25 +42,22 @@ class ProviderGoodsController {
 
     async updateProviderGoods(req, res) {
         const { id } = req.params
-        const { bakery, goods, providerId, status, unitOfMeasure } = req.body
+        const { bakery: places, goods, providerId, status, unitOfMeasure } = req.body
 
-        const data = bakery.map((place) => ({
+        const data = places.map((place) => ({
             place: place.label,
             goods,
             providerId,
             status,
             unitOfMeasure,
         }))
-        console.log(data)
 
         for (const providerGood of data) {
-            console.log(data)
-            const updated = await models.providerGoods.update(providerGood, {
+            await models.providerGoods.update(providerGood, {
                 where: {
                     id,
                 },
             })
-            console.log(updated)
         }
         return res.status(200).json({ message: 'Поставщик товары успешно обновлен' })
     }
