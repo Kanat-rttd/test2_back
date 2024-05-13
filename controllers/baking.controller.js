@@ -37,7 +37,7 @@ class BakingController {
                     [Sequelize.literal('SUM(flour)'), 'totalFlour'],
                     [Sequelize.literal('SUM(salt)'), 'totalSalt'],
                     [Sequelize.literal('SUM(yeast)'), 'totalYeast'],
-                    [Sequelize.literal('SUM(malt)'), 'totalMalt'],
+                     [Sequelize.literal('SUM(malt)'), 'totalMalt'],
                     [Sequelize.literal('SUM(butter)'), 'totalButter'],
                     [Sequelize.literal('SUM(output)'), 'totalOutput'],
                 ],

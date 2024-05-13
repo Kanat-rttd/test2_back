@@ -48,6 +48,42 @@ class FactInputController {
             message: 'Заказ успешно создан',
         })
     }
+
+    async updateFactInput(req, res, next) {
+        const { id } = req.params
+
+        const { name, place, quantity } = req.body
+
+        console.log(name, place, quantity)
+
+        const updateObj = {
+            name,
+            place,
+            quantity,
+        }
+
+        // console.log(id, individualPriceData.detail[0].id, individualPriceData.detail[0].price)
+
+        await models.factInput.update(updateObj, {
+            where: {
+                id,
+            },
+        })
+
+        return res.status(200).send('Fact input updated')
+    }
+
+    async deleteFactInput(req, res) {
+        const { id } = req.params
+
+        const deletedUser = await models.factInput.destroy({
+            where: {
+                id,
+            },
+        })
+
+        return res.json({ message: 'Fact input deleted' })
+    }
 }
 
 module.exports = new FactInputController()

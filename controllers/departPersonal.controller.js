@@ -51,6 +51,17 @@ class DepartPersonalController {
         })
         return res.status(200).send('Personal updated')
     }
+
+    async deletePersonal(req, res) {
+        const { id } = req.params
+
+        const deletedUser = await models.departPersonal.destroy({
+            where: {
+                id,
+            },
+        })
+        return res.json({ message: 'Персонал успешно удален', data: deletedUser })
+    }
 }
 
 module.exports = new DepartPersonalController()
