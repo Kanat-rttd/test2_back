@@ -9,14 +9,19 @@ class ProviderGoodsController {
         if (status) filterOptions.status = status
 
         const data = await models.providerGoods.findAll({
-            attributes: ['id', 'providerId', 'goods', 'unitOfMeasure', 'place', 'status'],
+            attributes: ['id', 'providerId', 'goods', 'unitOfMeasure', 'place', 'status', 'isDeleted'],
             include: [
                 {
                     attributes: ['id', 'name'],
                     model: models.providers,
                 },
             ],
-            where: filterOptions,
+            where: {
+                ...filterOptions,
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+            },
         })
         return res.json(data)
     }
@@ -24,52 +29,91 @@ class ProviderGoodsController {
     async createProviderGoods(req, res, next) {
         const providerGoodsData = req.body
 
-        const data = providerGoodsData.bakery.map((bakeryItem) => ({
-            providerId: providerGoodsData.provider,
-            goods: providerGoodsData.goods,
-            unitOfMeasure: providerGoodsData.unitOfMeasure,
-            place: bakeryItem.label,
-            status: providerGoodsData.status,
-        }))
+        const places = providerGoodsData.bakery.map((bakeryItem) => ({ label: bakeryItem.label }))
 
-        await models.providerGoods.bulkCreate(data)
+        const placesString = JSON.stringify(places)
 
-        res.status(200).json({
-            status: 'success',
-            message: 'Поставщик товары успешно созданы',
-        })
+        if (typeof providerGoodsData.providerId == 'string') {
+            console.log('string')
+
+            const newProvider = await models.providers.create({
+                name: providerGoodsData.providerId,
+            })
+
+            const data = {
+                providerId: newProvider.id,
+                goods: providerGoodsData.goods,
+                unitOfMeasure: providerGoodsData.unitOfMeasure,
+                place: placesString,
+                status: providerGoodsData.status,
+            }
+
+            await models.providerGoods.create(data)
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Поставщик товары успешно созданы',
+            })
+        } else {
+            console.log('number')
+
+            const data = {
+                providerId: providerGoodsData.providerId,
+                goods: providerGoodsData.goods,
+                unitOfMeasure: providerGoodsData.unitOfMeasure,
+                place: placesString,
+                status: providerGoodsData.status,
+            }
+
+            await models.providerGoods.create(data)
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Поставщик товары успешно созданы',
+            })
+        }
     }
 
     async updateProviderGoods(req, res) {
         const { id } = req.params
-        const { bakery: places, goods, providerId, status, unitOfMeasure } = req.body
+        const providerGoodsData = req.body
 
-        const data = places.map((place) => ({
-            place: place.label,
-            goods,
-            providerId,
-            status,
-            unitOfMeasure,
-        }))
+        const places = providerGoodsData.bakery.map((bakeryItem) => ({ label: bakeryItem.label }))
 
-        for (const providerGood of data) {
-            await models.providerGoods.update(providerGood, {
-                where: {
-                    id,
-                },
-            })
+        const placesString = JSON.stringify(places)
+
+        const data = {
+            providerId: providerGoodsData.providerId,
+            goods: providerGoodsData.goods,
+            unitOfMeasure: providerGoodsData.unitOfMeasure,
+            place: placesString,
+            status: providerGoodsData.status,
         }
+
+        console.log(data)
+
+        await models.providerGoods.update(data, {
+            where: {
+                id,
+            },
+        })
+
         return res.status(200).json({ message: 'Поставщик товары успешно обновлен' })
     }
 
     async deleteProviderGoods(req, res) {
         const { id } = req.params
 
-        const deletedProviderGoods = await models.providerGoods.destroy({
-            where: {
-                id,
+        const deletedProviderGoods = await models.providerGoods.update(
+            {
+                isDeleted: true,
             },
-        })
+            {
+                where: {
+                    id,
+                },
+            },
+        )
         return res.json({ message: 'Поставщик товара успешно удален', data: deletedProviderGoods })
     }
 }
