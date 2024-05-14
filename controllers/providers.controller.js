@@ -6,7 +6,12 @@ class ProvidersController {
             attributes: ['id', 'name'],
         })
 
-        return res.json(data)
+        const transformedData = data.map((provider) => ({
+            label: provider.name,
+            value: provider.id,
+        }))
+
+        return res.json(transformedData)
     }
 }
 
