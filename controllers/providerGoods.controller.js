@@ -16,7 +16,12 @@ class ProviderGoodsController {
                     model: models.providers,
                 },
             ],
-            where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
         return res.json(data)
     }
@@ -65,12 +70,15 @@ class ProviderGoodsController {
     async deleteProviderGoods(req, res) {
         const { id } = req.params
 
-        const deletedProviderGoods = await models.providerGoods.destroy({
-            where: {
-                id,
+        const deletedProviderGoods = await models.providerGoods.update(
+            { isDeleted: true },
+            {
+                where: {
+                    id,
+                },
             },
-        })
-        return res.json({ message: 'Поставщик товара успешно удален', data: deletedProviderGoods })
+        )
+        return res.status(200).json({ message: 'Поставщик товара успешно удален', data: deletedProviderGoods })
     }
 }
 

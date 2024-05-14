@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const models = require('../models')
 
 class DepartPersonalController {
@@ -11,7 +12,12 @@ class DepartPersonalController {
 
         const data = await models.departPersonal.findAll({
             attributes: ['id', 'name', 'surname', 'status', 'userClass', 'fixSalary'],
-            where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
 
         return res.json(data)
@@ -55,12 +61,15 @@ class DepartPersonalController {
     async deletePersonal(req, res) {
         const { id } = req.params
 
-        const deletedUser = await models.departPersonal.destroy({
-            where: {
-                id,
+        const deletedUser = await models.departPersonal.update(
+            { isDeleted: true },
+            {
+                where: {
+                    id,
+                },
             },
-        })
-        return res.json({ message: 'Персонал успешно удален', data: deletedUser })
+        )
+        return res.status(200).json({ message: 'Персонал успешно удален', data: deletedUser })
     }
 }
 

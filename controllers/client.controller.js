@@ -27,7 +27,12 @@ class ClientController {
 
         const data = await models.clients.findAll({
             attributes: ['id', 'name', 'surname', 'contact', 'telegrammId', 'status'],
-            where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
         return res.json(data)
     }
@@ -88,7 +93,7 @@ class ClientController {
                 },
             },
         )
-        return res.status(200).json({ id: id })
+        return res.status(200).json({ message: 'Клиент успешно удален', id: id })
     }
 
     async findByFilters(req, res, next) {

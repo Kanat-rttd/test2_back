@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const models = require('../models')
 
 class MagazinesController {
@@ -21,7 +22,12 @@ class MagazinesController {
                     where: filterClient,
                 },
             ],
-            where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
         return res.json(data)
     }
@@ -71,7 +77,6 @@ class MagazinesController {
                 },
             },
         )
-        // return res.status(200).json({ id: id })
         return res.status(200).json({
             status: 'success',
             message: 'Magazine deleted',

@@ -122,7 +122,8 @@ class IndividualPricesController {
 
     async deleteIndividualPrice(req, res, next) {
         const { id } = req.params
-        await models.individualPrices.update(
+        
+        const deletedIndividualPrice = await models.individualPrices.update(
             {
                 isDeleted: true,
             },
@@ -132,7 +133,9 @@ class IndividualPricesController {
                 },
             },
         )
-        return res.status(200).send('Individual Price updated')
+        return res
+            .status(200)
+            .json({ message: 'Индивидуальная цена товара успешно удалена', data: deletedIndividualPrice })
     }
 }
 
