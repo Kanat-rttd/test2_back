@@ -7,6 +7,7 @@ const magazines = sequelize.define('magazines', {
     name: { type: DataTypes.STRING },
     clientId: { type: DataTypes.INTEGER },
     status: { type: DataTypes.STRING },
+    isDeleted : {type: DataTypes.BOOLEAN , defaultValue: false}
 })
 
 clients.hasMany(magazines)

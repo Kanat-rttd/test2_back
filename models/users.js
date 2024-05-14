@@ -14,6 +14,7 @@ const users = sequelize.define(
         fixSalary: { type: DataTypes.STRING },
         pass: { type: DataTypes.STRING, require: true },
         userClass: { type: DataTypes.STRING },
+        isDeleted : {type: DataTypes.BOOLEAN , defaultValue: false}
     },
     {
         indexes: [

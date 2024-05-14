@@ -10,6 +10,7 @@ const departPersonal = sequelize.define(
         status: { type: DataTypes.STRING },
         userClass: { type: DataTypes.STRING },
         fixSalary: { type: DataTypes.STRING },
+        isDeleted : {type: DataTypes.BOOLEAN , defaultValue: false}
     },
     {
         indexes: [
