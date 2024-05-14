@@ -14,7 +14,17 @@ class UserController {
         }
 
         const data = await models.users.findAll({
-            attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary', 'permission'],
+            attributes: [
+                'id',
+                'name',
+                'userClass',
+                'phone',
+                'surname',
+                'status',
+                'fixSalary',
+                'permission',
+                'isDeleted',
+            ],
 
             where: {
                 isDeleted: {

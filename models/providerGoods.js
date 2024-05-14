@@ -9,7 +9,7 @@ const providerGoods = sequelize.define('providerGoods', {
     unitOfMeasure: { type: DataTypes.STRING },
     place: { type: DataTypes.STRING },
     status: { type: DataTypes.STRING },
-    isDeleted : {type: DataTypes.BOOLEAN , defaultValue: false}
+    isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
 providers.hasMany(providerGoods)
