@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const models = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -14,7 +15,13 @@ class UserController {
 
         const data = await models.users.findAll({
             attributes: ['id', 'name', 'userClass', 'phone', 'surname', 'status', 'fixSalary', 'permission'],
-            where: filterOptions,
+
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
 
         return res.json(data)
