@@ -7,21 +7,48 @@ const Sequelize = require('../config/db')
 
 class DispatchController {
     async getAll(req, res, next) {
-        const { startDate, endDate, facilityUnit } = req.query
-        console.log('Received query parameters:', startDate, endDate, facilityUnit)
+        const { startDate, endDate, facilityUnit, client, product } = req.query
+        console.log('______________________________')
+        console.log('Received query parameters:', startDate, endDate, facilityUnit, client, product)
 
         const filterOptions = {}
         const facilityOptions = {}
+        const clientOptions = {}
+        const productOptions = {}
         if (startDate && endDate) {
-            filterOptions.createdAt = {
-                [Op.between]: [startDate, endDate],
+            if (startDate == endDate) {
+                const nextDay = new Date(startDate)
+                nextDay.setDate(nextDay.getDate())
+                nextDay.setHours(1, 0, 0, 0)
+
+                const endOfDay = new Date(startDate)
+                endOfDay.setDate(endOfDay.getDate())
+                endOfDay.setHours(24, 59, 59, 999)
+
+                filterOptions.createdAt = {
+                    [Op.between]: [nextDay, endOfDay],
+                }
+            } else {
+                filterOptions.createdAt = {
+                    [Op.between]: [startDate, endDate],
+                }
             }
+        }
+
+        if (client) {
+            clientOptions.name = client
+        }
+
+        if (product) {
+            productOptions.name = product
         }
 
         if (facilityUnit) {
             facilityOptions.id = facilityUnit
-            // filterOptions['$goodsDispatchDetails.product.bakingFacilityUnit.id$'] = facilityUnit
         }
+
+        let totalQuantity = 0
+        let totalPrice = 0
 
         const dispatch = await models.goodsDispatch.findAll({
             attributes: ['id', 'clientId', 'createdAt', 'dispatch'],
@@ -34,6 +61,7 @@ class DispatchController {
                         {
                             model: models.products,
                             attributes: ['name', 'price'],
+                            where: productOptions,
                             required: true,
                             include: [
                                 {
@@ -49,14 +77,44 @@ class DispatchController {
                 {
                     model: models.clients,
                     attributes: ['id', 'name'],
+                    where: clientOptions,
+                    required: true,
                 },
             ],
-            where: filterOptions,
+            // where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
 
         // console.log(dispatch)
 
-        res.status(200).json(dispatch)
+        dispatch.forEach((dispatchItem) => {
+            if (!dispatchItem.dispatch) {
+                const dispatchDetails = dispatchItem.goodsDispatchDetails
+
+                dispatchDetails.forEach((detail) => {
+                    if (detail.price !== null) {
+                        totalPrice += detail.quantity * detail.price
+                    } else {
+                        totalPrice += detail.quantity * detail.product.price
+                    }
+
+                    totalQuantity += detail.quantity
+                })
+            }
+        })
+
+        console.log(totalQuantity, totalPrice)
+
+        res.status(200).json({
+            data: dispatch,
+            totalPrice: totalPrice,
+            totalQuantity: totalQuantity,
+        })
     }
 
     async createDispatch(req, res, next) {
@@ -162,10 +220,16 @@ class DispatchController {
     async updateDispatch(req, res, next) {
         const { id } = req.params
 
-        const { productId, quantity } = req.body
+        const { productId, quantity, price } = req.body
 
-        const updateObj = {
-            quantity,
+        const updateObj = {}
+
+        if (price) {
+            updateObj.price = price
+        }
+
+        if (quantity) {
+            updateObj.quantity = quantity
         }
 
         await models.goodsDispatchDetails.update(updateObj, {
@@ -176,6 +240,20 @@ class DispatchController {
         })
 
         return res.status(200).send('Dispatch updated')
+    }
+
+    async deleteDispatch(req, res) {
+        const { id } = req.params
+
+        const deletedDispatch = await models.goodsDispatch.update(
+            { isDeleted: true },
+            {
+                where: {
+                    id,
+                },
+            },
+        )
+        return res.status(200).json({ message: 'Поставщик товара успешно удален' })
     }
 }
 
