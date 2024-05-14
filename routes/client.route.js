@@ -10,5 +10,6 @@ router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createClient))
 router.put('/:id', catchAsync(Controller.updateClient))
 router.post('/find', catchAsync(Controller.findByFilters))
+router.delete('/:id', catchAsync(Controller.deleteClient))
 
 module.exports = router
