@@ -29,7 +29,12 @@ class BakingController {
                         ],
                     },
                 ],
-                where: filterOptions,
+                where: {
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                    ...filterOptions,
+                },
             })
 
             const totals = await models.baking.findAll({
