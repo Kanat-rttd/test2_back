@@ -104,6 +104,25 @@ class OverPriceController {
 
         return res.json({ message: 'overPrice deleted' })
     }
+
+    async getClientsForFilter(req, res, next) {
+        try {
+            const data = await models.overPrice.findAll({
+                attributes: ['clientId'],
+                include: [
+                    {
+                        model: models.clients,
+                        attributes: ['id', 'name'],
+                    },
+                ],
+                group: ['clientId'],
+            })
+
+            return res.json(data)
+        } catch (error) {
+            return next(error)
+        }
+    }
 }
 
 module.exports = new OverPriceController()
