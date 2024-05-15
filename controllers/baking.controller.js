@@ -37,7 +37,7 @@ class BakingController {
                     [Sequelize.literal('SUM(flour)'), 'totalFlour'],
                     [Sequelize.literal('SUM(salt)'), 'totalSalt'],
                     [Sequelize.literal('SUM(yeast)'), 'totalYeast'],
-                     [Sequelize.literal('SUM(malt)'), 'totalMalt'],
+                    [Sequelize.literal('SUM(malt)'), 'totalMalt'],
                     [Sequelize.literal('SUM(butter)'), 'totalButter'],
                     [Sequelize.literal('SUM(output)'), 'totalOutput'],
                 ],
@@ -72,6 +72,20 @@ class BakingController {
         })
 
         return res.status(200).send('Baking Created')
+    }
+
+    async deleteBaking(req, res) {
+        const { id } = req.params
+
+        const deletedBakings = await models.baking.update(
+            { isDeleted: true },
+            {
+                where: {
+                    id,
+                },
+            },
+        )
+        return res.status(200).json({ message: 'Выпечка успешно удалена' })
     }
 }
 

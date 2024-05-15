@@ -12,6 +12,7 @@ const baking = sequelize.define('baking', {
     temperature: { type: DataTypes.INTEGER },
     time: { type: DataTypes.TIME },
     output: { type: DataTypes.INTEGER },
+    isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
 product.hasMany(baking)
