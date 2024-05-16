@@ -140,6 +140,32 @@ class DispatchController {
     }
 
     async getInvoiceData(req, res, next) {
+        const { clientId, startDate, endDate, status } = req.query
+
+        let filterOptions = {}
+
+        if (startDate && endDate) {
+            if (startDate == endDate) {
+                const newDate = new Date(startDate)
+
+                const endDate = new Date(newDate.getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000))
+
+                filterOptions.createdAt = {
+                    [Op.between]: [newDate, endDate],
+                }
+            } else {
+                filterOptions.createdAt = {
+                    [Op.between]: [startDate, endDate],
+                }
+            }
+        }
+
+        if (clientId) {
+            filterOptions.clientId = clientId
+        }
+
+        console.log(filterOptions)
+
         const dispatch = await models.goodsDispatch.findAll({
             attributes: ['id', 'clientId', 'createdAt', 'dispatch'],
             include: [
@@ -169,10 +195,10 @@ class DispatchController {
                     attributes: ['id', 'name'],
                 },
             ],
-            order: [['createdAt', 'ASC']], // Order by createdAt ascending
+            where: filterOptions,
+            order: [['createdAt', 'ASC']],
         })
 
-        // Группировка по дате создания и clientId, объединение продуктов
         const groupedDispatch = dispatch.reduce((acc, curr) => {
             const key = `${curr.createdAt.getFullYear()}-${curr.createdAt.getMonth() + 1}-${curr.createdAt.getDate()}-${
                 curr.clientId
@@ -211,7 +237,6 @@ class DispatchController {
             return acc
         }, {})
 
-        // Преобразование объекта в массив значений
         const result = Object.values(groupedDispatch)
 
         res.status(200).json(result)
