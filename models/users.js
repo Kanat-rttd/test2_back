@@ -14,7 +14,7 @@ const users = sequelize.define(
         fixSalary: { type: DataTypes.STRING },
         pass: { type: DataTypes.STRING, require: true },
         userClass: { type: DataTypes.STRING },
-        isDeleted : {type: DataTypes.BOOLEAN , defaultValue: false}
+        isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
         indexes: [
@@ -33,7 +33,6 @@ const users = sequelize.define(
         ],
         hooks: {
             afterSync: async function (options) {
-                // this = Model
                 console.log('afterSync')
                 try {
                     const defaultPhone = '0000000000'
@@ -48,6 +47,7 @@ const users = sequelize.define(
                             name: 'Default User',
                             userClass: 'Admin',
                             pass: hashedPass,
+                            permission: `[{"label":"Admin"}]`,
                         })
                         console.log('Default user created successfully.')
                     }

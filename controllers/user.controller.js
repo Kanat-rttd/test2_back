@@ -40,39 +40,50 @@ class UserController {
     async createUser(req, res, next) {
         const userData = req.body
 
+        const permissions = userData.permission.map((perms) => ({ label: perms.label }))
+
+        const permissionString = JSON.stringify(permissions)
+
         const hashedPass = await bcrypt.hash(userData.pass, 10)
 
-        await models.users.create({
-            name: userData.name,
-            surname: userData.surname,
-            userClass: userData.userClass,
-            permission: userData.permission,
+        const data = {
             phone: userData.phone,
+            name: userData.name,
             pass: hashedPass,
+            userClass: userData.userClass,
+            surname: userData.surname,
+            permission: permissionString,
             status: userData.status,
             fixSalary: userData.fixSalary,
-        })
+        }
+
+        console.log(data)
+
+        await models.users.create(data)
 
         return res.status(200).send('User Created')
     }
 
     async updateUser(req, res, next) {
         const { id } = req.params
-        // console.log(id)
-        const { name, userClass, surname, phone, pass, status, fixSalary, permission } = req.body
+        const userData = req.body
+
+        const permissions = userData.permission.map((perms) => ({ label: perms.label }))
+
+        const permissionString = JSON.stringify(permissions)
 
         const updateObj = {
-            name,
-            userClass,
-            phone,
-            surname,
-            permission,
-            status,
-            fixSalary,
+            phone: userData.phone,
+            name: userData.name,
+            userClass: userData.userClass,
+            surname: userData.surname,
+            permission: permissionString,
+            status: userData.status,
+            fixSalary: userData.fixSalary,
         }
 
-        if (pass !== undefined && pass !== null && pass !== '') {
-            const hashedPass = await bcrypt.hash(pass, 10)
+        if (userData.pass !== undefined && userData.pass !== null && userData.pass !== '') {
+            const hashedPass = await bcrypt.hash(userData.pass, 10)
             updateObj.pass = hashedPass
         }
 

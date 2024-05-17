@@ -35,4 +35,5 @@ module.exports = {
     shiftTimeView,
     factInput: require('./factInput.js'),
     providerGoods: require('./providerGoods.js'),
+    place: require('./places.js'),
 }

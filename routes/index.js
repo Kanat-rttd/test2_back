@@ -21,6 +21,7 @@ const reportsRouter = require('./reports.route')
 const factInputRouter = require('./factInput.route')
 const overPriceRouter = require('./overPrice.route')
 const providerGoodsRouter = require('./providerGoods.route')
+const placeRouter = require('./place.route')
 let router = Router()
 
 router.use('/user', userRouter)
@@ -45,5 +46,6 @@ router.use('/reports', reportsRouter)
 router.use('/factInput', factInputRouter)
 router.use('/overPrice', overPriceRouter)
 router.use('/providerGoods', providerGoodsRouter)
+router.use('/place', placeRouter)
 
 module.exports = router
