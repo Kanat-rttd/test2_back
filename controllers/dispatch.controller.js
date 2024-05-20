@@ -245,7 +245,7 @@ class DispatchController {
     async updateDispatch(req, res, next) {
         const { id } = req.params
 
-        const { productId, quantity, price } = req.body
+        const { productId, quantity, price, clientId } = req.body
 
         const updateObj = {}
 
@@ -257,14 +257,16 @@ class DispatchController {
             updateObj.quantity = quantity
         }
 
+        const data = await models.invoiceData.update({ clientId }, { where: { id } })
+
         await models.goodsDispatchDetails.update(updateObj, {
             where: {
-                id,
+                goodsDispatchId: id,
                 productId,
             },
         })
 
-        return res.status(200).send('Dispatch updated')
+        return res.status(200).json({message:'Dispatch updated',data})
     }
 
     async deleteDispatch(req, res) {
