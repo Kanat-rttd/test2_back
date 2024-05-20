@@ -246,15 +246,15 @@ class DispatchController {
         const { id } = req.params
         console.log(id)
 
-        const { data } = req.body
+        const { data, clientId } = req.body
 
         console.error('clientID', clientId)
         const response = await models.goodsDispatch.update({ clientId }, { where: { id } })
         console.log(data)
-        for (const item of data){
+        for (const item of data) {
             await models.goodsDispatchDetails.update(item, {
                 where: {
-                    id: item.id
+                    id: item.id,
                 },
             })
         }
