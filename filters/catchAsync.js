@@ -9,9 +9,24 @@ function catchAsync(controllerFunction) {
             console.log(err, 'oshibka')
             if (err instanceof ValidationError) {
                 const errors = Object.values(err.errors).map((e) => e.message)
-                next(new AppError(errors[0], 400))
+
+                console.log('Error ', err)
+
+                const validationErrors = {
+                    phone_unique_constraint: 'Пользователь с таким номером уже зарегистрирован',
+                    name_unique_constraint: 'Пользователь с таким именем уже зарегистрирован',
+                    client_name_unique_constraint: 'Реализатор с таким именем уже зарегистрирован',
+                }
+
+                return res.status(400).json({
+                    message: validationErrors[err.errors[0].path],
+                    error: errors[0],
+                    field: err.errors[0].path.replace('_unique_constraint', ''),
+                })
+                // next(new AppError(errors[0], 400))
             } else {
-                next(new AppError(err.message, 405))
+                return res.status(405).json({ error: err.message })
+                // next(new AppError(err.message, 405))
             }
         }
     }

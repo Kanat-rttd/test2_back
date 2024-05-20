@@ -6,10 +6,10 @@ const roleCheck = (requiredRole) => {
         const token = authToken.split(' ')[1]
         const tokenData = tokenDecode.jwtDecode(token)
 
-        const hasPermission = tokenData.class === requiredRole
-        console.log('permission', tokenData.class)
+        const parsedData = JSON.parse(tokenData.class)
+        const hasRole = parsedData.some((obj) => obj.label === requiredRole)
 
-        if (!hasPermission) {
+        if (!hasRole) {
             return res.status(403).json({ message: 'Недостаточно прав доступа' })
         }
 
