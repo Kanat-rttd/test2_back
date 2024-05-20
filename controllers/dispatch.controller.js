@@ -246,29 +246,20 @@ class DispatchController {
         const { id } = req.params
         console.log(id)
 
-        const { productId, quantity, price, clientId } = req.body
+        const { data } = req.body
 
-        console.error('clientID',clientId)
-        const updateObj = {}
-
-        if (price) {
-            updateObj.price = price
-        }
-
-        if (quantity) {
-            updateObj.quantity = quantity
-        }
-
-        const data = await models.goodsDispatch.update({ clientId }, { where: { id } })
+        console.error('clientID', clientId)
+        const response = await models.goodsDispatch.update({ clientId }, { where: { id } })
         console.log(data)
-        await models.goodsDispatchDetails.update(updateObj, {
-            where: {
-                goodsDispatchId: id,
-                productId,
-            },
-        })
+        for (const item of data){
+            await models.goodsDispatchDetails.update(item, {
+                where: {
+                    id: item.id
+                },
+            })
+        }
 
-        return res.status(200).json({message:'Dispatch updated',data})
+        return res.status(200).json({ message: 'Dispatch updated', data: response })
     }
 
     async deleteDispatch(req, res) {
