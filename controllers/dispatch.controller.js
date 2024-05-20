@@ -259,7 +259,7 @@ class DispatchController {
             updateObj.quantity = quantity
         }
 
-        const data = await models.invoiceData.update({ clientId }, { where: { id } })
+        const data = await models.goodsDispatch.update({ clientId }, { where: { id } })
         console.log(data)
         await models.goodsDispatchDetails.update(updateObj, {
             where: {
