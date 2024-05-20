@@ -10,7 +10,7 @@ const roleCheck = (requiredRole) => {
         const hasRole = parsedData.some((obj) => obj.label === requiredRole)
 
         if (!hasRole) {
-            return res.status(403).json({ message: 'Недостаточно прав доступа' })
+            return res.status(403).json({ message: 'Недостаточно прав доступа', role: parsedData })
         }
 
         next()
