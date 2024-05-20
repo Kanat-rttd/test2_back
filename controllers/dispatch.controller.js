@@ -244,9 +244,11 @@ class DispatchController {
 
     async updateDispatch(req, res, next) {
         const { id } = req.params
+        console.log(id)
 
         const { productId, quantity, price, clientId } = req.body
 
+        console.error('clientID',clientId)
         const updateObj = {}
 
         if (price) {
@@ -258,7 +260,7 @@ class DispatchController {
         }
 
         const data = await models.invoiceData.update({ clientId }, { where: { id } })
-
+        console.log(data)
         await models.goodsDispatchDetails.update(updateObj, {
             where: {
                 goodsDispatchId: id,
