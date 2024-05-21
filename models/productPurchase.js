@@ -1,6 +1,7 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const rawMaterials = require('./rawMaterials')
+// const rawMaterials = require('./rawMaterials')
+const providerGoods = require('./providerGoods')
 const providers = require('./providers')
 
 const productPurchase = sequelize.define('productPurchase', {
@@ -16,8 +17,8 @@ const productPurchase = sequelize.define('productPurchase', {
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
-rawMaterials.hasMany(productPurchase)
-productPurchase.belongsTo(rawMaterials)
+providerGoods.hasMany(productPurchase, {foreignKey:'rawMaterialId'})
+productPurchase.belongsTo(providerGoods, {foreignKey:'rawMaterialId'})
 
 providers.hasMany(productPurchase)
 productPurchase.belongsTo(providers)
