@@ -9,5 +9,6 @@ router.get('/', catchAsync(Controller.getAllPruchases))
 router.post('/', catchAsync(Controller.createPurchase))
 router.get('/debt', catchAsync(Controller.getDebtPurchases))
 router.put('/:id', catchAsync(Controller.updatePurchase))
+router.delete('/:id', catchAsync(Controller.deletePurchase))
 
 module.exports = router

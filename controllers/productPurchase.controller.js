@@ -56,7 +56,12 @@ class ProductPurchaseController {
                         // required: true,
                     },
                 ],
-                where: dateFilterOptions,
+                where: {
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                    ...dateFilterOptions,
+                },
             })
 
             let totalQuantity = 0
@@ -127,6 +132,20 @@ class ProductPurchaseController {
         })
 
         return res.status(200).send('Purchase updated')
+    }
+
+    async deletePurchase(req, res) {
+        const { id } = req.params
+
+        const deletedPurchase = await models.productPurchase.update(
+            { isDeleted: true },
+            {
+                where: {
+                    id,
+                },
+            },
+        )
+        return res.status(200).json({ message: 'Закупка успешно удалена', data: deletedPurchase })
     }
 
     async getDebtPurchases(req, res, next) {
