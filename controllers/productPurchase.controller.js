@@ -51,7 +51,7 @@ class ProductPurchaseController {
                     },
                     {
                         attributes: ['id', 'name'],
-                        model: models.rawMaterials,
+                        model: models.providerGoods,
                         where: rawMaterialFilterOptions,
                         // required: true,
                     },

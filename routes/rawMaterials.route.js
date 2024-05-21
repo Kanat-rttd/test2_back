@@ -1,10 +1,10 @@
-const { Router } = require('express')
+// const { Router } = require('express')
 
-const Controller = require('../controllers/rawMaterials.controller')
-const catchAsync = require('../filters/catchAsync')
+// const Controller = require('../controllers/rawMaterials.controller')
+// const catchAsync = require('../filters/catchAsync')
 
-let router = Router()
+// let router = Router()
 
-router.get('/', catchAsync(Controller.getAllRawMaterials))
+// router.get('/', catchAsync(Controller.getAllRawMaterials))
 
-module.exports = router
+// module.exports = router

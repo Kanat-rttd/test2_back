@@ -1,13 +1,13 @@
-const models = require('../models')
+// const models = require('../models')
 
-class RawMaterialsController {
-    async getAllRawMaterials(req, res, next) {
-        const data = await models.rawMaterials.findAll({
-            attributes: ['id', 'name', 'uom'],
-        })
-        // console.log(data)
-        return res.json(data)
-    }
-}
+// class RawMaterialsController {
+//     async getAllRawMaterials(req, res, next) {
+//         const data = await models.rawMaterials.findAll({
+//             attributes: ['id', 'name', 'uom'],
+//         })
+//         // console.log(data)
+//         return res.json(data)
+//     }
+// }
 
-module.exports = new RawMaterialsController()
+// module.exports = new RawMaterialsController()

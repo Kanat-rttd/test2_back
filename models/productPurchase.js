@@ -17,6 +17,8 @@ const productPurchase = sequelize.define('productPurchase', {
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
+// rawMaterials.hasMany(productPurchase, {foreignKey:'rawMaterialId'})
+// productPurchase.belongsTo(rawMaterials, {foreignKey:'rawMaterialId'})
 providerGoods.hasMany(productPurchase, {foreignKey:'rawMaterialId'})
 productPurchase.belongsTo(providerGoods, {foreignKey:'rawMaterialId'})
 
