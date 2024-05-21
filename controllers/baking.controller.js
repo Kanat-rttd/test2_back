@@ -5,14 +5,40 @@ const Sequelize = require('../config/db')
 class BakingController {
     async getAll(req, res, next) {
         try {
-            const { startDate, endDate } = req.query
+            const { startDate, endDate, facilityUnit } = req.query
             console.log('Received query parameters:', startDate, endDate)
 
-            const filterOptions = {}
+            let filterOptions = {}
+            let filterOptionsDate = {}
+
+            // if (startDate && endDate) {
+            //     filterOptionsDate.createdAt = {
+            //         [Op.and]: [{ [Op.gte]: new Date(startDate) }, { [Op.lte]: endYear }],
+            //     }
+            // }
+
             if (startDate && endDate) {
-                filterOptions.createdAt = {
-                    [Op.between]: [startDate, endDate],
+                if (startDate == endDate) {
+                    const nextDay = new Date(startDate)
+                    nextDay.setDate(nextDay.getDate())
+                    nextDay.setHours(1, 0, 0, 0)
+    
+                    const endOfDay = new Date(startDate)
+                    endOfDay.setDate(endOfDay.getDate())
+                    endOfDay.setHours(24, 59, 59, 999)
+    
+                    filterOptionsDate.createdAt = {
+                        [Op.between]: [nextDay, endOfDay],
+                    }
+                } else {
+                    filterOptionsDate.createdAt = {
+                        [Op.between]: [startDate, endDate],
+                    }
                 }
+            }
+
+            if (facilityUnit) {
+                filterOptions.facilityUnit = facilityUnit
             }
 
             const bakingData = await models.baking.findAll({
@@ -25,6 +51,7 @@ class BakingController {
                             {
                                 attributes: ['facilityUnit', 'id'],
                                 model: models.bakingFacilityUnits,
+                                where: filterOptions
                             },
                         ],
                     },
@@ -33,7 +60,7 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    ...filterOptions,
+                    ...filterOptionsDate,
                 },
             })
 
