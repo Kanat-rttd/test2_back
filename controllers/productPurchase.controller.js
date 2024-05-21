@@ -93,7 +93,7 @@ class ProductPurchaseController {
 
         let totalSum = Number(purchaseData.quantity) * Number(purchaseData.price) + Number(purchaseData.deliverySum)
 
-        await models.productPurchase.create({
+        const createdPurchase = await models.productPurchase.create({
             date: purchaseData.date,
             providerId: purchaseData.providerId,
             rawMaterialId: purchaseData.rawMaterialId,
@@ -104,7 +104,7 @@ class ProductPurchaseController {
             status: purchaseData.status.label,
         })
 
-        return res.status(200).send('Purchase Created')
+        return res.status(200).json({ message: 'Закупка успешно создана', data: createdPurchase })
     }
 
     async updatePurchase(req, res, next) {
