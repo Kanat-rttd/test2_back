@@ -94,12 +94,7 @@ class ProductPurchaseController {
         let totalSum = Number(purchaseData.quantity) * Number(purchaseData.price) + Number(purchaseData.deliverySum)
 
         const createdPurchase = await models.productPurchase.create({
-            date: purchaseData.date,
-            providerId: purchaseData.providerId,
-            rawMaterialId: purchaseData.rawMaterialId,
-            quantity: purchaseData.quantity,
-            price: purchaseData.price,
-            deliverySum: purchaseData.deliverySum,
+            ...purchaseData,
             totalSum: totalSum,
             status: purchaseData.status.label,
         })
