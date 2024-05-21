@@ -50,7 +50,7 @@ class ProductPurchaseController {
                         // required: true,
                     },
                     {
-                        attributes: ['id', [col('good'),'name']],
+                        attributes: ['id', [col('goods'),'name']],
                         model: models.providerGoods,
                         where: rawMaterialFilterOptions,
                         // required: true,
