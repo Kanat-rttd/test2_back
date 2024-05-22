@@ -12,6 +12,12 @@ class DepartPersonalController {
 
         const data = await models.departPersonal.findAll({
             attributes: ['id', 'name', 'surname', 'status', 'userClass', 'fixSalary'],
+            include: [
+                {
+                    model: models.bakingFacilityUnits,
+                    attributes: ['id', 'facilityUnit'],
+                },
+            ],
             where: {
                 isDeleted: {
                     [Op.ne]: 1,
