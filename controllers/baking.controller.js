@@ -22,11 +22,11 @@ class BakingController {
                     const nextDay = new Date(startDate)
                     nextDay.setDate(nextDay.getDate())
                     nextDay.setHours(1, 0, 0, 0)
-    
+
                     const endOfDay = new Date(startDate)
                     endOfDay.setDate(endOfDay.getDate())
                     endOfDay.setHours(24, 59, 59, 999)
-    
+
                     filterOptionsDate.createdAt = {
                         [Op.between]: [nextDay, endOfDay],
                     }
@@ -51,7 +51,7 @@ class BakingController {
                             {
                                 attributes: ['facilityUnit', 'id'],
                                 model: models.bakingFacilityUnits,
-                                where: filterOptions
+                                where: filterOptions,
                             },
                         ],
                     },
@@ -104,6 +104,31 @@ class BakingController {
         })
 
         return res.status(200).send('Baking Created')
+    }
+
+    async updateBaking(req, res) {
+        const { id } = req.params
+        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output } = req.body
+
+        const updateObj = {
+            productId: breadType,
+            flour,
+            salt,
+            yeast,
+            malt,
+            butter,
+            temperature,
+            time,
+            output,
+        }
+
+        await models.providerGoods.update(updateObj, {
+            where: {
+                id,
+            },
+        })
+
+        return res.status(200).json({ message: 'Выпечка успешно обновлена', data: updateObj })
     }
 
     async deleteBaking(req, res) {
