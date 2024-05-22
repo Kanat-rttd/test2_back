@@ -1,5 +1,6 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
+const bakeryFacilityUnits = require('./bakeryFacilityUnits')
 
 const departPersonal = sequelize.define(
     'departPersonal',
@@ -10,7 +11,7 @@ const departPersonal = sequelize.define(
         status: { type: DataTypes.STRING },
         userClass: { type: DataTypes.STRING },
         fixSalary: { type: DataTypes.STRING },
-        isDeleted : {type: DataTypes.BOOLEAN , defaultValue: false}
+        isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
         indexes: [
@@ -23,5 +24,8 @@ const departPersonal = sequelize.define(
         ],
     },
 )
+
+bakeryFacilityUnits.hasMany(departPersonal)
+departPersonal.belongsTo(bakeryFacilityUnits)
 
 module.exports = departPersonal
