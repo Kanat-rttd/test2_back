@@ -5,9 +5,12 @@ const AppError = require('../filters/appError')
 
 class SalesController {
     async getAll(req, res, next) {
-        const { startDate, endDate } = req.query
+        const { startDate, endDate, facilityUnitId } = req.query
+
+        console.log('Recieved Data ', facilityUnitId)
 
         const filterOptions = {}
+        const facilityFilterOptions = {}
 
         if (startDate && endDate) {
             filterOptions.createdAt = {
@@ -15,20 +18,29 @@ class SalesController {
             }
         }
 
+        if (facilityUnitId) {
+            facilityFilterOptions.id = facilityUnitId
+        }
+
         const orders = await models.order.findAll({
             attributes: ['id', 'userId', 'totalPrice', 'createdAt', 'done'],
+            required: true,
             include: [
                 {
                     model: models.orderDetails,
                     attributes: [['id', 'orderDetailsId'], 'productId', 'orderedQuantity'],
+                    required: true,
                     include: [
                         {
                             model: models.products,
                             attributes: ['name', 'price'],
+                            required: true,
                             include: [
                                 {
                                     model: models.bakingFacilityUnits,
                                     attributes: ['id', 'facilityUnit'],
+                                    where: facilityFilterOptions,
+                                    required: true,
                                 },
                             ],
                         },
