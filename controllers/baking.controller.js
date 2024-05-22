@@ -122,7 +122,7 @@ class BakingController {
             output,
         }
 
-        await models.providerGoods.update(updateObj, {
+        await models.baking.update(updateObj, {
             where: {
                 id,
             },
