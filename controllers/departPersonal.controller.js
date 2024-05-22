@@ -38,6 +38,7 @@ class DepartPersonalController {
             status: departPersonalData.status,
             userClass: departPersonalData.userClass,
             fixSalary: departPersonalData.fixSalary,
+            bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId
         })
 
         return res.status(200).send('Personal Created')
@@ -46,7 +47,7 @@ class DepartPersonalController {
     async updateDepartPersonal(req, res, next) {
         const { id } = req.params
 
-        const { name, userClass, surname, status, fixSalary } = req.body
+        const { name, userClass, surname, status, fixSalary, bakingFacilityUnitId } = req.body
 
         const updateObj = {
             name,
@@ -54,6 +55,7 @@ class DepartPersonalController {
             status,
             userClass,
             fixSalary,
+            bakingFacilityUnitId
         }
 
         await models.departPersonal.update(updateObj, {
