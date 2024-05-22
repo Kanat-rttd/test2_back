@@ -6,7 +6,7 @@ class BakingController {
     async getAll(req, res, next) {
         try {
             const { startDate, endDate, facilityUnit } = req.query
-            console.log('Received query parameters:', startDate, endDate)
+            console.log('Received query parameters:', startDate, endDate, facilityUnit)
 
             let filterOptions = {}
             let filterOptionsDate = {}
@@ -43,15 +43,18 @@ class BakingController {
 
             const bakingData = await models.baking.findAll({
                 attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output'],
+                required: true,
                 include: [
                     {
                         attributes: ['name', 'id'],
                         model: models.products,
+                        required: true,
                         include: [
                             {
                                 attributes: ['facilityUnit', 'id'],
                                 model: models.bakingFacilityUnits,
                                 where: filterOptions,
+                                required: true,
                             },
                         ],
                     },
@@ -73,15 +76,45 @@ class BakingController {
                     [Sequelize.literal('SUM(butter)'), 'totalButter'],
                     [Sequelize.literal('SUM(output)'), 'totalOutput'],
                 ],
-                where: filterOptions,
+                group: ['productId'], // Группируем по productId
+                required: true,
+                include: [
+                    {
+                        model: models.products,
+                        required: true,
+                        include: [
+                            {
+                                model: models.bakingFacilityUnits,
+                                where: filterOptions,
+                                required: true,
+                            },
+                        ],
+                    },
+                ],
+                where: {
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                    ...filterOptionsDate,
+                },
             })
+
+            const jsonTotals = totals[0].toJSON()
+
+            const formattedTotals = {
+                totalFlour: parseFloat(jsonTotals.totalFlour).toFixed(2),
+                totalSalt: parseFloat(jsonTotals.totalSalt).toFixed(2),
+                totalYeast: parseFloat(jsonTotals.totalYeast).toFixed(2),
+                totalMalt: parseFloat(jsonTotals.totalMalt).toFixed(2),
+                totalButter: parseFloat(jsonTotals.totalButter).toFixed(2),
+                totalOutput: parseFloat(jsonTotals.totalOutput).toFixed(2),
+            }
 
             const data = {
                 bakingData,
-                totals: totals[0].toJSON(),
+                totals: formattedTotals,
             }
 
-            //console.log(data)
             return res.json(data)
         } catch (error) {
             return next(error)

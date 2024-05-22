@@ -1,7 +1,5 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const clients = require('./clients')
-const departPersonal = require('./departPersonal')
 
 const breadReportView = sequelize.define('BreadReportViews', {
     Date: { type: DataTypes.DATE },
@@ -15,4 +13,9 @@ const shiftTimeView = sequelize.define('shiftTimeViews', {
     totalHours: { type: DataTypes.INTEGER },
 })
 
-module.exports = { breadReportView, shiftTimeView }
+const magazineDebtView = sequelize.define('magazineDebtViews', {
+    MagazineName: { type: DataTypes.STRING },
+    Debit: { type: DataTypes.INTEGER },
+})
+
+module.exports = { breadReportView, shiftTimeView, magazineDebtView }

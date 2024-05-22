@@ -19,8 +19,8 @@ const productPurchase = sequelize.define('productPurchase', {
 
 // rawMaterials.hasMany(productPurchase, {foreignKey:'rawMaterialId'})
 // productPurchase.belongsTo(rawMaterials, {foreignKey:'rawMaterialId'})
-providerGoods.hasMany(productPurchase, {foreignKey:'rawMaterialId'})
-productPurchase.belongsTo(providerGoods, {foreignKey:'rawMaterialId'})
+providerGoods.hasMany(productPurchase, { foreignKey: 'rawMaterialId' })
+productPurchase.belongsTo(providerGoods, { foreignKey: 'rawMaterialId' })
 
 providers.hasMany(productPurchase)
 productPurchase.belongsTo(providers)

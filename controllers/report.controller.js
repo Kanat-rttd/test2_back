@@ -31,6 +31,36 @@ class ReportController {
 
         return res.json(data)
     }
+
+    async magazineDebtView(req, res, next) {
+        const { MagazineName } = req.query
+
+        console.log('magazineName ', MagazineName)
+
+        const filterOptions = {}
+
+        if (MagazineName) {
+            filterOptions.MagazineName = MagazineName
+        }
+
+        const data = await models.magazineDebtView.findAll({
+            attributes: ['MagazineName', 'Debit'],
+            where: filterOptions,
+        })
+
+        let totalDebt = 0
+        data.forEach((item) => {
+            console.log(item.Debit)
+            totalDebt += Number(item.Debit)
+        })
+
+        const responseData = {
+            mainData: data,
+            total: totalDebt,
+        }
+
+        return res.json(responseData)
+    }
 }
 
 module.exports = new ReportController()

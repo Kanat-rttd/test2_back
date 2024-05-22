@@ -3,7 +3,7 @@
 const { goodsDispatch, invoiceData } = require('./goodsDispatch.js')
 const { shiftAccounting, shiftAccountingDetails } = require('./shiftAccounting.js')
 const { debtTransfer, debtCalculationView } = require('./debtTransfer.js')
-const { breadReportView, shiftTimeView } = require('./reports.js')
+const { breadReportView, shiftTimeView, magazineDebtView } = require('./reports.js')
 
 module.exports = {
     users: require('./users.js'),
@@ -33,6 +33,7 @@ module.exports = {
     overPrice: require('./overPrice.js'),
     breadReportView,
     shiftTimeView,
+    magazineDebtView,
     factInput: require('./factInput.js'),
     providerGoods: require('./providerGoods.js'),
     place: require('./places.js'),

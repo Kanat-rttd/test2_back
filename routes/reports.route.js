@@ -7,5 +7,6 @@ let router = Router()
 
 router.get('/bread', catchAsync(Controller.breadViewReport))
 router.get('/time', catchAsync(Controller.shiftTimeView))
+router.get('/magazineDebt', catchAsync(Controller.magazineDebtView))
 
 module.exports = router
