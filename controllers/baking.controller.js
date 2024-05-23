@@ -36,7 +36,7 @@ class BakingController {
             }
 
             const bakingData = await models.baking.findAll({
-                attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output', 'defective'],
+                attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output', 'defective', 'createdAt'],
                 required: true,
                 include: [
                     {
