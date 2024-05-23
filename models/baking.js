@@ -12,6 +12,7 @@ const baking = sequelize.define('baking', {
     temperature: { type: DataTypes.FLOAT },
     time: { type: DataTypes.TIME },
     output: { type: DataTypes.FLOAT },
+    defective: { type: DataTypes.FLOAT },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 

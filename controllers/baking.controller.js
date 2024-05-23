@@ -10,13 +10,7 @@ class BakingController {
 
             let filterOptions = {}
             let filterOptionsDate = {}
-
-            // if (startDate && endDate) {
-            //     filterOptionsDate.createdAt = {
-            //         [Op.and]: [{ [Op.gte]: new Date(startDate) }, { [Op.lte]: endYear }],
-            //     }
-            // }
-
+            
             if (startDate && endDate) {
                 if (startDate == endDate) {
                     const nextDay = new Date(startDate)
@@ -42,7 +36,7 @@ class BakingController {
             }
 
             const bakingData = await models.baking.findAll({
-                attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output'],
+                attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output', 'defective'],
                 required: true,
                 include: [
                     {
@@ -75,6 +69,7 @@ class BakingController {
                     [Sequelize.literal('SUM(malt)'), 'totalMalt'],
                     [Sequelize.literal('SUM(butter)'), 'totalButter'],
                     [Sequelize.literal('SUM(output)'), 'totalOutput'],
+                    [Sequelize.literal('SUM(defective)'), 'totalDefective'],
                 ],
                 group: ['productId'], // Группируем по productId
                 required: true,
@@ -108,6 +103,7 @@ class BakingController {
                 totalMalt: parseFloat(jsonTotals.totalMalt).toFixed(2),
                 totalButter: parseFloat(jsonTotals.totalButter).toFixed(2),
                 totalOutput: parseFloat(jsonTotals.totalOutput).toFixed(2),
+                totalDefective: parseFloat(jsonTotals.totalDefective).toFixed(2),
             }
 
             const data = {
@@ -122,7 +118,7 @@ class BakingController {
     }
 
     async createBaking(req, res, next) {
-        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output } = req.body
+        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective } = req.body
 
         await models.baking.create({
             productId: breadType,
@@ -134,6 +130,7 @@ class BakingController {
             temperature,
             time,
             output,
+            defective
         })
 
         return res.status(200).send('Baking Created')
@@ -141,7 +138,7 @@ class BakingController {
 
     async updateBaking(req, res) {
         const { id } = req.params
-        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output } = req.body
+        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective } = req.body
 
         const updateObj = {
             productId: breadType,
@@ -153,6 +150,7 @@ class BakingController {
             temperature,
             time,
             output,
+            defective
         }
 
         await models.baking.update(updateObj, {
