@@ -14,6 +14,7 @@ const baking = sequelize.define('baking', {
     output: { type: DataTypes.FLOAT },
     defective: { type: DataTypes.FLOAT },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+    createdAt: { type: DataTypes.DATE, defaultValue: false },
 })
 
 product.hasMany(baking)

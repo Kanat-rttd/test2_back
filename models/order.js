@@ -15,7 +15,6 @@ const order = sequelize.define(
         editableUntil: { type: DataTypes.DATE },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
         done: { type: DataTypes.INTEGER, defaultValue: 0 },
-        createdAt: { type: DataTypes.DATE, defaultValue: false },
     },
     {
         hooks: {
