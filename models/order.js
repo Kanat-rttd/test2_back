@@ -2,12 +2,14 @@ const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
 const users = require('./users')
 const orderDetails = require('./orderDetails')
+const clients = require('./clients')
 
 const order = sequelize.define(
     'order',
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         userId: { type: DataTypes.INTEGER },
+        clientId: { type: DataTypes.INTEGER },
         statusId: { type: DataTypes.INTEGER, defaultValue: 0 },
         totalPrice: { type: DataTypes.INTEGER },
         editableUntil: { type: DataTypes.DATE },
@@ -38,9 +40,11 @@ const order = sequelize.define(
 )
 
 users.hasMany(order)
+clients.hasMany(order)
 order.hasMany(orderDetails)
 
 orderDetails.belongsTo(order)
 order.belongsTo(users)
+order.belongsTo(clients)
 
 module.exports = order

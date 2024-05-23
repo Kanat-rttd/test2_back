@@ -50,6 +50,10 @@ class SalesController {
                     model: models.users,
                     attributes: ['id', 'name'],
                 },
+                {
+                    model: models.clients,
+                    attributes: ['id', 'name'],
+                },
             ],
             where: filterOptions,
         })
@@ -87,7 +91,7 @@ class SalesController {
         const sales = req.body
 
         const order = await models.order.create({
-            userId: sales.clientId,
+            clientId: sales.clientId,
             totalPrice: sales.products.reduce((acc, sale) => acc + sale.price, 0),
         })
 
@@ -105,7 +109,7 @@ class SalesController {
         })
     }
 
-    async editSale(req, res, next) {
+    async updateSale(req, res, next) {
         const { id } = req.params
         const { editedOrders, deletedOrderIds } = req.body
 
