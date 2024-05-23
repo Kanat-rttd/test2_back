@@ -13,6 +13,7 @@ const baking = sequelize.define('baking', {
     time: { type: DataTypes.TIME },
     output: { type: DataTypes.FLOAT },
     defective: { type: DataTypes.FLOAT },
+    date: { type: DataTypes.STRING },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 

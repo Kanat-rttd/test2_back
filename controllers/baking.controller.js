@@ -10,7 +10,7 @@ class BakingController {
 
             let filterOptions = {}
             let filterOptionsDate = {}
-            
+
             if (startDate && endDate) {
                 if (startDate == endDate) {
                     const nextDay = new Date(startDate)
@@ -36,7 +36,19 @@ class BakingController {
             }
 
             const bakingData = await models.baking.findAll({
-                attributes: ['id', 'flour', 'salt', 'yeast', 'malt', 'butter', 'temperature', 'time', 'output', 'defective'],
+                attributes: [
+                    'id',
+                    'flour',
+                    'salt',
+                    'yeast',
+                    'malt',
+                    'butter',
+                    'temperature',
+                    'time',
+                    'output',
+                    'defective',
+                    'date',
+                ],
                 required: true,
                 include: [
                     {
@@ -118,7 +130,7 @@ class BakingController {
     }
 
     async createBaking(req, res, next) {
-        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective } = req.body
+        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective, date } = req.body
 
         await models.baking.create({
             productId: breadType,
@@ -130,7 +142,8 @@ class BakingController {
             temperature,
             time,
             output,
-            defective
+            defective,
+            date,
         })
 
         return res.status(200).send('Baking Created')
@@ -138,7 +151,7 @@ class BakingController {
 
     async updateBaking(req, res) {
         const { id } = req.params
-        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective } = req.body
+        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective, date } = req.body
 
         const updateObj = {
             productId: breadType,
@@ -150,7 +163,8 @@ class BakingController {
             temperature,
             time,
             output,
-            defective
+            defective,
+            date,
         }
 
         await models.baking.update(updateObj, {
