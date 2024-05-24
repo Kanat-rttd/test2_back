@@ -5,17 +5,38 @@ const sequelize = require('../config/db')
 class FactInputController {
     async getAll(req, res, next) {
         try {
-            const { name, place } = req.query
+            const { name, place, startDate, endDate } = req.query
 
             console.log('Recieved data: ', name, place)
 
             let filterOptions = {}
+
             if (name) {
                 filterOptions.name = name
             }
 
             if (place) {
                 filterOptions.place = place
+            }
+
+            if (startDate && endDate) {
+                if (startDate == endDate) {
+                    const nextDay = new Date(startDate)
+                    nextDay.setDate(nextDay.getDate())
+                    nextDay.setHours(1, 0, 0, 0)
+
+                    const endOfDay = new Date(startDate)
+                    endOfDay.setDate(endOfDay.getDate())
+                    endOfDay.setHours(24, 59, 59, 999)
+
+                    filterOptions.createdAt = {
+                        [Op.between]: [nextDay, endOfDay],
+                    }
+                } else {
+                    filterOptions.createdAt = {
+                        [Op.between]: [startDate, endDate],
+                    }
+                }
             }
 
             const data = await models.factInput.findAll({
