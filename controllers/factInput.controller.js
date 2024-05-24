@@ -20,22 +20,11 @@ class FactInputController {
             }
 
             if (startDate && endDate) {
-                if (startDate == endDate) {
-                    const nextDay = new Date(startDate)
-                    nextDay.setDate(nextDay.getDate())
-                    nextDay.setHours(1, 0, 0, 0)
-
-                    const endOfDay = new Date(startDate)
-                    endOfDay.setDate(endOfDay.getDate())
-                    endOfDay.setHours(24, 59, 59, 999)
-
-                    filterOptions.createdAt = {
-                        [Op.between]: [nextDay, endOfDay],
-                    }
-                } else {
-                    filterOptions.createdAt = {
-                        [Op.between]: [startDate, endDate],
-                    }
+                whereClause.createdAt = {
+                    [Op.between]: [
+                        new Date(startDate).setHours(0, 0, 0, 0),
+                        new Date(endDate).setHours(23, 59, 59, 999),
+                    ],
                 }
             }
 
