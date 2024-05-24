@@ -111,13 +111,16 @@ class FactInputController {
     async deleteFactInput(req, res) {
         const { id } = req.params
 
-        const deletedUser = await models.factInput.destroy({
-            where: {
-                id,
+        const deletedUser = await models.factInput.update(
+            { isDeleted: true },
+            {
+                where: {
+                    id,
+                },
             },
-        })
+        )
 
-        return res.json({ message: 'Fact input deleted' })
+        return res.status(200).json({ message: 'Fact input deleted', data: deletedUser })
     }
 }
 

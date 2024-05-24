@@ -7,6 +7,7 @@ const factInput = sequelize.define('factInput', {
     place: { type: DataTypes.STRING },
     unitOfMeasure: { type: DataTypes.STRING },
     quantity: { type: DataTypes.STRING },
+    isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
 module.exports = factInput
