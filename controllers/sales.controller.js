@@ -9,17 +9,32 @@ class SalesController {
 
         console.log('Recieved Data ', facilityUnitId)
 
-        const filterOptions = {}
-        const facilityFilterOptions = {}
-
-        if (startDate && endDate) {
-            filterOptions.createdAt = {
-                [Op.between]: [startDate, endDate],
-            }
-        }
+        let facilityFilterOptions = {}
+        let filterOptionsDate = {}
 
         if (facilityUnitId) {
-            facilityFilterOptions.id = facilityUnitId
+            facilityFilterOptions.facilityUnit = facilityUnitId
+        }
+
+
+        if (startDate && endDate) {
+            if (startDate == endDate) {
+                const nextDay = new Date(startDate)
+                nextDay.setDate(nextDay.getDate())
+                nextDay.setHours(1, 0, 0, 0)
+
+                const endOfDay = new Date(startDate)
+                endOfDay.setDate(endOfDay.getDate())
+                endOfDay.setHours(24, 59, 59, 999)
+
+                filterOptionsDate.createdAt = {
+                    [Op.between]: [nextDay, endOfDay],
+                }
+            } else {
+                filterOptionsDate.createdAt = {
+                    [Op.between]: [startDate, endDate],
+                }
+            }
         }
 
         const orders = await models.order.findAll({
@@ -55,7 +70,7 @@ class SalesController {
                     attributes: ['id', 'name'],
                 },
             ],
-            where: filterOptions,
+            where: filterOptionsDate,
         })
 
         res.status(200).json(orders)
