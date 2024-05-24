@@ -20,7 +20,7 @@ class FactInputController {
             }
 
             if (startDate && endDate) {
-                whereClause.createdAt = {
+                filterOptions.createdAt = {
                     [Op.between]: [
                         new Date(startDate).setHours(0, 0, 0, 0),
                         new Date(endDate).setHours(23, 59, 59, 999),
