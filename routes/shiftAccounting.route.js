@@ -6,7 +6,7 @@ const catchAsync = require('../filters/catchAsync')
 let router = Router()
 
 router.get('/', catchAsync(Controller.getAll))
-// router.post('/', catchAsync(Controller.createDispatch))
+router.post('/', catchAsync(Controller.createShiftAccounting))
 // router.get('/invoice', catchAsync(Controller.getInvoiceData))
 
 module.exports = router

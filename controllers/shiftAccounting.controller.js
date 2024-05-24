@@ -32,27 +32,29 @@ class ShiftAccountingController {
         res.status(200).json(shiftAccounting)
     }
 
-    // async createShiftAccounting(req, res, next) {
-    //     const shiftAccountingData = req.body
+    async createShiftAccounting(req, res, next) {
+        const shiftAccountingData = req.body
 
-    //     const dispatch = await models.goodsDispatch.create({
-    //         clientId: dispatchData.userId,
-    //         dispatch: dispatchData.dispatch,
-    //     })
+        console.log(shiftAccountingData)
 
-    //     const dispatchDetails = dispatchData.products.map((sale) => ({
-    //         goodsDispatchId: dispatch.id,
-    //         productId: sale.id,
-    //         quantity: sale.quantity,
-    //     }))
+        const shiftAccounting = await models.shiftAccounting.create({
+            bakingFacilityUnitId: shiftAccountingData.facilityUnitsId,
+            date: shiftAccountingData.date,
+        })
 
-    //     await models.goodsDispatchDetails.bulkCreate(dispatchDetails)
+        const shiftAccountingDetails = shiftAccountingData.departPersonals.map((item) => ({
+            shiftAccountingId: shiftAccounting.id,
+            departPersonalId: item.id,
+            shiftTime: item.hours,
+        }))
 
-    //     res.status(200).json({
-    //         status: 'success',
-    //         message: 'Заказ успешно создан',
-    //     })
-    // }
+        await models.shiftAccountingDetails.bulkCreate(shiftAccountingDetails)
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Учёт-времени успешно создан',
+        })
+    }
 }
 
 module.exports = new ShiftAccountingController()
