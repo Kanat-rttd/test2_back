@@ -15,11 +15,16 @@ class ReportController {
         console.log('Received query parameters:', startDate, endDate, personalName)
 
         const filterOptions = {}
+
         if (startDate && endDate) {
-            filterOptions.Date = {
-                [Op.between]: [startDate, endDate],
+            filterOptions.createdAt = {
+                [Op.between]: [
+                    new Date(startDate).setHours(0, 0, 0, 0),
+                    new Date(endDate).setHours(23, 59, 59, 999),
+                ],
             }
         }
+
         if (personalName) {
             filterOptions.personalName = personalName
         }

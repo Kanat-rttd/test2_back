@@ -36,7 +36,12 @@ class OverPriceController {
                         where: filterOptions,
                     },
                 ],
-                where: filterOptionsDate,
+                where: {
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                    ...filterOptionsDate,
+                },
             })
 
             return res.json(data)
