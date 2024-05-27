@@ -111,55 +111,32 @@ class SalesController {
 
     async updateSale(req, res, next) {
         const { id } = req.params
-        const { editedOrders, deletedOrderIds } = req.body
+        const sales = req.body
 
         const today = new Date()
         today.setHours(11, 0, 0, 0)
 
-        const updatePromises = editedOrders.orderDetails.map(async (details) => {
-            return models.orderDetails.update(
-                { details },
-                {
-                    where: {
-                        orderId: editedOrders.id,
-                        id: details.orderDetailsId,
-                        editableUntil: {
-                            [Op.lt]: today,
-                        },
-                    },
-                },
-            )
+        const order = await models.order.update(
+            {
+                clientId: sales.clientId,
+                totalPrice: sales.products.reduce((acc, sale) => acc + sale.price, 0),
+            },
+            { where: { id } },
+        )
+
+        const orderDetails = sales.products.map((sale) => ({
+            orderId: order.id,
+            productId: sale.productId,
+            orderedQuantity: sale.orderedQuantity,
+        }))
+
+        await models.orderDetails.destroy({ where: { orderId: order.id } })
+        await models.orderDetails.bulkCreate(orderDetails)
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Заказ успешно обновлен',
         })
-
-        const deletePromises = deletedOrderIds.map(async (details) => {
-            return models.orderDetails.destroy({
-                where: {
-                    orderId: deletedOrderIds.id,
-                    id: details.id,
-                    editableUntil: {
-                        [Op.lt]: today,
-                    },
-                },
-            })
-        })
-
-        try {
-            const [updateResults, deleteResults] = await Promise.all([
-                Promise.all(updatePromises),
-                Promise.all(deletePromises),
-            ])
-
-            if (updateResults.some((result) => result[0] === 0) || deleteResults.some((result) => result === 0)) {
-                return next(new AppError('Нельзя изменить заказ', 400))
-            }
-
-            res.status(200).json({
-                status: 'success',
-                message: 'Заказ успешно обновлен',
-            })
-        } catch (error) {
-            return next(new AppError('Ошибка при обновлении заказа', 500))
-        }
     }
 
     async deleteSale(req, res, next) {
