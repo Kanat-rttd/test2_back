@@ -124,49 +124,20 @@ class SalesController {
             { where: { id } },
         )
 
-        // const orderDetails = sales.products.map((sale) => ({
-        //     orderId: id,
-        //     productId: sale.productId,
-        //     orderedQuantity: sale.orderedQuantity,
-        // }))
+        const orderDetails = sales.products.map((sale) => ({
+            orderId: id,
+            productId: sale.productId,
+            orderedQuantity: sale.orderedQuantity,
+        }))
 
-        // // await models.orderDetails.destroy({ where: { orderId: id } })
-        // await models.orderDetails.bulkCreate(orderDetails)
-
-        const deletePromises = sales.map(async (details) => {
-            return models.orderDetails.destroy({
-                where: {
-                    orderId: id,
-                    id: details.id,
-                    editableUntil: {
-                        [Op.lt]: today,
-                    },
-                },
-            })
+         models.orderDetails.destroy({ where: { orderId: id } }).then(async ()=>{
+             await models.orderDetails.bulkCreate(orderDetails)
         })
 
-        try {
-            const [updateResults, deleteResults] = await Promise.all([
-                Promise.all(updatePromises),
-                Promise.all(deletePromises),
-            ])
-
-            if (updateResults.some((result) => result[0] === 0) || deleteResults.some((result) => result === 0)) {
-                return next(new AppError('Нельзя изменить заказ', 400))
-            }
-
-            res.status(200).json({
-                status: 'success',
-                message: 'Заказ успешно обновлен',
-            })
-        } catch (error) {
-            return next(new AppError('Ошибка при обновлении заказа', 500))
-        }
-
-        // res.status(200).json({
-        //     status: 'success',
-        //     message: 'Заказ успешно обновлен',
-        // })
+        res.status(200).json({
+            status: 'success',
+            message: 'Заказ успешно обновлен',
+        })
     }
 
     async deleteSale(req, res, next) {
