@@ -11,7 +11,7 @@ const order = sequelize.define(
         userId: { type: DataTypes.INTEGER },
         clientId: { type: DataTypes.INTEGER },
         statusId: { type: DataTypes.INTEGER, defaultValue: 0 },
-        totalPrice: { type: DataTypes.INTEGER },
+        totalQuantity: { type: DataTypes.INTEGER },
         editableUntil: { type: DataTypes.DATE },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
         done: { type: DataTypes.INTEGER, defaultValue: 0 },
