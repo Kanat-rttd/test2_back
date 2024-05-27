@@ -125,7 +125,7 @@ class SalesController {
         )
 
         const orderDetails = sales.products.map((sale) => ({
-            orderId: order.id,
+            orderId: id,
             productId: sale.productId,
             orderedQuantity: sale.orderedQuantity,
         }))
