@@ -92,7 +92,7 @@ class SalesController {
 
         const order = await models.order.create({
             clientId: sales.clientId,
-            totalQuantity: sales.products.reduce((acc, sale) => acc + sale.orderedQuantity, 0),
+            totalQuantity: sales.products.reduce((acc, sale) => acc + Number(sale.orderedQuantity), 0),
         })
 
         const orderDetails = sales.products.map((sale) => ({
