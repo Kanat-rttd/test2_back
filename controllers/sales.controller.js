@@ -13,15 +13,12 @@ class SalesController {
         let filterOptionsDate = {}
 
         if (facilityUnitId) {
-            facilityFilterOptions.facilityUnit = facilityUnitId
+            facilityFilterOptions.id = facilityUnitId
         }
 
         if (startDate && endDate) {
             filterOptionsDate.createdAt = {
-                [Op.between]: [
-                    new Date(startDate).setHours(0, 0, 0, 0),
-                    new Date(endDate).setHours(23, 59, 59, 999),
-                ],
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
 

@@ -67,6 +67,7 @@ class DispatchController {
                     required: true,
                 },
             ],
+            required: true,
             where: {
                 isDeleted: {
                     [Op.ne]: 1,

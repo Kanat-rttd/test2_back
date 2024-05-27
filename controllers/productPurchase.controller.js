@@ -1,6 +1,6 @@
 const models = require('../models')
 const sequelize = require('../config/db')
-const { Op,col } = require('sequelize')
+const { Op, col } = require('sequelize')
 
 class ProductPurchaseController {
     async getAllPruchases(req, res, next) {
@@ -38,7 +38,7 @@ class ProductPurchaseController {
                     'id',
                     'date',
                     'providerId',
-                    'rawMaterialId',
+                    'providerGoodId',
                     'quantity',
                     'price',
                     'deliverySum',
@@ -53,7 +53,7 @@ class ProductPurchaseController {
                         // required: true,
                     },
                     {
-                        attributes: ['id', [col('goods'),'name']],
+                        attributes: ['id', [col('goods'), 'name'], 'unitOfMeasure'],
                         model: models.providerGoods,
                         where: rawMaterialFilterOptions,
                         // required: true,

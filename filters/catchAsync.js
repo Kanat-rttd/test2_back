@@ -10,12 +10,14 @@ function catchAsync(controllerFunction) {
             if (err instanceof ValidationError) {
                 const errors = Object.values(err.errors).map((e) => e.message)
 
-                console.log('Error ', err)
+                console.log('Error: Valid ', err)
+                console.log('Error check: ', err.errors[0].path)
 
                 const validationErrors = {
                     phone_unique_constraint: 'Пользователь с таким номером уже зарегистрирован',
                     name_unique_constraint: 'Пользователь с таким именем уже зарегистрирован',
                     client_name_unique_constraint: 'Реализатор с таким именем уже зарегистрирован',
+                    goods: 'Такой товар уже существует',
                 }
 
                 return res.status(400).json({

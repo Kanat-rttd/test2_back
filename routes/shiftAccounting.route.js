@@ -7,6 +7,7 @@ let router = Router()
 
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createShiftAccounting))
-// router.get('/invoice', catchAsync(Controller.getInvoiceData))
+router.put('/:id', catchAsync(Controller.updateShiftAccounting))
+router.put('/delete/:id', catchAsync(Controller.deleteShiftAccounting))
 
 module.exports = router

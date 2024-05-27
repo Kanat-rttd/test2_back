@@ -12,7 +12,7 @@ class FactInputController {
             let filterOptions = {}
 
             if (name) {
-                filterOptions.name = name
+                filterOptions.providerGoodId = name
             }
 
             if (place) {
@@ -29,13 +29,21 @@ class FactInputController {
             }
 
             const data = await models.factInput.findAll({
-                attributes: ['id', 'name', 'place', 'unitOfMeasure', 'quantity', 'updatedAt'],
+                attributes: ['id', 'providerGoodId', 'place', 'unitOfMeasure', 'quantity', 'updatedAt'],
                 where: filterOptions,
+                include: [
+                    {
+                        model: models.providerGoods,
+                        attributes: ['goods'],
+                    },
+                ],
             })
+
+            console.log(data)
 
             const table = data.map((item) => ({
                 id: item.id,
-                name: item.name,
+                name: item.providerGood.goods,
                 place: item.place,
                 unitOfMeasure: item.unitOfMeasure,
                 quantity: Number(item.quantity),
@@ -47,6 +55,7 @@ class FactInputController {
             const responseData = {
                 table,
                 totalFact,
+                data: data,
             }
 
             return res.json(responseData)
@@ -59,7 +68,7 @@ class FactInputController {
         const factInputData = req.body
 
         const factInput = factInputData.map((input) => ({
-            name: input.name,
+            providerGoodId: input.id,
             place: input.place,
             unitOfMeasure: input.unitOfMeasure,
             quantity: input.quantity,
