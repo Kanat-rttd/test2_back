@@ -23,7 +23,7 @@ class SalesController {
         }
 
         const orders = await models.order.findAll({
-            attributes: ['id', 'userId', 'totalPrice', 'createdAt', 'done'],
+            attributes: ['id', 'userId', 'totalQuantity', 'createdAt', 'done'],
             required: true,
             include: [
                 {
@@ -65,7 +65,7 @@ class SalesController {
         const { id } = req.params
 
         const orders = await models.order.findOne({
-            attributes: ['id', 'userId', 'totalPrice', 'createdAt'],
+            attributes: ['id', 'userId', 'totalQuantity', 'createdAt'],
             include: [
                 {
                     model: models.orderDetails,
@@ -92,7 +92,7 @@ class SalesController {
 
         const order = await models.order.create({
             clientId: sales.clientId,
-            totalPrice: sales.products.reduce((acc, sale) => acc + sale.price, 0),
+            totalQuantity: sales.products.reduce((acc, sale) => acc + sale.orderedQuantity, 0),
         })
 
         const orderDetails = sales.products.map((sale) => ({
@@ -119,7 +119,7 @@ class SalesController {
         const order = await models.order.update(
             {
                 clientId: sales.clientId,
-                totalPrice: sales.products.reduce((acc, sale) => acc + sale.price, 0),
+                totalQuantity: sales.products.reduce((acc, sale) => acc + sale.orderedQuantity, 0),
             },
             { where: { id } },
         )
@@ -182,7 +182,7 @@ class SalesController {
         const { facilityUnitId } = req.body
 
         const orders = await models.order.findAll({
-            attributes: ['id', 'userId', 'totalPrice', 'createdAt', 'done'],
+            attributes: ['id', 'userId', 'totalQuantity', 'createdAt', 'done'],
             include: [
                 {
                     model: models.orderDetails,
