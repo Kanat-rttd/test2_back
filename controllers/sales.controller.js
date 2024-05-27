@@ -130,7 +130,7 @@ class SalesController {
             orderedQuantity: sale.orderedQuantity,
         }))
 
-        await models.orderDetails.destroy({ where: { orderId: order.id } })
+        await models.orderDetails.destroy({ where: { orderId: id } })
         await models.orderDetails.bulkCreate(orderDetails)
 
         res.status(200).json({
