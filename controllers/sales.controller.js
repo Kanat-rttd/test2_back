@@ -55,7 +55,12 @@ class SalesController {
                     attributes: ['id', 'name'],
                 },
             ],
-            where: filterOptionsDate,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptionsDate,
+            },
         })
 
         res.status(200).json(orders)
@@ -130,8 +135,8 @@ class SalesController {
             orderedQuantity: sale.orderedQuantity,
         }))
 
-         models.orderDetails.destroy({ where: { orderId: id } }).then(async ()=>{
-             await models.orderDetails.bulkCreate(orderDetails)
+        models.orderDetails.destroy({ where: { orderId: id } }).then(async () => {
+            await models.orderDetails.bulkCreate(orderDetails)
         })
 
         res.status(200).json({
