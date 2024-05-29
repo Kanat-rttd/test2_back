@@ -32,6 +32,11 @@ class IndividualPricesController {
             // Получаем всех клиентов
             const clients = await models.clients.findAll({
                 attributes: ['id', 'name'],
+                where: {
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                },
             })
 
             const data = await Promise.all(
@@ -122,7 +127,7 @@ class IndividualPricesController {
 
     async deleteIndividualPrice(req, res, next) {
         const { id } = req.params
-        
+
         const deletedIndividualPrice = await models.individualPrices.update(
             {
                 isDeleted: true,
