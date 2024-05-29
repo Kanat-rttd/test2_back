@@ -179,7 +179,12 @@ class DispatchController {
                     attributes: ['id', 'name'],
                 },
             ],
-            where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
             order: [['createdAt', 'ASC']],
         })
 
