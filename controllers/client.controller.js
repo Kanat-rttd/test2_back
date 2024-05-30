@@ -41,8 +41,8 @@ class ClientController {
         const { name, surname, contact, telegrammId, status, password } = req.body
 
         const hashedPass = await bcrypt.hash(password, 10)
-        //TODO: На фронт можно вернуть сообщение с ключом message и нового клиента для взаимодействия
-        await models.clients.create({
+
+        const createdClient = await models.clients.create({
             name,
             surname,
             contact,
@@ -50,13 +50,18 @@ class ClientController {
             status,
             password: hashedPass,
         })
-        await mo
-        return res.status(200).send('Client Created')
+
+        await models.contragent.create({
+            contragentName: name,
+            status,
+            type: 'реализатор',
+        })
+
+        return res.status(200).json({ message: 'Клиент успешно создан', data: createdClient })
     }
 
     async updateClient(req, res, next) {
         const { id } = req.params
-        // console.log(id)
         const { name, surname, contact, telegrammId, status, password } = req.body
 
         const updateObj = {
@@ -73,18 +78,37 @@ class ClientController {
             updateObj.password = hashedPass
         }
 
-        await models.clients.update(updateObj, {
+        const findedClient = await models.clients.findByPk(id)
+
+        await models.contragent.update(
+            { contragentName: name, status },
+            { where: { contragentName: findedClient.name } },
+        )
+
+        const updatedClient = await models.clients.update(updateObj, {
             where: {
                 id,
             },
         })
 
-        return res.status(200).send('Client updated')
+        return res.status(200).json({ message: 'Клиент успешно обновлен', data: updatedClient })
     }
 
     async deleteClient(req, res, next) {
         const { id } = req.params
-        await models.clients.update(
+
+        const findedClient = await models.clients.findByPk(id)
+
+        await models.contragent.update(
+            {
+                isDeleted: true,
+            },
+            {
+                where: { contragentName: findedClient.name },
+            },
+        )
+
+        const deletedClietn = await models.clients.update(
             {
                 isDeleted: true,
             },
@@ -94,7 +118,7 @@ class ClientController {
                 },
             },
         )
-        return res.status(200).json({ message: 'Клиент успешно удален', id: id })
+        return res.status(200).json({ message: 'Клиент успешно удален', data: deletedClietn })
     }
 
     async findByFilters(req, res, next) {

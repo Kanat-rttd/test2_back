@@ -32,16 +32,22 @@ class DepartPersonalController {
     async createDepartPersonal(req, res, next) {
         const departPersonalData = req.body
 
-        await models.departPersonal.create({
+        const createdPersonal = await models.departPersonal.create({
             name: departPersonalData.name,
             surname: departPersonalData.surname,
             status: departPersonalData.status,
             userClass: departPersonalData.userClass,
             fixSalary: departPersonalData.fixSalary,
-            bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId
+            bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId,
         })
 
-        return res.status(200).send('Personal Created')
+        await models.contragent.create({
+            contragentName: departPersonalData.name,
+            status: departPersonalData.status,
+            type: 'цехперсонал',
+        })
+
+        return res.status(200).json({ message: 'Клиент успешно создан', data: createdPersonal })
     }
 
     async updateDepartPersonal(req, res, next) {
@@ -55,19 +61,38 @@ class DepartPersonalController {
             status,
             userClass,
             fixSalary,
-            bakingFacilityUnitId
+            bakingFacilityUnitId,
         }
 
-        await models.departPersonal.update(updateObj, {
+        const findedPersonal = await models.departPersonal.findByPk(id)
+
+        await models.contragent.update(
+            { contragentName: name, status },
+            { where: { contragentName: findedPersonal.name } },
+        )
+
+         const upadatedPersonal = await models.departPersonal.update(updateObj, {
             where: {
                 id,
             },
         })
-        return res.status(200).send('Personal updated')
+
+        return res.status(200).json({ message: 'Персонал успешно обновлен', data: upadatedPersonal })
     }
 
     async deletePersonal(req, res) {
         const { id } = req.params
+
+        const findedPersonal = await models.departPersonal.findByPk(id)
+
+        await models.contragent.update(
+            {
+                isDeleted: true,
+            },
+            {
+                where: { contragentName: findedPersonal.name },
+            },
+        )
 
         const deletedUser = await models.departPersonal.update(
             { isDeleted: true },

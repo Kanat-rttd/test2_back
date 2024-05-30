@@ -40,6 +40,12 @@ class ProviderGoodsController {
                 name: providerGoodsData.providerId,
             })
 
+            await models.contragent.create({
+                contragentName: providerGoodsData.providerId,
+                status: departPersonalData.status,
+                type: 'цехперсонал',
+            })
+
             const data = {
                 providerId: newProvider.id,
                 goods: providerGoodsData.goods,

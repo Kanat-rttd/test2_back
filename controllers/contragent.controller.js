@@ -51,7 +51,7 @@ class ContragentController {
             },
         })
 
-        return res.status(200).json({ message: 'Контрагент успешно обнавлен', data: updatedContragent })
+        return res.status(200).json({ message: 'Контрагент успешно обновлен', data: updatedContragent })
     }
 
     async deleteContragent(req, res, next) {

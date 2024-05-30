@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize')
 const contragent = sequelize.define('contragent', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     contragentName: { type: DataTypes.STRING },
-    type: { type: DataTypes.STRING },
+    type: { type: DataTypes.ENUM(['реализатор','поставщик','цехперсонал']) },
     status: { type: DataTypes.STRING },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
