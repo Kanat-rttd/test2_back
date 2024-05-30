@@ -13,14 +13,10 @@ class BakingController {
             let filterOptionsDate = {}
 
             if (startDate && endDate) {
-                console.log(
-                    dayjs(startDate).add(-1, 'day').set('hour', 14).format('YYYY-MM-DD HH:mm'),
-                    dayjs(endDate).set('hour', 14).format('YYYY-MM-DD HH:mm'),
-                )
-                filterOptionsDate.createdAt = {
+                filterOptionsDate.date = {
                     [Op.between]: [
-                        dayjs(startDate).add(-1, 'day').set('hour', 14).format('YYYY-MM-DD HH:mm'),
-                        dayjs(endDate).set('hour', 14).format('YYYY-MM-DD HH:mm'),
+                        dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
+                        dayjs(endDate).format('YYYY-MM-DD'),
                     ],
                 }
             }
@@ -63,9 +59,31 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    ...filterOptionsDate,
+                    [Op.and]: [
+                        {
+                            [Op.or]: [
+                                {
+                                    date: dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
+                                },
+                                {
+                                    time: { [Op.gte]: 14 }, 
+                                },
+                            ],
+                        },
+                        {
+                            [Op.or]: [
+                                {
+                                    date: dayjs(startDate).format('YYYY-MM-DD'),
+                                },
+                                {
+                                    time: { [Op.lt]: 14 }, 
+                                },
+                            ],
+                        },
+                    ],
                 },
-            })
+            });
+            
 
             const totals = await models.baking.findAll({
                 attributes: [
