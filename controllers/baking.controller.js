@@ -1,6 +1,7 @@
 const models = require('../models')
 const { Op } = require('sequelize')
 const Sequelize = require('../config/db')
+const dayjs = require('dayjs')
 
 class BakingController {
     async getAll(req, res, next) {
@@ -12,11 +13,9 @@ class BakingController {
             let filterOptionsDate = {}
 
             if (startDate && endDate) {
+                console.log(dayjs(startDate).add(-1, 'day').set('hour', 14), dayjs(endDate).set('hour', 14))
                 filterOptionsDate.createdAt = {
-                    [Op.between]: [
-                        new Date(startDate).setHours(0, 0, 0, 0),
-                        new Date(endDate).setHours(23, 59, 59, 999),
-                    ],
+                    [Op.between]: [dayjs(startDate).add(-1, 'day').set('hour', 14), dayjs(endDate).set('hour', 14)],
                 }
             }
 

@@ -47,7 +47,7 @@ class ProvidersController {
 
         await models.contragent.update(
             { contragentName: providerName, status },
-            { where: { contragentName: findedProvider.name } },
+            { where: { contragentName: findedProvider.providerName } },
         )
 
         const updetedProvider = await models.providers.update(
@@ -72,7 +72,7 @@ class ProvidersController {
                 isDeleted: true,
             },
             {
-                where: { contragentName: findedProvider.name },
+                where: { contragentName: findedProvider.providerName },
             },
         )
 
