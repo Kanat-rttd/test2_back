@@ -85,7 +85,7 @@ class BakingController {
             });
             
 
-            const totals = await models.baking.findAll({
+            const totals = await models.baking.findOne({
                 attributes: [
                     [Sequelize.literal('SUM(flour)'), 'totalFlour'],
                     [Sequelize.literal('SUM(salt)'), 'totalSalt'],
@@ -116,18 +116,18 @@ class BakingController {
                     },
                     ...filterOptionsDate,
                 },
+                raw: true
             })
 
-            const jsonTotals = totals[0].toJSON()
-
+            console.log(totals)
             const formattedTotals = {
-                totalFlour: parseFloat(jsonTotals.totalFlour).toFixed(2),
-                totalSalt: parseFloat(jsonTotals.totalSalt).toFixed(2),
-                totalYeast: parseFloat(jsonTotals.totalYeast).toFixed(2),
-                totalMalt: parseFloat(jsonTotals.totalMalt).toFixed(2),
-                totalButter: parseFloat(jsonTotals.totalButter).toFixed(2),
-                totalOutput: parseFloat(jsonTotals.totalOutput).toFixed(2),
-                totalDefective: parseFloat(jsonTotals.totalDefective).toFixed(2),
+                totalFlour: parseFloat(totals.totalFlour).toFixed(2),
+                totalSalt: parseFloat(totals.totalSalt).toFixed(2),
+                totalYeast: parseFloat(totals.totalYeast).toFixed(2),
+                totalMalt: parseFloat(totals.totalMalt).toFixed(2),
+                totalButter: parseFloat(totals.totalButter).toFixed(2),
+                totalOutput: parseFloat(totals.totalOutput).toFixed(2),
+                totalDefective: parseFloat(totals.totalDefective).toFixed(2),
             }
 
             const data = {
