@@ -13,7 +13,7 @@ class FinanceController {
             const order = sortOrder === 'desc' ? [['date', 'DESC']] : [['date', 'ASC']]
 
             const data = await models.finance.findAll({
-                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'clientId', 'account', 'comment'],
+                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'contragentId', 'account', 'comment'],
                 order: order,
                 include: [
                     {
@@ -38,7 +38,7 @@ class FinanceController {
             account: bodyData.data.account,
             amount: bodyData.data.amount,
             financeCategoryId: bodyData.data.financeCategoryId,
-            clientId: bodyData.data.clientId,
+            contragentId: bodyData.data.contragentId,
             comment: bodyData.data.comment,
             date: bodyData.data.date,
             invoiceNumber: bodyData.invoiceNumber,
@@ -48,15 +48,13 @@ class FinanceController {
     }
 
     async createConsumption(req, res, next) {
-        const { account, amount, financeCategoryId, clientId, comment, date } = req.body
-
         const bodyData = req.body
 
         await models.finance.create({
             account: bodyData.data.account,
             amount: bodyData.data.amount * -1,
             financeCategoryId: bodyData.data.financeCategoryId,
-            clientId: bodyData.data.clientId,
+            contragentId: bodyData.data.contragentId,
             comment: bodyData.data.comment,
             date: bodyData.data.date,
         })
@@ -71,7 +69,7 @@ class FinanceController {
             account: fromAccount,
             amount: amount * -1,
             financeCategoryId: 5,
-            clientId: null,
+            contragentId: null,
             comment,
             date,
         })
@@ -80,7 +78,7 @@ class FinanceController {
             account: toAccount,
             amount: amount,
             financeCategoryId: 5,
-            clientId: null,
+            contragentId: null,
             comment,
             date,
         })
