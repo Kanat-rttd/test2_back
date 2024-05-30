@@ -2,17 +2,23 @@ const models = require('../models')
 
 class ProvidersController {
     async getAllProviders(req, res, next) {
+
+        const { status } = req.query
+
+        let filterOptions = {}
+
+        if (status) filterOptions.status = status
+
         const data = await models.providers.findAll({
             attributes: ['id', 'providerName', 'status'],
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
-
-        const transformedData = data.map((provider) => ({
-            providerName: provider.name,
-            status: provider.status,
-            id: provider.id,
-        }))
-
-        return res.json(transformedData)
+        return res.json(data)
     }
 
     async createProvider(req, res, next) {
