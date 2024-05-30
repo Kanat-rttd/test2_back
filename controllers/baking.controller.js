@@ -66,7 +66,7 @@ class BakingController {
                                     date: dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
                                 },
                                 {
-                                    time: { [Op.gte]: 14 }, 
+                                    time: { [Op.gte]: '14:00:00' }, 
                                 },
                             ],
                         },
@@ -76,7 +76,7 @@ class BakingController {
                                     date: dayjs(endDate).format('YYYY-MM-DD'),
                                 },
                                 {
-                                    time: { [Op.lt]: 14 }, 
+                                    time: { [Op.lt]: '14:00:00' }, 
                                 },
                             ],
                         },
