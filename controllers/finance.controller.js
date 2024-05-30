@@ -31,8 +31,6 @@ class FinanceController {
     }
 
     async createArrival(req, res, next) {
-        const { account, amount, financeCategoryId, clientId, comment, date } = req.body
-
         const bodyData = req.body
         console.log(bodyData)
 

@@ -50,6 +50,7 @@ class ClientController {
             status,
             password: hashedPass,
         })
+        await mo
         return res.status(200).send('Client Created')
     }
 

@@ -1,4 +1,6 @@
 const { Router } = require('express')
+
+const contragentRouter = require('./contragent.route')
 const userRouter = require('./user.route')
 const requestRouter = require('./request.route')
 const clientRouter = require('./client.route')
@@ -24,6 +26,7 @@ const providerGoodsRouter = require('./providerGoods.route')
 const placeRouter = require('./place.route')
 let router = Router()
 
+router.use('/contragent', contragentRouter)
 router.use('/user', userRouter)
 router.use('/requests', requestRouter)
 router.use('/client', clientRouter)

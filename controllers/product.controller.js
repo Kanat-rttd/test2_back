@@ -135,6 +135,7 @@ class ProductController {
                 isDeleted: {
                     [Op.ne]: 1,
                 },
+
             },
         })
 

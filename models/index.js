@@ -6,6 +6,7 @@ const { debtTransfer, debtCalculationView } = require('./debtTransfer.js')
 const { breadReportView, shiftTimeView, magazineDebtView } = require('./reports.js')
 
 module.exports = {
+    contragent: require('./contragent.js'),
     users: require('./users.js'),
     requests: require('./requests.js'),
     clients: require('./clients.js'),
