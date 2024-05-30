@@ -1,4 +1,5 @@
 const models = require('../models')
+const { Op } = require('sequelize')
 
 class ProvidersController {
     async getAllProviders(req, res, next) {
