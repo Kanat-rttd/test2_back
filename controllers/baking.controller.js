@@ -73,7 +73,7 @@ class BakingController {
                         {
                             [Op.or]: [
                                 {
-                                    date: dayjs(startDate).format('YYYY-MM-DD'),
+                                    date: dayjs(endDate).format('YYYY-MM-DD'),
                                 },
                                 {
                                     time: { [Op.lt]: 14 }, 
