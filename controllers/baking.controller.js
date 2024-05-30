@@ -59,6 +59,12 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
+                    date:{
+                        [Op.between]: [
+                            dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
+                            dayjs(endDate).format('YYYY-MM-DD')
+                        ]
+                    },
                     [Op.or]: [
                         {
                             [Op.and]: [
