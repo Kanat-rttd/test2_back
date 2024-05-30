@@ -83,7 +83,7 @@ class BakingController {
                     ],
                 },
             });
-            
+            console.log(bakingData)
 
             const totals = await models.baking.findOne({
                 attributes: [
