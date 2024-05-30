@@ -63,26 +63,26 @@ class BakingController {
                         {
                             [Op.and]: [
                                 {
-                                    date: dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
+                                    date: { [Op.gte]: dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD') },
                                 },
                                 {
-                                    time: { [Op.gte]: '14:00:00' }, 
+                                    time: { [Op.gte]: '14:00:00' },
                                 },
                             ],
                         },
                         {
                             [Op.and]: [
                                 {
-                                    date: dayjs(endDate).format('YYYY-MM-DD'),
+                                    date: { [Op.lte]: dayjs(endDate).format('YYYY-MM-DD') },
                                 },
                                 {
-                                    time: { [Op.lt]: '14:00:00' }, 
+                                    time: { [Op.lt]: '14:00:00' },
                                 },
                             ],
                         },
                     ],
                 },
-            });
+            })
             console.log(bakingData)
 
             const totals = await models.baking.findOne({
@@ -116,7 +116,7 @@ class BakingController {
                     },
                     ...filterOptionsDate,
                 },
-                raw: true
+                raw: true,
             })
 
             console.log(totals)
