@@ -13,9 +13,15 @@ class BakingController {
             let filterOptionsDate = {}
 
             if (startDate && endDate) {
-                console.log(dayjs(startDate).add(-1, 'day').set('hour', 14), dayjs(endDate).set('hour', 14))
+                console.log(
+                    dayjs(startDate).add(-1, 'day').set('hour', 14).format('YYYY-MM-DD HH:mm'),
+                    dayjs(endDate).set('hour', 14).format('YYYY-MM-DD HH:mm'),
+                )
                 filterOptionsDate.createdAt = {
-                    [Op.between]: [dayjs(startDate).add(-1, 'day').set('hour', 14), dayjs(endDate).set('hour', 14)],
+                    [Op.between]: [
+                        dayjs(startDate).add(-1, 'day').set('hour', 14).format('YYYY-MM-DD HH:mm'),
+                        dayjs(endDate).set('hour', 14).format('YYYY-MM-DD HH:mm'),
+                    ],
                 }
             }
 
