@@ -46,7 +46,7 @@ class ProvidersController {
         const findedProvider = await models.providers.findByPk(id)
 
         await models.contragent.update(
-            { contragentName: name, status },
+            { contragentName: providerName, status },
             { where: { contragentName: findedProvider.name } },
         )
 

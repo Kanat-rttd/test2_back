@@ -12,7 +12,7 @@ class ProviderGoodsController {
             attributes: ['id', 'providerId', 'goods', 'unitOfMeasure', 'place', 'status', 'isDeleted'],
             include: [
                 {
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'providerName', 'status'],
                     model: models.providers,
                 },
             ],
@@ -35,16 +35,6 @@ class ProviderGoodsController {
 
         if (typeof providerGoodsData.providerId == 'string') {
             console.log('string')
-
-            const newProvider = await models.providers.create({
-                name: providerGoodsData.providerId,
-            })
-
-            await models.contragent.create({
-                contragentName: providerGoodsData.providerId,
-                status: departPersonalData.status,
-                type: 'цехперсонал',
-            })
 
             const data = {
                 providerId: newProvider.id,
