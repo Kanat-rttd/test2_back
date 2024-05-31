@@ -17,20 +17,6 @@ class BakingController {
             const dateFrom =  dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD');
             const dateTo = dayjs(endDate).format('YYYY-MM-DD');
 
-            if (startDate && endDate) {
-                filterOptionsDate.date = {
-                    [Op.and]: [...dateTimeFilter]
-                    // [Op.between]: [
-                    //     dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
-                    //     dayjs(endDate).format('YYYY-MM-DD'),
-                    // ],
-                }
-            }
-
-            if (facilityUnit) {
-                filterOptions.facilityUnit = facilityUnit
-            }
-
             const dateTimeFilter = [
                 { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
                 {
@@ -47,7 +33,19 @@ class BakingController {
                 }
               ];
 
+            if (startDate && endDate) {
+                filterOptionsDate.date = {
+                    [Op.and]: [...dateTimeFilter]
+                    // [Op.between]: [
+                    //     dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
+                    //     dayjs(endDate).format('YYYY-MM-DD'),
+                    // ],
+                }
+            }
 
+            if (facilityUnit) {
+                filterOptions.facilityUnit = facilityUnit
+            }
 
             const bakingData = await models.baking.findAll({
                 attributes: [
