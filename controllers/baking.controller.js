@@ -13,39 +13,33 @@ class BakingController {
             let filterOptionsDate = {}
 
             const time = '14:00:00';
-
             const dateFrom =  dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD');
             const dateTo = dayjs(endDate).format('YYYY-MM-DD');
 
-            const dateTimeFilter = [
-                { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
-                {
-                  [Op.or]: [
-                    {
-                      date: dateFrom,
-                      time: { [Op.lt]: time }
-                    },
-                    {
-                      date: dateTo,
-                      time: { [Op.gt]: time }
-                    }
-                  ]
-                }
-              ];
-
             if (startDate && endDate) {
                 filterOptionsDate.date = {
-                    [Op.and]: [...dateTimeFilter]
-                    // [Op.between]: [
-                    //     dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
-                    //     dayjs(endDate).format('YYYY-MM-DD'),
-                    // ],
+                    [Op.and]: [
+                        { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
+                        {
+                          [Op.or]: [
+                            {
+                              date: dateFrom,
+                              time: { [Op.lt]: time }
+                            },
+                            {
+                              date: dateTo,
+                              time: { [Op.gt]: time }
+                            }
+                          ]
+                        }
+                      ]
                 }
             }
 
             if (facilityUnit) {
                 filterOptions.facilityUnit = facilityUnit
             }
+
 
             const bakingData = await models.baking.findAll({
                 attributes: [
@@ -81,7 +75,21 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    [Op.and]: [...dateTimeFilter]
+                    [Op.and]: [
+                        { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
+                        {
+                          [Op.or]: [
+                            {
+                              date: dateFrom,
+                              time: { [Op.lt]: time }
+                            },
+                            {
+                              date: dateTo,
+                              time: { [Op.gt]: time }
+                            }
+                          ]
+                        }
+                      ]
                 },
             })
             console.log(bakingData)
