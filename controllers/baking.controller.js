@@ -25,7 +25,7 @@ class BakingController {
                 filterOptions.facilityUnit = facilityUnit
             }
 
-            const time = 14;
+            const time = '14:00:00';
             const yesterday =  dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD');
             const today = dayjs(endDate).format('YYYY-MM-DD');
 
