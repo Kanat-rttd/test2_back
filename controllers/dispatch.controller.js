@@ -239,9 +239,8 @@ class DispatchController {
         const response = await models.goodsDispatch.update(
             {
                 clientId,
-                totalQuantity: products.reduce((acc, sale) => acc + Number(sale.orderedQuantity), 0),
             },
-            { where: { id } },
+            { where: { id }},
         )
 
         const orderDetails = products.map((sale) => ({
