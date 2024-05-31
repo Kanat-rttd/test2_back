@@ -233,20 +233,29 @@ class DispatchController {
 
     async updateDispatch(req, res, next) {
         const { id } = req.params
-        console.log(id)
 
-        const { data, clientId } = req.body
+        const { products, clientId } = req.body
 
-        console.error('clientID', clientId)
-        const response = await models.goodsDispatch.update({ clientId }, { where: { id } })
-        console.log(data)
-        for (const item of data) {
-            await models.goodsDispatchDetails.update(item, {
-                where: {
-                    id: item.id,
-                },
-            })
-        }
+        const response = await models.goodsDispatch.update(
+            {
+                clientId,
+                totalQuantity: products.reduce((acc, sale) => acc + Number(sale.orderedQuantity), 0),
+            },
+            { where: { id } },
+        )
+
+        const orderDetails = products.map((sale) => ({
+            id,
+            productId: sale.productId,
+            quantity: sale.quantity,
+            price: sele.price,
+        }))
+
+        await models.goodsDispatchDetails.update(orderDetails, {
+            where: {
+                id,
+            },
+        })
 
         return res.status(200).json({ message: 'Dispatch updated', data: response })
     }
