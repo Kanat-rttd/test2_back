@@ -18,28 +18,16 @@ class BakingController {
 
             if (startDate && endDate) {
                 filterOptionsDate.date = {
-                    [Op.and]: [
-                        { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
-                        {
-                          [Op.or]: [
-                            {
-                              date: dateFrom,
-                              time: { [Op.lt]: time }
-                            },
-                            {
-                              date: dateTo,
-                              time: { [Op.gt]: time }
-                            }
-                          ]
-                        }
-                      ]
+                    [Op.between]: [
+                        dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
+                        dayjs(endDate).format('YYYY-MM-DD'),
+                    ],
                 }
             }
 
             if (facilityUnit) {
                 filterOptions.facilityUnit = facilityUnit
             }
-
 
             const bakingData = await models.baking.findAll({
                 attributes: [
@@ -80,11 +68,11 @@ class BakingController {
                         {
                           [Op.or]: [
                             {
-                              date: dateFrom,
+                              date: dateTo,
                               time: { [Op.lt]: time }
                             },
                             {
-                              date: dateTo,
+                              date: dateFrom,
                               time: { [Op.gt]: time }
                             }
                           ]
