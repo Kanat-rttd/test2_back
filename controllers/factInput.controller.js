@@ -30,7 +30,12 @@ class FactInputController {
 
             const data = await models.factInput.findAll({
                 attributes: ['id', 'providerGoodId', 'place', 'unitOfMeasure', 'quantity', 'updatedAt'],
-                where: filterOptions,
+                where: {
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
+                    ...filterOptions,
+                },
                 include: [
                     {
                         model: models.providerGoods,
