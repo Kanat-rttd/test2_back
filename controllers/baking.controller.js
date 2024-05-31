@@ -25,6 +25,10 @@ class BakingController {
                 filterOptions.facilityUnit = facilityUnit
             }
 
+            const time = 14;
+            const yesterday =  dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD');
+            const today = dayjs(endDate).format('YYYY-MM-DD');
+
             const bakingData = await models.baking.findAll({
                 attributes: [
                     'id',
@@ -59,34 +63,21 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    date:{
-                        [Op.between]: [
-                            dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
-                            dayjs(endDate).format('YYYY-MM-DD')
-                        ]
-                    },
-                    [Op.or]: [
+                    [Op.and]: [
+                        { date: { [Op.gte]: yesterday, [Op.lte]: today  } },
                         {
-                            [Op.and]: [
-                                {
-                                    date: { [Op.gte]: dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD') },
-                                },
-                                {
-                                    time: { [Op.gte]: '14:00:00' },
-                                },
-                            ],
-                        },
-                        {
-                            [Op.and]: [
-                                {
-                                    date: { [Op.lte]: dayjs(endDate).format('YYYY-MM-DD') },
-                                },
-                                {
-                                    time: { [Op.lt]: '14:00:00' },
-                                },
-                            ],
-                        },
-                    ],
+                          [Op.or]: [
+                            {
+                              date: today,
+                              time: { [Op.lt]: time }
+                            },
+                            {
+                              date: yesterday,
+                              time: { [Op.gt]: time }
+                            }
+                          ]
+                        }
+                      ]
                 },
             })
             console.log(bakingData)
@@ -107,8 +98,10 @@ class BakingController {
                     {
                         model: models.products,
                         required: true,
+                        attributes: [],
                         include: [
                             {
+                                attributes: [],
                                 model: models.bakingFacilityUnits,
                                 where: filterOptions,
                                 required: true,
