@@ -19,8 +19,8 @@ class BakingController {
             if (startDate && endDate) {
                 filterOptionsDate.dateTime = {
                     [Op.between]: [
-                        dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
-                        dayjs(endDate).format('YYYY-MM-DD'),
+                        new Date(startDate).add(-1, 'day').setHours(14, 0, 0, 0),
+                        new Date(endDate).setHours(14, 0, 0, 0),
                     ],
                 }
             }
