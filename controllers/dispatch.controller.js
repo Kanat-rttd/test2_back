@@ -7,9 +7,7 @@ const Sequelize = require('../config/db')
 
 class DispatchController {
     async getAll(req, res, next) {
-        const { startDate, endDate, facilityUnit, client, product } = req.query
-        console.log('______________________________')
-        console.log('Received query parameters:', startDate, endDate, facilityUnit, client, product)
+        const { startDate, endDate, facilityUnit, client, product, status } = req.query
 
         const filterOptions = {}
         const facilityOptions = {}
@@ -19,6 +17,9 @@ class DispatchController {
             filterOptions.createdAt = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
+        }
+        if(status){
+            filterOptions.dispatch = status
         }
 
         if (client) {
@@ -240,7 +241,7 @@ class DispatchController {
             {
                 clientId,
             },
-            { where: { id }},
+            { where: { id } },
         )
 
         const orderDetails = products.map((sale) => ({
