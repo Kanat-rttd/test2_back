@@ -12,15 +12,15 @@ class BakingController {
             let filterOptions = {}
             let filterOptionsDate = {}
 
-            const time = '14:00:00';
-            const dateFrom =  dayjs(startDate).add(-1, 'day');
-            const dateTo = dayjs(endDate);
+            const time = '14:00:00'
+            const dateFrom = dayjs(startDate).add(-1, 'day')
+            const dateTo = dayjs(endDate)
 
             if (startDate && endDate) {
                 filterOptionsDate.dateTime = {
                     [Op.between]: [
                         new Date(dateFrom).setHours(14, 0, 0, 0),
-                        new Date(dateTo).setHours(14, 0, 0, 0),
+                        new Date(dateTo).setHours(13, 59, 59, 999),
                     ],
                 }
             }
@@ -64,7 +64,7 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    ...filterOptionsDate
+                    ...filterOptionsDate,
                     // [Op.and]: [
                     //     { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
                     //     {
@@ -120,23 +120,25 @@ class BakingController {
                 raw: true,
             })
 
-            console.log(totals[0])
-            const formattedTotals = {
-                totalFlour: parseFloat(totals[0].totalFlour).toFixed(2),
-                totalSalt: parseFloat(totals[0].totalSalt).toFixed(2),
-                totalYeast: parseFloat(totals[0].totalYeast).toFixed(2),
-                totalMalt: parseFloat(totals[0].totalMalt).toFixed(2),
-                totalButter: parseFloat(totals[0].totalButter).toFixed(2),
-                totalOutput: parseFloat(totals[0].totalOutput).toFixed(2),
-                totalDefective: parseFloat(totals[0].totalDefective).toFixed(2),
-            }
+            if (totals.length > 0) {
+                const formattedTotals = {
+                    totalFlour: parseFloat(totals[0].totalFlour).toFixed(2),
+                    totalSalt: parseFloat(totals[0].totalSalt).toFixed(2),
+                    totalYeast: parseFloat(totals[0].totalYeast).toFixed(2),
+                    totalMalt: parseFloat(totals[0].totalMalt).toFixed(2),
+                    totalButter: parseFloat(totals[0].totalButter).toFixed(2),
+                    totalOutput: parseFloat(totals[0].totalOutput).toFixed(2),
+                    totalDefective: parseFloat(totals[0].totalDefective).toFixed(2),
+                }
+                const data = {
+                    bakingData,
+                    totals: formattedTotals,
+                }
 
-            const data = {
-                bakingData,
-                totals: formattedTotals,
+                return res.json(data)
+            } else {
+                return res.json({ error: 'No data available' })
             }
-
-            return res.json(data)
         } catch (error) {
             return next(error)
         }
