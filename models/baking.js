@@ -10,7 +10,7 @@ const baking = sequelize.define('baking', {
     malt: { type: DataTypes.FLOAT },
     butter: { type: DataTypes.FLOAT },
     temperature: { type: DataTypes.FLOAT },
-    dateTime: { type: DataTypes.STRING },
+    dateTime: { type: DataTypes.DATE },
     // time: { type: DataTypes.TIME },
     output: { type: DataTypes.FLOAT },
     defective: { type: DataTypes.FLOAT },
