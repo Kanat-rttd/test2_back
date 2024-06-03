@@ -120,25 +120,21 @@ class BakingController {
                 raw: true,
             })
 
-            if (totals.length > 0) {
-                const formattedTotals = {
-                    totalFlour: parseFloat(totals[0].totalFlour).toFixed(2),
-                    totalSalt: parseFloat(totals[0].totalSalt).toFixed(2),
-                    totalYeast: parseFloat(totals[0].totalYeast).toFixed(2),
-                    totalMalt: parseFloat(totals[0].totalMalt).toFixed(2),
-                    totalButter: parseFloat(totals[0].totalButter).toFixed(2),
-                    totalOutput: parseFloat(totals[0].totalOutput).toFixed(2),
-                    totalDefective: parseFloat(totals[0].totalDefective).toFixed(2),
-                }
-                const data = {
-                    bakingData,
-                    totals: formattedTotals,
-                }
-
-                return res.json(data)
-            } else {
-                return res.json({ error: 'No data available' })
+            const formattedTotals = {
+                totalFlour: parseFloat(totals[0].totalFlour).toFixed(2),
+                totalSalt: parseFloat(totals[0].totalSalt).toFixed(2),
+                totalYeast: parseFloat(totals[0].totalYeast).toFixed(2),
+                totalMalt: parseFloat(totals[0].totalMalt).toFixed(2),
+                totalButter: parseFloat(totals[0].totalButter).toFixed(2),
+                totalOutput: parseFloat(totals[0].totalOutput).toFixed(2),
+                totalDefective: parseFloat(totals[0].totalDefective).toFixed(2),
             }
+            const data = {
+                bakingData,
+                totals: formattedTotals,
+            }
+
+            return res.json(data)
         } catch (error) {
             return next(error)
         }
