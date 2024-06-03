@@ -39,8 +39,6 @@ class BakingController {
                     'butter',
                     'temperature',
                     'dateTime',
-                    // 'time',
-                    // 'date',
                     'output',
                     'defective',
                 ],
@@ -65,21 +63,6 @@ class BakingController {
                         [Op.ne]: 1,
                     },
                     ...filterOptionsDate,
-                    // [Op.and]: [
-                    //     { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
-                    //     {
-                    //       [Op.or]: [
-                    //         {
-                    //           date: dateTo,
-                    //           time: { [Op.lt]: time }
-                    //         },
-                    //         {
-                    //           date: dateFrom,
-                    //           time: { [Op.gt]: time }
-                    //         }
-                    //       ]
-                    //     }
-                    //   ]
                 },
             })
             console.log(bakingData)
@@ -152,8 +135,6 @@ class BakingController {
             butter,
             temperature,
             dateTime,
-            // time,
-            // date,
             output,
             defective,
         })

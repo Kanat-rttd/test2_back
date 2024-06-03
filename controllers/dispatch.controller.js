@@ -248,7 +248,7 @@ class DispatchController {
             id,
             productId: sale.productId,
             quantity: sale.quantity,
-            price: sele.price,
+            price: sale.price,
         }))
 
         await models.goodsDispatchDetails.update(orderDetails, {
