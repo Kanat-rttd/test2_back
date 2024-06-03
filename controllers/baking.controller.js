@@ -13,14 +13,14 @@ class BakingController {
             let filterOptionsDate = {}
 
             const time = '14:00:00';
-            const dateFrom =  dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD');
-            const dateTo = dayjs(endDate).format('YYYY-MM-DD');
+            const dateFrom =  dayjs(startDate).add(-1, 'day');
+            const dateTo = dayjs(endDate);
 
             if (startDate && endDate) {
                 filterOptionsDate.dateTime = {
                     [Op.between]: [
-                        new Date(startDate).add(-1, 'day').setHours(14, 0, 0, 0),
-                        new Date(endDate).setHours(14, 0, 0, 0),
+                        new Date(dateFrom).setHours(14, 0, 0, 0),
+                        new Date(dateTo).setHours(14, 0, 0, 0),
                     ],
                 }
             }
