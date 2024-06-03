@@ -17,7 +17,7 @@ class BakingController {
             const dateTo = dayjs(endDate).format('YYYY-MM-DD');
 
             if (startDate && endDate) {
-                filterOptionsDate.date = {
+                filterOptionsDate.dateTime = {
                     [Op.between]: [
                         dayjs(startDate).add(-1, 'day').format('YYYY-MM-DD'),
                         dayjs(endDate).format('YYYY-MM-DD'),
@@ -38,10 +38,11 @@ class BakingController {
                     'malt',
                     'butter',
                     'temperature',
-                    'time',
+                    'dateTime',
+                    // 'time',
+                    // 'date',
                     'output',
                     'defective',
-                    'date',
                 ],
                 required: true,
                 include: [
@@ -63,21 +64,22 @@ class BakingController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    [Op.and]: [
-                        { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
-                        {
-                          [Op.or]: [
-                            {
-                              date: dateTo,
-                              time: { [Op.lt]: time }
-                            },
-                            {
-                              date: dateFrom,
-                              time: { [Op.gt]: time }
-                            }
-                          ]
-                        }
-                      ]
+                    ...filterOptionsDate
+                    // [Op.and]: [
+                    //     { date: { [Op.gte]: dateFrom, [Op.lte]: dateTo  } },
+                    //     {
+                    //       [Op.or]: [
+                    //         {
+                    //           date: dateTo,
+                    //           time: { [Op.lt]: time }
+                    //         },
+                    //         {
+                    //           date: dateFrom,
+                    //           time: { [Op.gt]: time }
+                    //         }
+                    //       ]
+                    //     }
+                    //   ]
                 },
             })
             console.log(bakingData)
@@ -141,7 +143,7 @@ class BakingController {
     }
 
     async createBaking(req, res, next) {
-        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective, date } = req.body
+        const { breadType, flour, salt, yeast, malt, butter, temperature, dateTime, output, defective } = req.body
 
         await models.baking.create({
             productId: breadType,
@@ -151,10 +153,11 @@ class BakingController {
             malt,
             butter,
             temperature,
-            time,
+            dateTime,
+            // time,
+            // date,
             output,
             defective,
-            date,
         })
 
         return res.status(200).send('Baking Created')
@@ -162,7 +165,7 @@ class BakingController {
 
     async updateBaking(req, res) {
         const { id } = req.params
-        const { breadType, flour, salt, yeast, malt, butter, temperature, time, output, defective, date } = req.body
+        const { breadType, flour, salt, yeast, malt, butter, temperature, dateTime, output, defective } = req.body
 
         const updateObj = {
             productId: breadType,
@@ -172,10 +175,9 @@ class BakingController {
             malt,
             butter,
             temperature,
-            time,
+            dateTime,
             output,
             defective,
-            date,
         }
 
         await models.baking.update(updateObj, {
