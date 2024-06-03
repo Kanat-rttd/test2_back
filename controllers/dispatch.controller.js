@@ -18,7 +18,7 @@ class DispatchController {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
-        if(status){
+        if (status) {
             filterOptions.dispatch = status
         }
 
@@ -103,18 +103,29 @@ class DispatchController {
     }
 
     async createDispatch(req, res, next) {
-        const dispatchData = req.body
+        const { clientId, dispatch, products } = req.body
 
-        const dispatch = await models.goodsDispatch.create({
-            clientId: dispatchData.userId,
-            dispatch: dispatchData.dispatch,
+        const createdDispatch = await models.goodsDispatch.create({
+            clientId,
+            dispatch,
         })
 
-        const dispatchDetails = dispatchData.products.map((sale) => ({
-            goodsDispatchId: dispatch.id,
-            productId: sale.id,
-            quantity: sale.quantity,
-        }))
+        const clientPrices = await models.individualPrices.findAll({
+            where: { clientId },
+            raw: true,
+        })
+
+        console.log(clientPrices)
+        
+        const dispatchDetails = products.map((sale) => {
+            const finded = clientPrices.find((price) => price.productId === sale.id)
+            return {
+                goodsDispatchId: createdDispatch.id,
+                productId: sale.id,
+                quantity: sale.quantity,
+                price: finded ? finded.price : 0,
+            }
+        })
 
         await models.goodsDispatchDetails.bulkCreate(dispatchDetails)
 
