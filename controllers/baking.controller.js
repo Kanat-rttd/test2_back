@@ -19,8 +19,8 @@ class BakingController {
             if (startDate && endDate) {
                 filterOptionsDate.dateTime = {
                     [Op.between]: [
-                        dayjs(dateFrom).set('hours',14).format('YYYY-MM-DD HH:mm'),
-                        dayjs(dateTo).set('hours',14).format('YYYY-MM-DD HH:mm'),
+                        dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm'),
+                        dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm'),
                     ],
                 }
             }
@@ -84,7 +84,7 @@ class BakingController {
             })
             console.log(bakingData)
 
-            const totals = await models.baking.findAll({
+            const totals = await models.baking.findOne({
                 attributes: [
                     [Sequelize.literal('SUM(flour)'), 'totalFlour'],
                     [Sequelize.literal('SUM(salt)'), 'totalSalt'],
@@ -94,7 +94,6 @@ class BakingController {
                     [Sequelize.literal('SUM(output)'), 'totalOutput'],
                     [Sequelize.literal('SUM(defective)'), 'totalDefective'],
                 ],
-                group: ['productId'], // Группируем по productId
                 required: true,
                 include: [
                     {
@@ -122,13 +121,13 @@ class BakingController {
             console.log(totals)
 
             const formattedTotals = {
-                totalFlour: 0, //parseFloat(totals[0].totalFlour).toFixed(2),
-                totalSalt: 0, //parseFloat(totals[0].totalSalt).toFixed(2),
-                totalYeast: 0, //parseFloat(totals[0].totalYeast).toFixed(2),
-                totalMalt: 0, //parseFloat(totals[0].totalMalt).toFixed(2),
-                totalButter: 0, //parseFloat(totals[0].totalButter).toFixed(2),
-                totalOutput: 0, //parseFloat(totals[0].totalOutput).toFixed(2),
-                totalDefective: 0, // parseFloat(totals[0].totalDefective).toFixed(2),
+                totalFlour: parseFloat(totals.totalFlour).toFixed(2),
+                totalSalt: parseFloat(totals.totalSalt).toFixed(2),
+                totalYeast: parseFloat(totals.totalYeast).toFixed(2),
+                totalMalt: parseFloat(totals.totalMalt).toFixed(2),
+                totalButter: parseFloat(totals.totalButter).toFixed(2),
+                totalOutput: parseFloat(totals.totalOutput).toFixed(2),
+                totalDefective: parseFloat(totals.totalDefective).toFixed(2),
             }
             const data = {
                 bakingData,
