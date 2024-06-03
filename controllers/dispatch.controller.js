@@ -111,7 +111,7 @@ class DispatchController {
         })
 
         const clientPrices = await models.individualPrices.findAll({
-            where: { clientId },
+            where: { clientId, isDeleted: false },
             raw: true,
         })
 
