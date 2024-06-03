@@ -93,8 +93,15 @@ class IndividualPricesController {
     async createIndividualPrice(req, res, next) {
         const individualPriceData = req.body
 
-        // console.log(individualPriceData)
-
+        const data = await models.individualPrices.findAll({
+            where: {
+                clientId: individualPriceData.clientId,
+                productId: individualPriceData.detail[0].id,
+            },
+        })
+        if (data.length > 0) {
+            res.status(405).json({message:"Цена на данный продукт уже существует"})
+        }
         await models.individualPrices.create({
             price: individualPriceData.detail[0].price,
             clientId: individualPriceData.clientId,
@@ -112,8 +119,6 @@ class IndividualPricesController {
         const updateObj = {
             price: individualPriceData.detail[0].price,
         }
-
-        // console.log(id, individualPriceData.detail[0].id, individualPriceData.detail[0].price)
 
         await models.individualPrices.update(updateObj, {
             where: {
