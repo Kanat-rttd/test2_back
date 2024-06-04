@@ -230,10 +230,10 @@ class DispatchController {
                     })
                 } else {
                     acc[key].totalProducts[foundIndex].quantity += detail.quantity
-                    acc[key].totalProducts[foundIndex].totalPrice += detail.quantity * detail.product.price
+                    acc[key].totalProducts[foundIndex].totalPrice += detail.quantity * detail.price
                 }
 
-                acc[key].totalSum += detail.quantity * detail.product.price
+                acc[key].totalSum += detail.quantity * detail.price
             })
 
             acc[key].dispatches.push(curr)
