@@ -79,10 +79,7 @@ class ReportController {
 
         if (startDate && endDate) {
             filterOptions.createdAt = {
-                [Op.between]: [
-                    new Date(startDate).setHours(0, 0, 0, 0),
-                    new Date(endDate).setHours(23, 59, 59, 999),
-                ],
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
 
@@ -96,12 +93,7 @@ class ReportController {
                 'adjustments',
                 'discrepancy',
             ],
-            where: {
-                isDeleted: {
-                    [Op.ne]: 1,
-                },
-                ...filterOptions,
-            },
+            where: filterOptions,
         })
 
         let totalRegister = 0
