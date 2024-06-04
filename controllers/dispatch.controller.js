@@ -258,17 +258,13 @@ class DispatchController {
         )
 
         const orderDetails = products.map((sale) => ({
-            id,
+            goodsDispatchId: id,
             productId: sale.productId,
             quantity: sale.quantity,
             price: sale.price,
         }))
-
-        await models.goodsDispatchDetails.update(orderDetails, {
-            where: {
-                id,
-            },
-        })
+        await models.goodsDispatchDetails.destroy({ where: { goodsDispatchId: id } })
+        await models.goodsDispatchDetails.bulkCreate(orderDetails)
 
         return res.status(200).json({ message: 'Dispatch updated', data: response })
     }
