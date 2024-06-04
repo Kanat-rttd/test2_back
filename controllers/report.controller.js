@@ -94,6 +94,12 @@ class ReportController {
                 'discrepancy',
             ],
             where: filterOptions,
+            include: [
+                {
+                    model: models.providerGoods,
+                    attributes: ['goods', 'id'],
+                },
+            ],
         })
 
         let totalRegister = 0
