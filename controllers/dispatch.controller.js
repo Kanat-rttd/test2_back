@@ -147,7 +147,7 @@ class DispatchController {
             const dateTo = dayjs(endDate)
 
             if (startDate && endDate) {
-                filterOptions.dateTime = {
+                filterOptions.createdAt = {
                     [Op.between]: [
                         dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
                         dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
