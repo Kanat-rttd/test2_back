@@ -124,6 +124,7 @@ class SalesController {
         const order = await models.order.update(
             {
                 clientId: sales.clientId,
+                date: sales.date,
                 totalQuantity: sales.products.reduce((acc, sale) => acc + Number(sale.orderedQuantity), 0),
             },
             { where: { id } },
