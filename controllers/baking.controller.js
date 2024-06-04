@@ -12,7 +12,6 @@ class BakingController {
             let filterOptions = {}
             let filterOptionsDate = {}
 
-            const time = '14:00:00'
             const dateFrom = dayjs(startDate).add(-1, 'day')
             const dateTo = dayjs(endDate)
 

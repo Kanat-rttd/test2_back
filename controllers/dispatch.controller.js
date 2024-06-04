@@ -142,21 +142,33 @@ class DispatchController {
 
         let filterOptions = {}
 
-        if (startDate && endDate) {
-            if (startDate == endDate) {
-                const newDate = new Date(startDate)
+        const dateFrom = dayjs(startDate).add(-1, 'day')
+            const dateTo = dayjs(endDate)
 
-                const endDate = new Date(newDate.getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000))
-
-                filterOptions.createdAt = {
-                    [Op.between]: [newDate, endDate],
-                }
-            } else {
-                filterOptions.createdAt = {
-                    [Op.between]: [startDate, endDate],
+            if (startDate && endDate) {
+                filterOptions.dateTime = {
+                    [Op.between]: [
+                        dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
+                        dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
+                    ],
                 }
             }
-        }
+
+        // if (startDate && endDate) {
+        //     if (startDate == endDate) {
+        //         const newDate = new Date(startDate)
+
+        //         const endDate = new Date(newDate.getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000))
+
+        //         filterOptions.createdAt = {
+        //             [Op.between]: [newDate, endDate],
+        //         }
+        //     } else {
+        //         filterOptions.createdAt = {
+        //             [Op.between]: [startDate, endDate],
+        //         }
+        //     }
+        // }
 
         if (clientId) {
             filterOptions.clientId = clientId
