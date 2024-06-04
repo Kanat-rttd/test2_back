@@ -125,7 +125,7 @@ class DispatchController {
                 goodsDispatchId: createdDispatch.id,
                 productId: sale.productId,
                 quantity: sale.quantity,
-                price: finded ? finded.price : 0,
+                price: finded ? finded.price : sale.productPrice,
             }
         })
 
