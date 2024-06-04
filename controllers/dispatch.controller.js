@@ -226,7 +226,7 @@ class DispatchController {
                         name: detail.product.name,
                         price: detail.price,
                         quantity: detail.quantity,
-                        totalPrice: detail.quantity * detail.product.price,
+                        totalPrice: detail.quantity * detail.price,
                     })
                 } else {
                     acc[key].totalProducts[foundIndex].quantity += detail.quantity
