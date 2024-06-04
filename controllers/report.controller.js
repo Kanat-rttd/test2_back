@@ -65,16 +65,12 @@ class ReportController {
     }
 
     async inventoryzationView(req, res, next) {
-        const { name, place, startDate, endDate } = req.query
+        const { name, startDate, endDate } = req.query
 
         const filterOptions = {}
 
         if (name) {
             filterOptions.providerGoodId = name
-        }
-
-        if (place) {
-            filterOptions.place = place
         }
 
         if (startDate && endDate) {
@@ -86,7 +82,7 @@ class ReportController {
         const data = await models.inventorizations.findAll({
             attributes: [
                 'id',
-                'goods',
+                'providerGoodId',
                 'unitOfMeasure',
                 'accountingQuantity',
                 'factQuantity',
@@ -97,7 +93,7 @@ class ReportController {
             include: [
                 {
                     model: models.providerGoods,
-                    attributes: ['goods', 'id'],
+                    attributes: ['goods'],
                 },
             ],
         })
