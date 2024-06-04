@@ -18,10 +18,7 @@ class ReportController {
 
         if (startDate && endDate) {
             filterOptions.createdAt = {
-                [Op.between]: [
-                    new Date(startDate).setHours(0, 0, 0, 0),
-                    new Date(endDate).setHours(23, 59, 59, 999),
-                ],
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
 
@@ -62,6 +59,47 @@ class ReportController {
         const responseData = {
             mainData: data,
             total: totalDebt,
+        }
+
+        return res.json(responseData)
+    }
+
+    async inventoryzationView(req, res, next) {
+        const { MagazineName } = req.query
+
+        console.log('magazineName ', MagazineName)
+
+        const filterOptions = {}
+
+        const data = await models.inventorizations.findAll({
+            attributes: [
+                'id',
+                'goods',
+                'unitOfMeasure',
+                'accountingQuantity',
+                'factQuantity',
+                'adjustments',
+                'discrepancy',
+            ],
+            // where: filterOptions,
+        })
+
+        let totalRegister = 0
+        let totalFact = 0
+        let divergence = 0
+
+        data.forEach((item) => {
+            console.log(item.Debit)
+            totalRegister += Number(item.accountingQuantity)
+            totalFact += Number(item.factQuantity)
+            divergence += Number(item.discrepancy)
+        })
+
+        const responseData = {
+            table: data,
+            totalRegister,
+            totalFact,
+            divergence,
         }
 
         return res.json(responseData)

@@ -4,6 +4,7 @@ const { goodsDispatch, invoiceData } = require('./goodsDispatch.js')
 const { shiftAccounting, shiftAccountingDetails } = require('./shiftAccounting.js')
 const { debtTransfer, debtCalculationView } = require('./debtTransfer.js')
 const { breadReportView, shiftTimeView, magazineDebtView } = require('./reports.js')
+const { inventorizations } = require('./inventorizationView.js')
 
 module.exports = {
     contragent: require('./contragent.js'),
@@ -38,4 +39,6 @@ module.exports = {
     factInput: require('./factInput.js'),
     providerGoods: require('./providerGoods.js'),
     place: require('./places.js'),
+    adjustments: require('./adjustments.js'),
+    inventorizations,
 }
