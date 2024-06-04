@@ -65,11 +65,26 @@ class ReportController {
     }
 
     async inventoryzationView(req, res, next) {
-        const { MagazineName } = req.query
-
-        console.log('magazineName ', MagazineName)
+        const { name, place, startDate, endDate } = req.query
 
         const filterOptions = {}
+
+        if (name) {
+            filterOptions.providerGoodId = name
+        }
+
+        if (place) {
+            filterOptions.place = place
+        }
+
+        if (startDate && endDate) {
+            filterOptions.createdAt = {
+                [Op.between]: [
+                    new Date(startDate).setHours(0, 0, 0, 0),
+                    new Date(endDate).setHours(23, 59, 59, 999),
+                ],
+            }
+        }
 
         const data = await models.inventorizations.findAll({
             attributes: [
@@ -81,7 +96,12 @@ class ReportController {
                 'adjustments',
                 'discrepancy',
             ],
-            // where: filterOptions,
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                ...filterOptions,
+            },
         })
 
         let totalRegister = 0
