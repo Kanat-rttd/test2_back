@@ -5,7 +5,7 @@ const goodsDispatchDetails = require('./goodsDispatchDetails')
 
 const goodsDispatch = sequelize.define('goodsDispatch', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    clientId: { type: DataTypes.INTEGER },
+    clientId: { type: DataTypes.INTEGER, allowNull: false },
     dispatch: { type: DataTypes.INTEGER, defaultValue: 0 },
     invoiceNumber: { type: DataTypes.INTEGER },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },

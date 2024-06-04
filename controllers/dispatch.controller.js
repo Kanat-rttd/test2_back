@@ -224,7 +224,7 @@ class DispatchController {
                     acc[key].totalProducts.push({
                         id: detail.productId,
                         name: detail.product.name,
-                        price: detail.product.price,
+                        price: detail.price,
                         quantity: detail.quantity,
                         totalPrice: detail.quantity * detail.product.price,
                     })
