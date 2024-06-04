@@ -14,11 +14,19 @@ class DispatchController {
         const facilityOptions = {}
         const clientOptions = {}
         const productOptions = {}
+
+        const dateFrom = dayjs(startDate).add(-1, 'day')
+        const dateTo = dayjs(endDate)
+
         if (startDate && endDate) {
             filterOptions.createdAt = {
-                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+                [Op.between]: [
+                    dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
+                    dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
+                ],
             }
         }
+        
         if (status) {
             filterOptions.dispatch = status
         }
@@ -144,16 +152,16 @@ class DispatchController {
         let filterOptions = {}
 
         const dateFrom = dayjs(startDate).add(-1, 'day')
-            const dateTo = dayjs(endDate)
+        const dateTo = dayjs(endDate)
 
-            if (startDate && endDate) {
-                filterOptions.createdAt = {
-                    [Op.between]: [
-                        dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
-                        dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
-                    ],
-                }
+        if (startDate && endDate) {
+            filterOptions.createdAt = {
+                [Op.between]: [
+                    dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
+                    dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
+                ],
             }
+        }
 
         // if (startDate && endDate) {
         //     if (startDate == endDate) {
