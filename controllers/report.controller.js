@@ -47,7 +47,7 @@ class ReportController {
 
         const data = await models.magazineDebtView.findAll({
             attributes: ['MagazineName', 'Debit'],
-            where: filterOptions,
+            // where: {...filterOptions},
         })
 
         let totalDebt = 0
