@@ -66,20 +66,14 @@ class ReportController {
 
     async inventoryzationView(req, res, next) {
         try {
-            const { name, startDate, endDate } = req.query;
+            const { name } = req.query;
     
             const filterOptions = {};
     
             if (name) {
                 filterOptions.providerGoodId = name;
             }
-    
-            if (startDate && endDate) {
-                filterOptions.createdAt = {
-                    [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
-                };
-            }
-    
+
             const data = await models.inventorizations.findAll({
                 attributes: [
                     'id',
