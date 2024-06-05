@@ -26,7 +26,7 @@ class DispatchController {
                 ],
             }
         }
-        
+
         if (status) {
             filterOptions.dispatch = status
         }
@@ -163,22 +163,6 @@ class DispatchController {
             }
         }
 
-        // if (startDate && endDate) {
-        //     if (startDate == endDate) {
-        //         const newDate = new Date(startDate)
-
-        //         const endDate = new Date(newDate.getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000))
-
-        //         filterOptions.createdAt = {
-        //             [Op.between]: [newDate, endDate],
-        //         }
-        //     } else {
-        //         filterOptions.createdAt = {
-        //             [Op.between]: [startDate, endDate],
-        //         }
-        //     }
-        // }
-
         if (clientId) {
             filterOptions.clientId = clientId
         }
@@ -223,13 +207,19 @@ class DispatchController {
             order: [['createdAt', 'ASC']],
         })
 
+        let startOfDay = new Date().setHours(14, 0, 0, 0)
+        let endOfDay = new Date().setHours(23, 59, 59, 999)
+
         const groupedDispatch = dispatch.reduce((acc, curr) => {
             const key = `${curr.createdAt.getFullYear()}-${curr.createdAt.getMonth() + 1}-${curr.createdAt.getDate()}-${
                 curr.clientId
             }`
             if (!acc[key]) {
                 acc[key] = {
-                    createdAt: curr.createdAt,
+                    createdAt:
+                        new Date(curr.createdAt) >= startOfDay && new Date(curr.createdAt) <= endOfDay
+                            ? dayjs(curr.createdAt).add(-1, 'day')
+                            : curr.createdAt,
                     clientId: curr.clientId,
                     clientName: curr.client.name,
                     invoiceNumber: curr.invoiceData.invoiceNumber,
