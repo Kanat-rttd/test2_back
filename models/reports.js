@@ -18,6 +18,4 @@ const magazineDebtView = sequelize.define('magazinedebtviews', {
     Debit: { type: DataTypes.INTEGER },
 })
 
-//12
-
 module.exports = { breadReportView, shiftTimeView, magazineDebtView }

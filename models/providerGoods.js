@@ -15,4 +15,6 @@ const providerGoods = sequelize.define('providerGoods', {
 providers.hasMany(providerGoods)
 providerGoods.belongsTo(providers)
 
+providerGoods.sync({alter: false}) //TODO: Закомментировать
+
 module.exports = providerGoods
