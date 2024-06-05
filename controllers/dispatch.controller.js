@@ -211,12 +211,14 @@ class DispatchController {
             const key = `${curr.createdAt.getFullYear()}-${curr.createdAt.getMonth() + 1}-${curr.createdAt.getDate()}-${
                 curr.clientId
             }`
+            const createdAt = dayjs(curr.createdAt)
+            const startOfDay = dayjs(curr.createdAt).startOf('day').hour(14)
+            const endOfDay = dayjs(curr.createdAt).endOf('day').hour(23).minute(59).second(59).millisecond(999)
             if (!acc[key]) {
                 acc[key] = {
                     createdAt:
-                        new Date(curr.createdAt).getTime() >= new Date(curr.createdAt).setHours(14, 0, 0, 0) &&
-                        new Date(curr.createdAt).getTime() <= new Date(curr.createdAt).setHours(23, 59, 59, 999)
-                            ? dayjs(curr.createdAt).add(-1, 'day')
+                        createdAt.isAfter(startOfDay) && createdAt.isBefore(endOfDay)
+                            ? dayjs(curr.createdAt).add(1, 'day')
                             : curr.createdAt,
                     clientId: curr.clientId,
                     clientName: curr.client.name,
