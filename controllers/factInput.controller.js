@@ -61,19 +61,51 @@ class FactInputController {
     async createFactInput(req, res, next) {
         const factInputData = req.body
 
-        const factInput = factInputData.map((input) => ({
-            providerGoodId: input.id,
-            place: input.place,
-            unitOfMeasure: input.unitOfMeasure,
-            quantity: input.quantity,
-        }))
+        // const factInput = factInputData.map((input) => ({
+        //     providerGoodId: input.id,
+        //     place: input.place,
+        //     unitOfMeasure: input.unitOfMeasure,
+        //     quantity: input.quantity,
+        // }))
 
-        await models.factInput.bulkCreate(factInput)
+        // await models.factInput.bulkCreate(factInput)
 
-        res.status(200).json({
-            status: 'success',
-            message: 'Заказ успешно создан',
-        })
+        // res.status(200).json({
+        //     status: 'success',
+        //     message: 'Заказ успешно создан',
+        // })
+
+        try {
+            await Promise.all(factInputData.map(async (input) => {
+                const [factInput, created] = await models.factInput.findOrCreate({
+                    where: {
+                        providerGoodId: input.id,
+                        place: input.place
+                    },
+                    defaults: {
+                        unitOfMeasure: input.unitOfMeasure,
+                        quantity: input.quantity,
+                    }
+                });
+    
+                if (!created) {
+                    await factInput.update({
+                        quantity: input.quantity
+                    });
+                }
+            }));
+    
+            res.status(200).json({
+                status: 'success',
+                message: 'Запись успешно создана',
+            });
+        } catch (error) {
+            console.error('Ошибка при создании записи:', error);
+            res.status(500).json({
+                status: 'error',
+                message: 'Произошла ошибка при создании записи',
+            });
+        }
     }
 
     async updateFactInput(req, res, next) {
