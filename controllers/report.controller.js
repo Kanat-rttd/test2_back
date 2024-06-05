@@ -86,12 +86,6 @@ class ReportController {
                 where: {
                     ...filterOptions,
                 },
-                include: [
-                    {
-                        model: models.providerGoods,
-                        attributes: ['goods'],
-                    },
-                ],
             });
     
             let totalRegister = 0;
