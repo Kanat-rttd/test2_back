@@ -5,20 +5,17 @@ const sequelize = require('../config/db')
 class FactInputController {
     async getAll(req, res, next) {
         try {
-            const { name, place } = req.query
-
-            console.log('Recieved data: ', name, place)
+            const { productId, place } = req.query
 
             let filterOptions = {}
 
-            if (name) {
-                filterOptions.providerGoodId = name
+            if (productId) {
+                filterOptions.providerGoodId = productId
             }
 
             if (place) {
                 filterOptions.place = place
             }
-
 
             const data = await models.factInput.findAll({
                 attributes: ['id', 'providerGoodId', 'place', 'unitOfMeasure', 'quantity', 'updatedAt'],

@@ -66,12 +66,12 @@ class ReportController {
 
     async inventoryzationView(req, res, next) {
         try {
-            const { name } = req.query;
+            const { productId } = req.query;
     
             const filterOptions = {};
     
-            if (name) {
-                filterOptions.providerGoodId = name;
+            if (productId) {
+                filterOptions.id = productId;
             }
 
             const data = await models.inventorizations.findAll({

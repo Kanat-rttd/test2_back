@@ -4,7 +4,7 @@ const providerGoods = require('./providerGoods')
 
 const inventorizations = sequelize.define('inventorizations', {
     id: { type: DataTypes.INTEGER, primaryKey: true },
-    providerGoodId: { type: DataTypes.INTEGER },
+    goods: { type: DataTypes.STRING },
     unitOfMeasure: { type: DataTypes.STRING },
     accountingQuantity: { type: DataTypes.INTEGER },
     factQuantity: { type: DataTypes.INTEGER },
@@ -12,7 +12,5 @@ const inventorizations = sequelize.define('inventorizations', {
     discrepancy: { type: DataTypes.INTEGER },
 })
 
-providerGoods.hasMany(inventorizations)
-inventorizations.belongsTo(providerGoods)
 
 module.exports = { inventorizations }
