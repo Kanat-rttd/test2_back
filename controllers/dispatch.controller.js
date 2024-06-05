@@ -207,9 +207,6 @@ class DispatchController {
             order: [['createdAt', 'ASC']],
         })
 
-        let startOfDay = new Date().setHours(14, 0, 0, 0)
-        let endOfDay = new Date().setHours(23, 59, 59, 999)
-
         const groupedDispatch = dispatch.reduce((acc, curr) => {
             const key = `${curr.createdAt.getFullYear()}-${curr.createdAt.getMonth() + 1}-${curr.createdAt.getDate()}-${
                 curr.clientId
@@ -217,7 +214,8 @@ class DispatchController {
             if (!acc[key]) {
                 acc[key] = {
                     createdAt:
-                        new Date(curr.createdAt) >= startOfDay && new Date(curr.createdAt) <= endOfDay
+                        new Date(curr.createdAt).getTime() >= new Date(curr.createdAt).setHours(14, 0, 0, 0) &&
+                        new Date(curr.createdAt).getTime() <= new Date(curr.createdAt).setHours(23, 59, 59, 999)
                             ? dayjs(curr.createdAt).add(-1, 'day')
                             : curr.createdAt,
                     clientId: curr.clientId,
