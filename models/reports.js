@@ -13,7 +13,7 @@ const shiftTimeView = sequelize.define('shiftTimeViews', {
     totalHours: { type: DataTypes.INTEGER },
 })
 
-const magazineDebtView = sequelize.define('magazineDebtViews', {
+const magazineDebtView = sequelize.define('magazinedebtviews', {
     MagazineName: { type: DataTypes.STRING },
     Debit: { type: DataTypes.INTEGER },
 })
