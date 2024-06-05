@@ -5,7 +5,7 @@ const sequelize = require('../config/db')
 class FactInputController {
     async getAll(req, res, next) {
         try {
-            const { name, place, startDate, endDate } = req.query
+            const { name, place } = req.query
 
             console.log('Recieved data: ', name, place)
 
@@ -19,14 +19,6 @@ class FactInputController {
                 filterOptions.place = place
             }
 
-            if (startDate && endDate) {
-                filterOptions.createdAt = {
-                    [Op.between]: [
-                        new Date(startDate).setHours(0, 0, 0, 0),
-                        new Date(endDate).setHours(23, 59, 59, 999),
-                    ],
-                }
-            }
 
             const data = await models.factInput.findAll({
                 attributes: ['id', 'providerGoodId', 'place', 'unitOfMeasure', 'quantity', 'updatedAt'],
