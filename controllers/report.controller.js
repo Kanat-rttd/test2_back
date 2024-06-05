@@ -65,59 +65,64 @@ class ReportController {
     }
 
     async inventoryzationView(req, res, next) {
-        const { name, startDate, endDate } = req.query
-
-        const filterOptions = {}
-
-        if (name) {
-            filterOptions.providerGoodId = name
-        }
-
-        if (startDate && endDate) {
-            filterOptions.createdAt = {
-                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+        try {
+            const { name, startDate, endDate } = req.query;
+    
+            const filterOptions = {};
+    
+            if (name) {
+                filterOptions.providerGoodId = name;
             }
-        }
-
-        const data = await models.inventorizations.findAll({
-            attributes: [
-                'id',
-                'providerGoodId',
-                'unitOfMeasure',
-                'accountingQuantity',
-                'factQuantity',
-                'adjustments',
-                'discrepancy',
-            ],
-            where: filterOptions,
-            include: [
-                {
-                    model: models.providerGoods,
-                    attributes: ['goods'],
+    
+            if (startDate && endDate) {
+                filterOptions.createdAt = {
+                    [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+                };
+            }
+    
+            const data = await models.inventorizations.findAll({
+                attributes: [
+                    'id',
+                    'unitOfMeasure',
+                    'accountingQuantity',
+                    'factQuantity',
+                    'adjustments',
+                    'discrepancy',
+                ],
+                where: {
+                    ...filterOptions,
                 },
-            ],
-        })
-
-        let totalRegister = 0
-        let totalFact = 0
-        let divergence = 0
-
-        data.forEach((item) => {
-            console.log(item.Debit)
-            totalRegister += Number(item.accountingQuantity)
-            totalFact += Number(item.factQuantity)
-            divergence += Number(item.discrepancy)
-        })
-
-        const responseData = {
-            table: data,
-            totalRegister,
-            totalFact,
-            divergence,
+                include: [
+                    {
+                        model: models.providerGoods,
+                        attributes: ['goods'],
+                    },
+                ],
+            });
+    
+            let totalRegister = 0;
+            let totalFact = 0;
+            let divergence = 0;
+    
+            data.forEach((item) => {
+                totalRegister += Number(item.accountingQuantity);
+                totalFact += Number(item.factQuantity);
+                divergence += Number(item.discrepancy);
+            });
+    
+            const responseData = {
+                table: data,
+                totalRegister,
+                totalFact,
+                divergence,
+            };
+    
+            return res.json(responseData);
+        } catch (error) {
+            return next(error);
         }
-
-        return res.json(responseData)
     }
+    
 }
 
 module.exports = new ReportController()
