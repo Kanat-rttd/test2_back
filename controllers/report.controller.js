@@ -77,6 +77,7 @@ class ReportController {
             const data = await models.inventorizations.findAll({
                 attributes: [
                     'id',
+                    'goods',
                     'unitOfMeasure',
                     'accountingQuantity',
                     'factQuantity',
