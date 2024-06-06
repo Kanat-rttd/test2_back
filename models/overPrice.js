@@ -41,6 +41,8 @@ const overPrices = sequelize.define(
                         isDeleted: false,
                     },
                 })
+                console.log('11111111111', overPrice);
+                console.log('22222222222', existingOverPrice);
 
                 if (existingOverPrice) {
                     throw new Error('Для данного реализатора в указанном месяце уже существует активная запись')
