@@ -91,6 +91,7 @@ class UserController {
             where: {
                 id,
             },
+            individualHooks: true,
         })
         return res.status(200).send('User updated')
     }

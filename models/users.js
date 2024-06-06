@@ -17,21 +17,77 @@ const users = sequelize.define(
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
-        indexes: [
-            {
-                unique: true,
-                fields: ['phone'],
-                name: 'phone_unique_constraint',
-                msg: 'Пользователь с таким телефоном уже существует',
-            },
-            {
-                unique: true,
-                fields: ['name'],
-                name: 'name_unique_constraint',
-                msg: 'Пользователь с таким именем уже существует',
-            },
-        ],
         hooks: {
+            beforeCreate: async (user) => {
+                const { phone, name } = user
+
+                const existingUserPhone = await users.findOne({
+                    where: {
+                        phone,
+                        isDeleted: false,
+                    },
+                })
+                const existingUserName = await users.findOne({
+                    where: {
+                        name,
+                        isDeleted: false,
+                    },
+                })
+                const existingUser = await users.findOne({
+                    where: {
+                        name,
+                        phone,
+                        isDeleted: false,
+                    },
+                })
+
+                if (existingUserPhone) {
+                    throw new Error('Пользователь с таким телефоном уже существует')
+                }
+
+                if (existingUserName) {
+                    throw new Error('Пользователь с таким именем уже существует')
+                }
+
+                if (existingUser) {
+                    throw new Error('Пользователь с таким телефоном и именем уже существует')
+                }
+            },
+            beforeUpdate: async (user) => {
+                const { phone, name } = user
+
+                const existingUserPhone = await users.findOne({
+                    where: {
+                        phone,
+                        isDeleted: false,
+                    },
+                })
+                const existingUserName = await users.findOne({
+                    where: {
+                        name,
+                        isDeleted: false,
+                    },
+                })
+                const existingUser = await users.findOne({
+                    where: {
+                        name,
+                        phone,
+                        isDeleted: false,
+                    },
+                })
+
+                if (existingUserPhone) {
+                    throw new Error('Пользователь с таким телефоном уже существует')
+                }
+
+                if (existingUserName) {
+                    throw new Error('Пользователь с таким именем уже существует')
+                }
+
+                if (existingUser) {
+                    throw new Error('Пользователь с таким телефоном и именем уже существует')
+                }
+            },
             afterSync: async function (options) {
                 console.log('afterSync')
                 try {
