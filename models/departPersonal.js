@@ -14,14 +14,36 @@ const departPersonal = sequelize.define(
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
-        indexes: [
-            {
-                unique: true,
-                fields: ['name'],
-                name: 'name_unique_constraint',
-                msg: 'Пользователь с таким именем уже существует',
+        hooks: {
+            beforeCreate: async (personal) => {
+                const existingPersonal = await departPersonal.findOne({
+                    where: {
+                        name: personal.name,
+                        isDeleted: false,
+                    },
+                })
+
+                if (existingPersonal) {
+                    throw new Error('Пользователь с таким именем уже существует')
+                }
             },
-        ],
+            beforeUpdate: async (personal) => {
+                const currentPersonal = await departPersonal.findByPk(personal.id)
+
+                if (personal.name !== currentPersonal.name) {
+                    const existingPersonal = await departPersonal.findOne({
+                        where: {
+                            name: personal.name,
+                            isDeleted: false,
+                        },
+                    })
+
+                    if (existingPersonal) {
+                        throw new Error('Пользователь с таким именем уже существует')
+                    }
+                }
+            },
+        },
     },
 )
 
