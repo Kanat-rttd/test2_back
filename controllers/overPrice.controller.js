@@ -1,12 +1,11 @@
 const models = require('../models')
-const { Op } = require('sequelize')
+const { Op, literal } = require('sequelize')
 const sequelize = require('../config/db')
 
 class OverPriceController {
     async getAll(req, res, next) {
         try {
-            const { name, startDate, endDate } = req.query
-            console.log('query Recieved', name, startDate, endDate)
+            const { name, month, year } = req.query
 
             let filterOptions = {}
             if (name) {
