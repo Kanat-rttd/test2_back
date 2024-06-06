@@ -27,8 +27,8 @@ class OverPriceController {
                         [Op.ne]: 1,
                     },
                     [Op.and]: [
-                        Sequelize.where(Sequelize.fn('overPrices', Sequelize.col('month')), Number(month)),
-                        Sequelize.where(Sequelize.fn('overPrices', Sequelize.col('year')), Number(year)),
+                        Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('month')), Number(month)),
+                        Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('year')), Number(year)),
                     ],
                 },
             })
