@@ -70,6 +70,7 @@ class OverPriceController {
             where: {
                 id,
             },
+            individualHooks: true,
         })
 
         return res.status(200).json({message: 'OverPrice updated', data: updatedData})
