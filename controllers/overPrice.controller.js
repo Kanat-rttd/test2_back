@@ -56,9 +56,6 @@ class OverPriceController {
 
     async updateOverPrice(req, res, next) {
         const { id } = req.params
-        // console.log(id)
-
-        console.log(req.body)
 
         const { clientId, month, year, price } = req.body
 
@@ -69,13 +66,13 @@ class OverPriceController {
             month,
         }
 
-        await models.overPrice.update(updateObj, {
+        const updatedData = await models.overPrice.update(updateObj, {
             where: {
                 id,
             },
         })
 
-        return res.status(200).send('OverPrice updated')
+        return res.status(200).json({message: 'OverPrice updated', data: updatedData})
     }
 
     async delOverPrice(req, res) {
