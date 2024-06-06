@@ -47,7 +47,7 @@ class DepartPersonalController {
             type: 'цехперсонал',
         })
 
-        return res.status(200).json({ message: 'Клиент успешно создан', data: createdPersonal })
+        return res.status(200).json({ message: 'Персонал успешно создан', data: createdPersonal })
     }
 
     async updateDepartPersonal(req, res, next) {
