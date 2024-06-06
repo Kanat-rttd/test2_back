@@ -24,7 +24,7 @@ class SalesController {
         }
 
         const orders = await models.order.findAll({
-            attributes: ['id', 'userId', 'totalQuantity', 'createdAt', 'done'],
+            attributes: ['id', 'userId', 'totalQuantity', 'createdAt', 'done', 'date'],
             required: true,
             include: [
                 {
