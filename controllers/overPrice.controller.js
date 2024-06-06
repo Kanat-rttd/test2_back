@@ -1,5 +1,6 @@
 const models = require('../models')
 const { Op, literal } = require('sequelize')
+const Sequelize = require('sequelize');
 const sequelize = require('../config/db')
 
 class OverPriceController {
@@ -26,8 +27,8 @@ class OverPriceController {
                         [Op.ne]: 1,
                     },
                     [Op.and]: [
-                        literal(`EXTRACT(MONTH FROM ("overPrices"."month")) =${Number(month)}`),
-                        literal(`EXTRACT(YEAR FROM ("overPrices"."year"))=${Number(year)}`),
+                        Sequelize.where(Sequelize.fn('overPrices', Sequelize.col('month')), Number(month)),
+                        Sequelize.where(Sequelize.fn('overPrices', Sequelize.col('year')), Number(year)),
                     ],
                 },
             })
