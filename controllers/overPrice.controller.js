@@ -13,11 +13,11 @@ class OverPriceController {
             }
 
             let filterOptionsDate = {}
-            if(month && year){
+            if (month && year) {
                 filterOptionsDate.month = month
                 filterOptionsDate.year = year
             }
-            
+
             const data = await models.overPrice.findAll({
                 attributes: ['id', 'price', 'clientId', 'month', 'year', 'isDeleted'],
                 include: [
@@ -31,7 +31,7 @@ class OverPriceController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    ...filterOptionsDate
+                    ...filterOptionsDate,
                 },
             })
 
@@ -44,25 +44,14 @@ class OverPriceController {
     async createOverPrice(req, res, next) {
         const overPriceData = req.body
 
-        const existingRecord = await models.overPrice.findOne({
-            where: {
-                clientId: overPriceData.data.clientId,
-                year: overPriceData.data.year,
-                month: overPriceData.data.month,
-            },
+        const createdOverPrice = await models.overPrice.create({
+            price: overPriceData.data.price,
+            clientId: overPriceData.data.clientId,
+            month: overPriceData.data.month,
+            year: overPriceData.data.year,
         })
 
-        if (existingRecord) {
-            res.status(400).send({ message: 'Для одного реализатора в одном месяце должна быть только одна запись' })
-        } else {
-            await models.overPrice.create({
-                price: overPriceData.data.price,
-                clientId: overPriceData.data.clientId,
-                month: overPriceData.data.month,
-                year: overPriceData.data.year,
-            })
-            return res.status(200).send('OverPrice Created')
-        }
+        return res.status(200).json({ message: 'OverPrice Created', data: createdOverPrice })
     }
 
     async updateOverPrice(req, res, next) {
