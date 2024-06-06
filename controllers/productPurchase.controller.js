@@ -47,7 +47,7 @@ class ProductPurchaseController {
                 ],
                 include: [
                     {
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'providerName'],
                         model: models.providers,
                         where: providerFilterOptions,
                         // required: true,
@@ -165,7 +165,7 @@ class ProductPurchaseController {
             attributes: [[sequelize.fn('SUM', sequelize.col('totalSum')), 'totalDebt'], 'providerId'],
             include: [
                 {
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'providerName'],
                     model: models.providers,
                     where: filterOptions,
                 },
