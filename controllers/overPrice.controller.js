@@ -7,25 +7,26 @@ class OverPriceController {
         try {
             const { name, startDate, endDate } = req.query
             console.log('query Recieved', name, startDate, endDate)
+
             let filterOptions = {}
-            let filterOptionsDate = {}
             if (name) {
                 filterOptions.name = name
             }
+            
+            // let filterOptionsDate = {}
+            // if (startDate && endDate) {
+            //     const startYear = new Date(startDate).getFullYear()
+            //     const startMonth = new Date(startDate).getMonth() + 1
+            //     const endYear = new Date(endDate).getFullYear()
+            //     const endMonth = new Date(endDate).getMonth() + 1
 
-            if (startDate && endDate) {
-                const startYear = new Date(startDate).getFullYear()
-                const startMonth = new Date(startDate).getMonth() + 1
-                const endYear = new Date(endDate).getFullYear()
-                const endMonth = new Date(endDate).getMonth() + 1
-
-                filterOptionsDate.year = {
-                    [Op.and]: [{ [Op.gte]: startYear }, { [Op.lte]: endYear }],
-                }
-                filterOptionsDate.month = {
-                    [Op.and]: [{ [Op.gte]: startMonth }, { [Op.lte]: endMonth }],
-                }
-            }
+            //     filterOptionsDate.year = {
+            //         [Op.and]: [{ [Op.gte]: startYear }, { [Op.lte]: endYear }],
+            //     }
+            //     filterOptionsDate.month = {
+            //         [Op.and]: [{ [Op.gte]: startMonth }, { [Op.lte]: endMonth }],
+            //     }
+            // }
 
             const data = await models.overPrice.findAll({
                 attributes: ['id', 'price', 'clientId', 'month', 'year', 'isDeleted'],
@@ -40,7 +41,10 @@ class OverPriceController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    ...filterOptionsDate,
+                    [Op.and]: [
+                        literal(`EXTRACT(MONTH FROM ("downTimeRecord"."date")) =${Number(month)}`),
+                        literal(`EXTRACT(YEAR FROM ("downTimeRecord"."date"))=${Number(year)}`),
+                    ],
                 },
             })
 
