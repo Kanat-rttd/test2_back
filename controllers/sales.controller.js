@@ -4,7 +4,6 @@ const { Op } = require('sequelize')
 const AppError = require('../filters/appError')
 const dayjs = require('dayjs')
 
-
 class SalesController {
     async getAll(req, res, next) {
         const { startDate, endDate, facilityUnitId } = req.query
@@ -18,15 +17,9 @@ class SalesController {
             facilityFilterOptions.id = facilityUnitId
         }
 
-        const dateFrom = dayjs(startDate).add(-1, 'day')
-        const dateTo = dayjs(endDate)
-
         if (startDate && endDate) {
-            filterOptionsDate.createdAt = {
-                [Op.between]: [
-                    dayjs(dateFrom).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
-                    dayjs(dateTo).set('hours', 14).format('YYYY-MM-DD HH:mm:ss'),
-                ],
+            filterOptionsDate.date = {
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
 
@@ -105,6 +98,7 @@ class SalesController {
 
         const order = await models.order.create({
             clientId: sales.clientId,
+            date: sales.date,
             totalQuantity: sales.products.reduce((acc, sale) => acc + Number(sale.orderedQuantity), 0),
         })
 

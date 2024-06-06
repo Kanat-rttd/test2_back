@@ -24,13 +24,13 @@ const users = sequelize.define(
                 const existingUserPhone = await users.findOne({
                     where: {
                         phone,
-                        isDeleted: true,
+                        isDeleted: false,
                     },
                 })
                 const existingUserName = await users.findOne({
                     where: {
                         name,
-                        isDeleted: true,
+                        isDeleted: false,
                     },
                 })
 
@@ -51,7 +51,7 @@ const users = sequelize.define(
                     const existingUserPhone = await users.findOne({
                         where: {
                             phone,
-                            isDeleted: true,
+                            isDeleted: false,
                         },
                     })
                     if (existingUserPhone) {
@@ -63,7 +63,7 @@ const users = sequelize.define(
                     const existingUserName = await users.findOne({
                         where: {
                             name,
-                            isDeleted: true,
+                            isDeleted: false,
                         },
                     })
 
