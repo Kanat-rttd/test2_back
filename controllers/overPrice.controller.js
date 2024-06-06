@@ -12,21 +12,6 @@ class OverPriceController {
                 filterOptions.name = name
             }
             
-            // let filterOptionsDate = {}
-            // if (startDate && endDate) {
-            //     const startYear = new Date(startDate).getFullYear()
-            //     const startMonth = new Date(startDate).getMonth() + 1
-            //     const endYear = new Date(endDate).getFullYear()
-            //     const endMonth = new Date(endDate).getMonth() + 1
-
-            //     filterOptionsDate.year = {
-            //         [Op.and]: [{ [Op.gte]: startYear }, { [Op.lte]: endYear }],
-            //     }
-            //     filterOptionsDate.month = {
-            //         [Op.and]: [{ [Op.gte]: startMonth }, { [Op.lte]: endMonth }],
-            //     }
-            // }
-
             const data = await models.overPrice.findAll({
                 attributes: ['id', 'price', 'clientId', 'month', 'year', 'isDeleted'],
                 include: [
@@ -41,8 +26,8 @@ class OverPriceController {
                         [Op.ne]: 1,
                     },
                     [Op.and]: [
-                        literal(`EXTRACT(MONTH FROM ("downTimeRecord"."date")) =${Number(month)}`),
-                        literal(`EXTRACT(YEAR FROM ("downTimeRecord"."date"))=${Number(year)}`),
+                        literal(`EXTRACT(MONTH FROM ("overPrices"."month")) =${Number(month)}`),
+                        literal(`EXTRACT(YEAR FROM ("overPrices"."year"))=${Number(year)}`),
                     ],
                 },
             })
