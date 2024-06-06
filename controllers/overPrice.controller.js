@@ -92,13 +92,18 @@ class OverPriceController {
     async delOverPrice(req, res) {
         const { id } = req.params
 
-        const deletedOverPrice = await models.overPrice.destroy({
-            where: {
-                id,
+        const deletedOverPrice = await models.overPrice.update(
+            {
+                isDeleted: true,
             },
-        })
+            {
+                where: {
+                    id,
+                },
+            },
+        )
 
-        return res.json({ message: 'overPrice deleted' })
+        return res.status(200).json({ message: 'overPrice deleted', data: deletedOverPrice })
     }
 
     async getClientsForFilter(req, res, next) {
