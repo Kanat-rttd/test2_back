@@ -1,6 +1,5 @@
 const models = require('../models')
 const { Op, literal } = require('sequelize')
-const Sequelize = require('sequelize');
 const sequelize = require('../config/db')
 
 class OverPriceController {
@@ -11,6 +10,12 @@ class OverPriceController {
             let filterOptions = {}
             if (name) {
                 filterOptions.name = name
+            }
+
+            let filterOptionsDate = {}
+            if(month && year){
+                filterOptionsDate.month = month
+                filterOptionsDate.year = year
             }
             
             const data = await models.overPrice.findAll({
@@ -26,10 +31,7 @@ class OverPriceController {
                     isDeleted: {
                         [Op.ne]: 1,
                     },
-                    [Op.and]: [
-                        Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('month')), Number(month)),
-                        Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('year')), Number(year)),
-                    ],
+                    ...filterOptionsDate
                 },
             })
 
