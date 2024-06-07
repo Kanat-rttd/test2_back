@@ -31,9 +31,17 @@ const overPrices = sequelize.define(
                 }
             },
             beforeUpdate: async (overPrice) => {
-                const { clientId, month, year } = overPrice;
-                const currentOverPrice = await overPrices.findByPk(overPrice.id);
-            
+                const { clientId, month, year } = overPrice
+                const currentOverPrice = await overPrices.findByPk(overPrice.id)
+
+                console.log(
+                    'Previous values:',
+                    currentOverPrice.clientId,
+                    currentOverPrice.month,
+                    currentOverPrice.year,
+                )
+                console.log('New values:', clientId, month, year)
+
                 if (
                     currentOverPrice.clientId !== clientId ||
                     currentOverPrice.month !== month ||
@@ -46,14 +54,13 @@ const overPrices = sequelize.define(
                             year,
                             isDeleted: false,
                         },
-                    });
-            
+                    })
+
                     if (existingOverPrice) {
-                        throw new Error('Для данного реализатора в указанном месяце уже существует активная запись');
+                        throw new Error('Для данного реализатора в указанном месяце уже существует активная запись')
                     }
                 }
-            }
-            
+            },
         },
     },
 )
