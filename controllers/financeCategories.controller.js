@@ -2,12 +2,12 @@ const models = require('../models')
 
 class FinanceCategories {
     async getAll(req, res, next) {
-        const {type} = req.query
+        const decodedType = decodeURIComponent(req.query.type)
 
         let filterOptions = {}
 
-        if(type){
-            filterOptions.type = type
+        if (decodedType) {
+            filterOptions.type = decodedType
         }
         const data = await models.financeCategories.findAll({
             attributes: ['id', 'name', 'type'],
