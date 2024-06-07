@@ -42,6 +42,13 @@ class MagazinesController {
             clientId: magazineData.data.clientId,
             status: magazineData.data.status,
         })
+
+        await models.contragent.create({
+            contragentName: magazineData.data.name,
+            status: magazineData.data.status,
+            type: 'магазин',
+        })
+
         return res.status(200).send('Magazine Created')
     }
 
@@ -56,6 +63,13 @@ class MagazinesController {
             status: magazineData.status,
         }
 
+        const findedMagazine = await models.magazines.findByPk(id)
+
+        await models.contragent.update(
+            { contragentName: magazineData.name, status: magazineData.status },
+            { where: { contragentName: findedMagazine.name } },
+        )
+
         await models.magazines.update(updateObj, {
             where: {
                 id,
@@ -67,6 +81,18 @@ class MagazinesController {
 
     async deleteMagazine(req, res, next) {
         const { id } = req.params
+
+        const findedMagazine = await models.magazines.findByPk(id)
+
+        await models.contragent.update(
+            {
+                isDeleted: true,
+            },
+            {
+                where: { contragentName: findedMagazine.name },
+            },
+        )
+
         await models.magazines.update(
             {
                 isDeleted: true,
