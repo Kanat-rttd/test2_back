@@ -75,6 +75,7 @@ class DepartPersonalController {
             where: {
                 id,
             },
+            individualHooks: true,
         })
 
         return res.status(200).json({ message: 'Персонал успешно обновлен', data: upadatedPersonal })
