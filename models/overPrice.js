@@ -35,7 +35,7 @@ const overPrices = sequelize.define(
                 const currentOverPrice = await overPrice.findByPk(overPrice.id)
 
                 if (
-                    (currentOverPrice.clientId =
+                    (currentOverPrice.clientId ==
                         clientId && currentOverPrice.month == month && currentOverPrice.year == year)
                 ) {
                     const existingOverPrice = await overPrices.findOne({
