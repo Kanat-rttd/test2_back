@@ -44,6 +44,7 @@ class DepartPersonalController {
         await models.contragent.create({
             contragentName: departPersonalData.name,
             status: departPersonalData.status,
+            mainId: createdPersonal.id,
             type: 'цехперсонал',
         })
 
