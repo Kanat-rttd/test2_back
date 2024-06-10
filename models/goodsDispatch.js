@@ -22,11 +22,8 @@ const invoiceData = sequelize.define('invoiceData', {
     invoiceNumber: { type: DataTypes.INTEGER, defaultValue: false },
 })
 
-contragent.hasMany(goodsDispatch)
 goodsDispatch.hasMany(goodsDispatchDetails)
-
 goodsDispatchDetails.belongsTo(goodsDispatch)
-goodsDispatch.belongsTo(contragent)
 
 invoiceData.hasOne(goodsDispatch, { foreignKey: 'id', as: 'invoiceData' })
 goodsDispatch.belongsTo(invoiceData, { foreignKey: 'id', as: 'invoiceData' })
