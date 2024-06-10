@@ -5,11 +5,13 @@ const { model } = require('../config/db')
 
 class ContragentController {
     async getAll(req, res, next) {
-        const { status } = req.query
+        const { status, type } = req.query
 
         let filterOptions = {}
 
         if (status) filterOptions.status = status
+
+        if (type) filterOptions.type = type
 
         const data = await models.contragent.findAll({
             attributes: ['id', 'contragentName', 'type', 'status', 'isDeleted'],
@@ -24,7 +26,7 @@ class ContragentController {
     }
 
     async createContragent(req, res, next) {
-        const {contragentName, type, mainId, status} = req.body
+        const { contragentName, type, mainId, status } = req.body
 
         const createdContragent = await models.contragent.create({
             contragentName,
