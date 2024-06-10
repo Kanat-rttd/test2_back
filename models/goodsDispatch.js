@@ -1,6 +1,6 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-// const clients = require('./clients')
+const clients = require('./clients')
 const goodsDispatchDetails = require('./goodsDispatchDetails')
 const { contragent } = require('.')
 
@@ -21,6 +21,9 @@ const invoiceData = sequelize.define('invoiceData', {
     dispatch: { type: DataTypes.INTEGER, defaultValue: false },
     invoiceNumber: { type: DataTypes.INTEGER, defaultValue: false },
 })
+
+clients.hasMany(goodsDispatch)
+goodsDispatch.belongsTo(clients)
 
 goodsDispatch.hasMany(goodsDispatchDetails)
 goodsDispatchDetails.belongsTo(goodsDispatch)
