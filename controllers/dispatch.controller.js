@@ -32,7 +32,7 @@ class DispatchController {
         }
 
         if (client) {
-            clientOptions.name = client
+            clientOptions.contragentName = client
         }
 
         if (product) {
@@ -71,8 +71,8 @@ class DispatchController {
                     ],
                 },
                 {
-                    model: models.clients,
-                    attributes: ['id', 'name'],
+                    model: models.contragent,
+                    attributes: ['id', 'contragentName'],
                     where: clientOptions,
                     required: true,
                 },
@@ -86,9 +86,11 @@ class DispatchController {
             },
         })
 
+        console.log('111111111111111111111111111111', dispatch);
         dispatch.forEach((dispatchItem) => {
             if (!dispatchItem.dispatch) {
                 const dispatchDetails = dispatchItem.goodsDispatchDetails
+
 
                 dispatchDetails.forEach((detail) => {
                     if (detail.price !== null) {
@@ -96,13 +98,14 @@ class DispatchController {
                     } else {
                         totalPrice += detail.quantity * detail.product.price
                     }
-
                     totalQuantity += detail.quantity
                 })
             }
         })
 
         console.log(totalQuantity, totalPrice)
+
+        // console.log(dispatch);
 
         res.status(200).json({
             data: dispatch,
