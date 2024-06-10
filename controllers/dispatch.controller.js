@@ -119,8 +119,16 @@ class DispatchController {
             dispatch,
         })
 
+        const findedContragent = await models.contragent.findByPk(contragentId)
+
+        const findedClient = await models.clients.findOne({
+            where: {
+                name: findedContragent.contragentName,
+            },
+        })
+
         const clientPrices = await models.individualPrices.findAll({
-            where: { contragentId, isDeleted: false },
+            where: { id: findedClient.id, isDeleted: false },
             raw: true,
         })
 
