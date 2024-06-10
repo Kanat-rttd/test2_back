@@ -1,13 +1,13 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const client = require('./clients')
+const contragent = require('./contragent')
 
 const overPrices = sequelize.define(
     'overPrices',
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         price: { type: DataTypes.INTEGER },
-        clientId: { type: DataTypes.INTEGER },
+        contragentId: { type: DataTypes.INTEGER },
         month: { type: DataTypes.INTEGER },
         year: { type: DataTypes.INTEGER },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
@@ -65,8 +65,7 @@ const overPrices = sequelize.define(
     },
 )
 
-client.hasMany(overPrices)
-
-overPrices.belongsTo(client)
+contragent.hasMany(overPrices)
+overPrices.belongsTo(contragent)
 
 module.exports = overPrices

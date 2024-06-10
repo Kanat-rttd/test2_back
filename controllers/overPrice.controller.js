@@ -9,7 +9,7 @@ class OverPriceController {
 
             let filterOptions = {}
             if (name) {
-                filterOptions.name = name
+                filterOptions.contragentName = name
             }
 
             let filterOptionsDate = {}
@@ -19,11 +19,11 @@ class OverPriceController {
             }
 
             const data = await models.overPrice.findAll({
-                attributes: ['id', 'price', 'clientId', 'month', 'year', 'isDeleted'],
+                attributes: ['id', 'price', 'contragentId', 'month', 'year', 'isDeleted'],
                 include: [
                     {
-                        model: models.clients,
-                        attributes: ['id', 'name'],
+                        model: models.contragent,
+                        attributes: ['id', 'contragentName'],
                         where: filterOptions,
                     },
                 ],
@@ -46,7 +46,7 @@ class OverPriceController {
 
         const createdOverPrice = await models.overPrice.create({
             price: overPriceData.data.price,
-            clientId: overPriceData.data.clientId,
+            contragentId: overPriceData.data.contragentId,
             month: overPriceData.data.month,
             year: overPriceData.data.year,
         })
@@ -57,11 +57,11 @@ class OverPriceController {
     async updateOverPrice(req, res, next) {
         const { id } = req.params
 
-        const { clientId, month, year, price } = req.body
+        const { contragentId, month, year, price } = req.body
 
         const updateObj = {
             price,
-            clientId,
+            contragentId,
             year,
             month,
         }
@@ -96,14 +96,14 @@ class OverPriceController {
     async getClientsForFilter(req, res, next) {
         try {
             const data = await models.overPrice.findAll({
-                attributes: ['clientId'],
+                attributes: ['contragentId'],
                 include: [
                     {
                         model: models.clients,
                         attributes: ['id', 'name'],
                     },
                 ],
-                group: ['clientId'],
+                group: ['contragentId'],
             })
 
             return res.json(data)
