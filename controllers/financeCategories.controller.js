@@ -4,8 +4,6 @@ class FinanceCategories {
     async getAll(req, res, next) {
         const { type } = req.query
 
-        type = Buffer.from(type, 'utf-8').toString();
-
         let filterOptions = {}
 
         if (type) {

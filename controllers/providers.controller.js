@@ -33,6 +33,7 @@ class ProvidersController {
         await models.contragent.create({
             contragentName: providerName,
             status,
+            mainId: createdProvider.id,
             type: 'поставщик',
         })
 

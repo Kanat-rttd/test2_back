@@ -1,11 +1,12 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const clients = require('./clients')
+// const clients = require('./clients')
 const goodsDispatchDetails = require('./goodsDispatchDetails')
+const { contragent } = require('.')
 
 const goodsDispatch = sequelize.define('goodsDispatch', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    clientId: { type: DataTypes.INTEGER, allowNull: false },
+    contragentId: { type: DataTypes.INTEGER, allowNull: false },
     dispatch: { type: DataTypes.INTEGER, defaultValue: 0 },
     invoiceNumber: { type: DataTypes.INTEGER },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
@@ -16,16 +17,16 @@ const invoiceData = sequelize.define('invoiceData', {
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     createdAt: { type: DataTypes.DATE, defaultValue: false },
     updatedAt: { type: DataTypes.DATE, defaultValue: false },
-    clientId: { type: DataTypes.INTEGER, defaultValue: false },
+    contragentId: { type: DataTypes.INTEGER, defaultValue: false },
     dispatch: { type: DataTypes.INTEGER, defaultValue: false },
     invoiceNumber: { type: DataTypes.INTEGER, defaultValue: false },
 })
 
-clients.hasMany(goodsDispatch)
+contragent.hasMany(goodsDispatch)
 goodsDispatch.hasMany(goodsDispatchDetails)
 
 goodsDispatchDetails.belongsTo(goodsDispatch)
-goodsDispatch.belongsTo(clients)
+goodsDispatch.belongsTo(contragent)
 
 invoiceData.hasOne(goodsDispatch, { foreignKey: 'id', as: 'invoiceData' })
 goodsDispatch.belongsTo(invoiceData, { foreignKey: 'id', as: 'invoiceData' })

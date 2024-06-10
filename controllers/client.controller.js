@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const models = require('../models')
 const { model } = require('../config/db')
 
@@ -54,6 +54,7 @@ class ClientController {
         await models.contragent.create({
             contragentName: name,
             status,
+            mainId: createdClient.id,
             type: 'реализатор',
         })
 

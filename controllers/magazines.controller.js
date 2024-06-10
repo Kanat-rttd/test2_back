@@ -37,7 +37,7 @@ class MagazinesController {
 
         console.log(magazineData)
 
-        await models.magazines.create({
+        const createdMagazine = await models.magazines.create({
             name: magazineData.data.name,
             clientId: magazineData.data.clientId,
             status: magazineData.data.status,
@@ -46,10 +46,11 @@ class MagazinesController {
         await models.contragent.create({
             contragentName: magazineData.data.name,
             status: magazineData.data.status,
+            mainId: createdMagazine.id,
             type: 'магазин',
         })
 
-        return res.status(200).send('Magazine Created')
+        return res.status(200).json({ message: 'Magazine Created', data: createdMagazine })
     }
 
     async updateMagazine(req, res, next) {

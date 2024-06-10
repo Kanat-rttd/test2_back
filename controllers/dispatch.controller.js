@@ -47,7 +47,7 @@ class DispatchController {
         let totalPrice = 0
 
         const dispatch = await models.goodsDispatch.findAll({
-            attributes: ['id', 'clientId', 'createdAt', 'dispatch'],
+            attributes: ['id', 'contragentId', 'createdAt', 'dispatch'],
             include: [
                 {
                     model: models.goodsDispatchDetails,
@@ -112,15 +112,15 @@ class DispatchController {
     }
 
     async createDispatch(req, res, next) {
-        const { clientId, dispatch, products } = req.body
+        const { contragentId, dispatch, products } = req.body
 
         const createdDispatch = await models.goodsDispatch.create({
-            clientId,
+            contragentId,
             dispatch,
         })
 
         const clientPrices = await models.individualPrices.findAll({
-            where: { clientId, isDeleted: false },
+            where: { contragentId, isDeleted: false },
             raw: true,
         })
 
@@ -147,7 +147,7 @@ class DispatchController {
     }
 
     async getInvoiceData(req, res, next) {
-        const { clientId, startDate, endDate, status } = req.query
+        const { contragentId, startDate, endDate, status } = req.query
 
         let filterOptions = {}
 
@@ -163,14 +163,14 @@ class DispatchController {
             }
         }
 
-        if (clientId) {
-            filterOptions.clientId = clientId
+        if (contragentId) {
+            filterOptions.contragentId = contragentId
         }
 
         console.log(filterOptions)
 
         const dispatch = await models.goodsDispatch.findAll({
-            attributes: ['id', 'clientId', 'createdAt', 'dispatch'],
+            attributes: ['id', 'contragentId', 'createdAt', 'dispatch'],
             include: [
                 {
                     model: models.invoiceData,
@@ -209,7 +209,7 @@ class DispatchController {
 
         const groupedDispatch = dispatch.reduce((acc, curr) => {
             const key = `${curr.createdAt.getFullYear()}-${curr.createdAt.getMonth() + 1}-${curr.createdAt.getDate()}-${
-                curr.clientId
+                curr.contragentId
             }`
             const createdAt = dayjs(curr.createdAt)
             const startOfDay = dayjs(curr.createdAt).startOf('day').hour(14)
@@ -220,7 +220,7 @@ class DispatchController {
                         createdAt.isAfter(startOfDay) && createdAt.isBefore(endOfDay)
                             ? dayjs(curr.createdAt).add(1, 'day')
                             : curr.createdAt,
-                    clientId: curr.clientId,
+                    contragentId: curr.contragentId,
                     clientName: curr.client.name,
                     invoiceNumber: curr.invoiceData.invoiceNumber,
                     totalProducts: [],
@@ -259,11 +259,11 @@ class DispatchController {
     async updateDispatch(req, res, next) {
         const { id } = req.params
 
-        const { products, clientId } = req.body
+        const { products, contragentId } = req.body
 
         const response = await models.goodsDispatch.update(
             {
-                clientId,
+                contragentId,
             },
             { where: { id } },
         )

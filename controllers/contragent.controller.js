@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const models = require('../models')
 const { model } = require('../config/db')
 
@@ -24,12 +24,13 @@ class ContragentController {
     }
 
     async createContragent(req, res, next) {
-        const contragentData = req.body
+        const {contragentName, type, mainId, status} = req.body
 
         const createdContragent = await models.contragent.create({
-            contragentName: contragentData.contragentName,
-            type: contragentData.type,
-            status: contragentData.status,
+            contragentName,
+            type,
+            mainId,
+            status,
         })
 
         return res.status(200).json({ message: 'Контрагент успешно создан', data: createdContragent })

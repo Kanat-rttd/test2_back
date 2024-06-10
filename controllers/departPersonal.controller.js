@@ -40,6 +40,7 @@ class DepartPersonalController {
             fixSalary: departPersonalData.fixSalary,
             bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId,
         })
+        console.log(createdPersonal)
 
         await models.contragent.create({
             contragentName: departPersonalData.name,
