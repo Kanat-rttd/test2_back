@@ -42,14 +42,12 @@ class DebtTransferController {
         console.log(debtTransfer)
 
         await models.debtTransfer.create({
-            dt: debtTransfer.toMagazine,
-            kt: debtTransfer.fromProvider,
+            dt: debtTransfer.to,
+            kt: debtTransfer.from,
             amount: debtTransfer.summa,
             transfer_date: debtTransfer.date,
             invoice_number: debtTransfer.invoiceNumber,
             comment: debtTransfer.comment,
-            clientId: debtTransfer.fromProvider,
-            magazineId: debtTransfer.toMagazine,
         })
         return res.status(200).send('debtTransfer Created')
     }

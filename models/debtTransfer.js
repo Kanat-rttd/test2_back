@@ -1,7 +1,6 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const clients = require('./clients')
-const magazines = require('./magazines')
+const contragent = require('./contragent')
 
 const debtTransfer = sequelize.define('debtTransfer', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -11,8 +10,6 @@ const debtTransfer = sequelize.define('debtTransfer', {
     transfer_date: { type: DataTypes.DATE },
     invoice_number: { type: DataTypes.INTEGER },
     comment: { type: DataTypes.STRING },
-    clientId: { type: DataTypes.INTEGER },
-    magazineId: { type: DataTypes.INTEGER },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
@@ -27,11 +24,8 @@ const debtCalculationView = sequelize.define('DebtCalculationViews', {
     Debt: { type: DataTypes.INTEGER },
 })
 
-clients.hasMany(debtTransfer)
-magazines.hasMany(debtTransfer)
-
-debtTransfer.belongsTo(clients)
-debtTransfer.belongsTo(magazines)
+contragent.hasMany(debtTransfer)
+debtTransfer.belongsTo(contragent)
 
 module.exports = { debtTransfer, debtCalculationView }
 // module.exports = debtTransfer

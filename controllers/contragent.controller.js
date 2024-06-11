@@ -14,7 +14,7 @@ class ContragentController {
         if (type) filterOptions.type = type
 
         const data = await models.contragent.findAll({
-            attributes: ['id', 'contragentName', 'type', 'status', 'isDeleted'],
+            attributes: ['id', 'contragentName', 'mainId', 'type', 'status', 'isDeleted'],
             where: {
                 isDeleted: {
                     [Op.ne]: 1,
