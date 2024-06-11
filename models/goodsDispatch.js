@@ -1,6 +1,5 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const clients = require('./clients')
 const goodsDispatchDetails = require('./goodsDispatchDetails')
 const contragent = require('./contragent')
 
@@ -33,11 +32,11 @@ goodsDispatch.belongsTo(invoiceData, { foreignKey: 'id', as: 'invoiceData' })
 
 module.exports = { invoiceData, goodsDispatch }
 
-// clients.hasMany(invoiceData)
-// invoiceData.hasMany(goodsDispatchDetails)
+// contragent.hasMany(invoiceData)
+// invoiceData.belongsTo(contragent)
 
+// invoiceData.hasMany(goodsDispatchDetails)
 // goodsDispatchDetails.belongsTo(invoiceData)
-// invoiceData.belongsTo(clients)
 
 // invoiceData.sync({ alter: true })
 // module.exports = goodsDispatch

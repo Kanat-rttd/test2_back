@@ -15,11 +15,11 @@ const overPrices = sequelize.define(
     {
         hooks: {
             beforeCreate: async (overPrice) => {
-                const { clientId, month, year } = overPrice
+                const { contragentId, month, year } = overPrice
 
                 const existingOverPrice = await overPrices.findOne({
                     where: {
-                        clientId,
+                        contragentId,
                         month,
                         year,
                         isDeleted: false,
@@ -31,25 +31,25 @@ const overPrices = sequelize.define(
                 }
             },
             beforeUpdate: async (overPrice) => {
-                const { clientId, month, year } = overPrice
+                const { contragentId, month, year } = overPrice
                 const currentOverPrice = await overPrices.findByPk(overPrice.id)
 
                 console.log(
                     'Previous values:',
-                    currentOverPrice.clientId,
+                    currentOverPrice.contragentId,
                     currentOverPrice.month,
                     currentOverPrice.year,
                 )
-                console.log('New values:', clientId, month, year)
+                console.log('New values:', contragentId, month, year)
 
                 if (
-                    currentOverPrice.clientId != clientId ||
+                    currentOverPrice.contragentId != contragentId ||
                     currentOverPrice.month != month ||
                     currentOverPrice.year != year
                 ) {
                     const existingOverPrice = await overPrices.findOne({
                         where: {
-                            clientId,
+                            contragentId,
                             month,
                             year,
                             isDeleted: false,

@@ -99,8 +99,8 @@ class OverPriceController {
                 attributes: ['contragentId'],
                 include: [
                     {
-                        model: models.clients,
-                        attributes: ['id', 'name'],
+                        model: models.contragent,
+                        attributes: ['id', 'contragentName'],
                     },
                 ],
                 group: ['contragentId'],

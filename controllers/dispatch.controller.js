@@ -205,8 +205,8 @@ class DispatchController {
                     ],
                 },
                 {
-                    model: models.clients,
-                    attributes: ['id', 'name'],
+                    model: models.contragent,
+                    attributes: ['id', 'contragentName'],
                 },
             ],
             where: {
@@ -232,7 +232,7 @@ class DispatchController {
                             ? dayjs(curr.createdAt).add(1, 'day')
                             : curr.createdAt,
                     contragentId: curr.contragentId,
-                    clientName: curr.client.name,
+                    contragentName: curr.contragent.contragentName,
                     invoiceNumber: curr.invoiceData.invoiceNumber,
                     totalProducts: [],
                     totalSum: 0,
