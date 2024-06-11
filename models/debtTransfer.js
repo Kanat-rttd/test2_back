@@ -24,8 +24,5 @@ const debtCalculationView = sequelize.define('DebtCalculationViews', {
     Debt: { type: DataTypes.INTEGER },
 })
 
-contragent.hasMany(debtTransfer)
-debtTransfer.belongsTo(contragent)
-
 module.exports = { debtTransfer, debtCalculationView }
 // module.exports = debtTransfer
