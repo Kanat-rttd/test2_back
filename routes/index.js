@@ -40,8 +40,8 @@ router.use('/release', dispatchRouter)
 router.use('/inPrice', individualPrices)
 router.use('/finance', finance)
 router.use('/financeCategories', financeCategories)
+router.use('/financeAccount', financeAccountRouter)
 router.use('/providers', providers)
-// router.use('/rawMaterials', rawMaterialsRouter)
 router.use('/productPurchase', productPurchaseRouter)
 router.use('/magazines', magazinesRouter)
 router.use('/debtTransfer', debtTransferRouter)
@@ -53,6 +53,6 @@ router.use('/overPrice', overPriceRouter)
 router.use('/providerGoods', providerGoodsRouter)
 router.use('/place', placeRouter)
 router.use('/adjustment', adjustmentRouter)
-router.use('/account', financeAccountRouter)
+
 
 module.exports = router

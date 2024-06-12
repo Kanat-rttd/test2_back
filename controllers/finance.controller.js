@@ -66,12 +66,10 @@ class FinanceController {
         const bodyData = req.body
         const { amount, comment, date, fromAccount, toAccount } = req.body
 
-        console.log('1111111111111111111111111', 'amount', bodyData);
-
         await models.finance.create({
             account: fromAccount,
             amount: Number(amount) * -1,
-            financeCategoryId: 7, //TODO: Почему 5?
+            financeCategoryId: 6, 
             contragentId: null,
             comment,
             date,
@@ -80,7 +78,7 @@ class FinanceController {
         await models.finance.create({
             account: toAccount,
             amount: Number(amount),
-            financeCategoryId: 7, //TODO: Почему 5?
+            financeCategoryId: 6,
             contragentId: null,
             comment,
             date,
