@@ -5,6 +5,7 @@ const { shiftAccounting, shiftAccountingDetails } = require('./shiftAccounting.j
 const { debtTransfer, debtCalculationView } = require('./debtTransfer.js')
 const { breadReportView, shiftTimeView, magazineDebtView } = require('./reports.js')
 const { inventorizations } = require('./inventorizationView.js')
+const financeAccount = require('./financeAccount.js')
 
 module.exports = {
     contragent: require('./contragent.js'),
@@ -40,5 +41,6 @@ module.exports = {
     providerGoods: require('./providerGoods.js'),
     place: require('./places.js'),
     adjustments: require('./adjustments.js'),
+    financeAccount: require('./financeAccount.js'),
     inventorizations,
 }
