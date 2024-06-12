@@ -1,5 +1,6 @@
 const { Op } = require('sequelize')
 const models = require('../models')
+
 class ProviderGoodsController {
     async getAll(req, res, next) {
         const { status } = req.query
@@ -33,41 +34,20 @@ class ProviderGoodsController {
 
         const placesString = JSON.stringify(places)
 
-        if (typeof providerGoodsData.providerId == 'string') {
-            console.log('string')
-
-            const data = {
-                providerId: newProvider.id,
-                goods: providerGoodsData.goods,
-                unitOfMeasure: providerGoodsData.unitOfMeasure,
-                place: placesString,
-                status: providerGoodsData.status,
-            }
-
-            await models.providerGoods.create(data)
-
-            res.status(200).json({
-                status: 'success',
-                message: 'Поставщик товары успешно созданы',
-            })
-        } else {
-            console.log('number')
-
-            const data = {
-                providerId: providerGoodsData.providerId,
-                goods: providerGoodsData.goods,
-                unitOfMeasure: providerGoodsData.unitOfMeasure,
-                place: placesString,
-                status: providerGoodsData.status,
-            }
-
-            await models.providerGoods.create(data)
-
-            res.status(200).json({
-                status: 'success',
-                message: 'Поставщик товары успешно созданы',
-            })
+        const data = {
+            providerId: providerGoodsData.providerId,
+            goods: providerGoodsData.goods,
+            unitOfMeasure: providerGoodsData.unitOfMeasure,
+            place: placesString,
+            status: providerGoodsData.status,
         }
+
+        const createdIndividualPrice = await models.providerGoods.create(data)
+
+        res.status(200).json({
+            message: 'Товар успешно создан',
+            data: createdIndividualPrice,
+        })
     }
 
     async updateProviderGoods(req, res) {
@@ -88,13 +68,14 @@ class ProviderGoodsController {
 
         console.log(data)
 
-        await models.providerGoods.update(data, {
+        const updatedProviderGoods = await models.providerGoods.update(data, {
             where: {
                 id,
             },
+            individualHooks: true,
         })
 
-        return res.status(200).json({ message: 'Поставщик товары успешно обновлен' })
+        return res.status(200).json({ message: 'Товар успешно обновлен', data: updatedProviderGoods })
     }
 
     async deleteProviderGoods(req, res) {
@@ -108,7 +89,7 @@ class ProviderGoodsController {
                 },
             },
         )
-        return res.status(200).json({ message: 'Поставщик товара успешно удален', data: deletedProviderGoods })
+        return res.status(200).json({ message: 'Товар успешно удален', data: deletedProviderGoods })
     }
 }
 
