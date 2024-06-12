@@ -63,12 +63,15 @@ class FinanceController {
     }
 
     async createTransfer(req, res, next) {
+        const bodyData = req.body
         const { amount, comment, date, fromAccount, toAccount } = req.body
+
+        console.log('1111111111111111111111111', 'amount', bodyData);
 
         await models.finance.create({
             account: fromAccount,
-            amount: amount * -1,
-            financeCategoryId: 5,
+            amount: Number(amount) * -1,
+            financeCategoryId: 5, //TODO: Почему 5?
             contragentId: null,
             comment,
             date,
@@ -76,14 +79,14 @@ class FinanceController {
 
         await models.finance.create({
             account: toAccount,
-            amount: amount,
-            financeCategoryId: 5,
+            amount: Number(amount),
+            financeCategoryId: 5, //TODO: Почему 5?
             contragentId: null,
             comment,
             date,
         })
 
-        return res.status(200).send('Transfer Created')
+        return res.status(200).json({message: 'Transfer Created'})
     }
 
     async getReportData(req, res, next) {

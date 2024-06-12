@@ -9,8 +9,6 @@ class ShiftAccountingController {
     async getAll(req, res, next) {
         const { startDate, endDate, facilityUnit, personal } = req.query
 
-        console.log(req.query)
-
         const dateFilterOptions = {}
         const facilityUnitOptions = {}
         const personalOptions = {}
@@ -61,7 +59,7 @@ class ShiftAccountingController {
             ],
         })
 
-        // console.log(shiftAccounting)
+        console.log(shiftAccounting)
 
         res.status(200).json(shiftAccounting)
     }

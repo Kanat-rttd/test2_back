@@ -14,4 +14,5 @@ module.exports = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process
         useUTC: true,
     },
     timezone: '+05:00',
+    logging: false //TODO: LOG
 })

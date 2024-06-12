@@ -86,7 +86,6 @@ class DispatchController {
             },
         })
 
-        console.log('111111111111111111111111111111', dispatch);
         dispatch.forEach((dispatchItem) => {
             if (!dispatchItem.dispatch) {
                 const dispatchDetails = dispatchItem.goodsDispatchDetails
@@ -123,7 +122,6 @@ class DispatchController {
         })
 
         const findedContragent = await models.contragent.findByPk(contragentId)
-
         const findedClient = await models.clients.findOne({
             where: {
                 name: findedContragent.contragentName,
@@ -131,16 +129,12 @@ class DispatchController {
         })
 
         const clientPrices = await models.individualPrices.findAll({
-            where: { id: findedClient.id, isDeleted: false },
+            where: { clientId: findedClient.id, isDeleted: false },
             raw: true,
         })
 
-        console.log(clientPrices)
-
         const dispatchDetails = products.map((sale) => {
-            console.log(sale.productId)
             const finded = clientPrices.find((price) => price.productId == sale.productId)
-            console.log(finded)
             return {
                 goodsDispatchId: createdDispatch.id,
                 productId: sale.productId,
