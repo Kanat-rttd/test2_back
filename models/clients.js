@@ -14,20 +14,62 @@ const clients = sequelize.define(
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
-        indexes: [
-            {
-                unique: true,
-                fields: ['contact'],
-                name: 'phone_unique_constraint',
-                msg: 'Пользователь с таким телефоном уже существует',
+        hooks: {
+            beforeCreate: async (client) => {
+                const { phone, name } = client
+
+                const existingClientPhone = await clients.findOne({
+                    where: {
+                        phone,
+                        isDeleted: false,
+                    },
+                })
+                const existingClientName = await clients.findOne({
+                    where: {
+                        name,
+                        isDeleted: false,
+                    },
+                })
+
+                if (existingClientPhone) {
+                    throw new Error('Пользователь с таким телефоном уже существует')
+                }
+
+                if (existingClientName) {
+                    throw new Error('Пользователь с таким именем уже существует')
+                }
             },
-            {
-                unique: true,
-                fields: ['name'],
-                name: 'name_unique_constraint',
-                msg: 'Пользователь с таким именем уже существует',
+            beforeUpdate: async (client) => {
+                const { phone, name } = client
+
+                const currentClient = await clients.findByPk(client.id)
+
+                if (phone !== currentClient.phone) {
+                    const existingClientPhone = await clients.findOne({
+                        where: {
+                            phone,
+                            isDeleted: false,
+                        },
+                    })
+                    if (existingClientPhone) {
+                        throw new Error('Пользователь с таким телефоном уже существует')
+                    }
+                }
+
+                if (name !== currentClient.name) {
+                    const existingClientName = await clients.findOne({
+                        where: {
+                            name,
+                            isDeleted: false,
+                        },
+                    })
+
+                    if (existingClientName) {
+                        throw new Error('Пользователь с таким именем уже существует')
+                    }
+                }
             },
-        ],
+        },
     },
 )
 

@@ -57,6 +57,7 @@ class ProvidersController {
                 where: {
                     id,
                 },
+                individualHooks: true,
             },
         )
 

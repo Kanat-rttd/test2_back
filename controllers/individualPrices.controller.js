@@ -97,6 +97,7 @@ class IndividualPricesController {
             where: {
                 clientId: individualPriceData.clientId,
                 productId: individualPriceData.detail[0].id,
+                isDeleted: false
             },
         })
         if (data.length > 0) {
@@ -125,6 +126,7 @@ class IndividualPricesController {
                 productId: individualPriceData.detail[0].id,
                 clientId: id,
             },
+            individualHooks: true,
         })
 
         return res.status(200).json({ message: 'Индивидуальная цена успешно обновлена', data: uodatedPrice })
