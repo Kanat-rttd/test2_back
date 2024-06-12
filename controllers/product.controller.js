@@ -34,7 +34,7 @@ class ProductController {
     async createProduct(req, res, next) {
         const { name, bakingFacilityUnitId, price, costPrice, status } = req.body
 
-        await models.products.create({
+        const createdProduct = await models.products.create({
             name,
             bakingFacilityUnitId,
             price,
@@ -42,7 +42,7 @@ class ProductController {
             status,
         })
 
-        return res.status(200).send('Product Created')
+        return res.status(200).json({message: 'Продукт успешно создан', data: createdProduct})
     }
 
     async findByFilters(req, res, next) {
@@ -81,9 +81,8 @@ class ProductController {
 
     async updateProduct(req, res, next) {
         const { id } = req.params
-        // console.log(id)
         const { name, bakingFacilityUnitId, price, costPrice, status } = req.body
-        await models.products.update(
+        const updatedProduct = await models.products.update(
             {
                 name,
                 bakingFacilityUnitId,
@@ -95,14 +94,16 @@ class ProductController {
                 where: {
                     id,
                 },
+                individualHooks: true,
             },
+            
         )
-        return res.status(200).send('Product updated')
+        return res.status(200).json({message: 'Продукт успешно обнавлен', data: updatedProduct})
     }
 
     async deleteProduct(req, res, next) {
         const { id } = req.params
-        await models.products.update(
+        const deletedProduct = await models.products.update(
             {
                 isDeleted: true,
             },
@@ -122,10 +123,7 @@ class ProductController {
                 },
             },
         )
-        return res.status(200).json({
-            status: 'success',
-            message: 'Product deleted',
-        })
+        return res.status(200).json({message: 'Продукт успешно удален', data: deletedProduct})
     }
 
     async getBreadNames(req, res, next) {

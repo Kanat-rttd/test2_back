@@ -50,7 +50,7 @@ class MagazinesController {
             type: 'магазин',
         })
 
-        return res.status(200).json({ message: 'Magazine Created', data: createdMagazine })
+        return res.status(200).json({ message: 'Магазин успешно создан', data: createdMagazine })
     }
 
     async updateMagazine(req, res, next) {
@@ -71,13 +71,14 @@ class MagazinesController {
             { where: { contragentName: findedMagazine.name } },
         )
 
-        await models.magazines.update(updateObj, {
+        const updatedMagazine = await models.magazines.update(updateObj, {
             where: {
                 id,
             },
+            individualHooks: true,
         })
 
-        return res.status(200).send('Magazine updated')
+        return res.status(200).json({ message: 'Магазин успешно обновлен', data: updatedMagazine })
     }
 
     async deleteMagazine(req, res, next) {
@@ -94,7 +95,7 @@ class MagazinesController {
             },
         )
 
-        await models.magazines.update(
+        const deletedMagazine = await models.magazines.update(
             {
                 isDeleted: true,
             },
@@ -104,10 +105,7 @@ class MagazinesController {
                 },
             },
         )
-        return res.status(200).json({
-            status: 'success',
-            message: 'Magazine deleted',
-        })
+        return res.status(200).json({ message: 'Магазин успешно удален', data: deletedMagazine })
     }
 }
 

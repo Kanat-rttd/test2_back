@@ -5,7 +5,7 @@ const financeCategories = require('./financeCategories')
 
 const finance = sequelize.define('finance', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    amount: { type: DataTypes.STRING },
+    amount: { type: DataTypes.INTEGER },
     date: { type: DataTypes.STRING },
     financeCategoryId: { type: DataTypes.INTEGER },
     contragentId: { type: DataTypes.INTEGER },

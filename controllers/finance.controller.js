@@ -71,7 +71,7 @@ class FinanceController {
         await models.finance.create({
             account: fromAccount,
             amount: Number(amount) * -1,
-            financeCategoryId: 5, //TODO: Почему 5?
+            financeCategoryId: 7, //TODO: Почему 5?
             contragentId: null,
             comment,
             date,
@@ -80,7 +80,7 @@ class FinanceController {
         await models.finance.create({
             account: toAccount,
             amount: Number(amount),
-            financeCategoryId: 5, //TODO: Почему 5?
+            financeCategoryId: 7, //TODO: Почему 5?
             contragentId: null,
             comment,
             date,
@@ -89,7 +89,7 @@ class FinanceController {
         return res.status(200).json({message: 'Transfer Created'})
     }
 
-    async getReportData(req, res, next) {
+    async getReportData(req, res, next) { 
         const rawData = await models.finance.findAll({
             attributes: ['amount', 'financeCategoryId', 'comment'],
             include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],

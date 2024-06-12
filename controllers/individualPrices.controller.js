@@ -100,15 +100,15 @@ class IndividualPricesController {
             },
         })
         if (data.length > 0) {
-            res.status(405).json({message:"Цена на данный продукт уже существует"})
+            res.status(405).json({ message: 'Цена на данный продукт уже существует' })
         }
-        await models.individualPrices.create({
+        const createdPrice = await models.individualPrices.create({
             price: individualPriceData.detail[0].price,
             clientId: individualPriceData.clientId,
             productId: individualPriceData.detail[0].id,
         })
 
-        return res.status(200).send('IndividualPrice Created')
+        return res.status(200).json({ message: 'Индивидуальная цена успешно создана', data: createdPrice })
     }
 
     async updateIndividualPrice(req, res, next) {
@@ -120,14 +120,14 @@ class IndividualPricesController {
             price: individualPriceData.detail[0].price,
         }
 
-        await models.individualPrices.update(updateObj, {
+        const uodatedPrice = await models.individualPrices.update(updateObj, {
             where: {
                 productId: individualPriceData.detail[0].id,
                 clientId: id,
             },
         })
 
-        return res.status(200).send('Individual Price updated')
+        return res.status(200).json({ message: 'Индивидуальная цена успешно обновлена', data: uodatedPrice })
     }
 
     async deleteIndividualPrice(req, res, next) {
@@ -143,9 +143,7 @@ class IndividualPricesController {
                 },
             },
         )
-        return res
-            .status(200)
-            .json({ message: 'Индивидуальная цена товара успешно удалена', data: deletedIndividualPrice })
+        return res.status(200).json({ message: 'Индивидуальная цена успешно удалена', data: deletedIndividualPrice })
     }
 }
 
