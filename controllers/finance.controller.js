@@ -64,24 +64,24 @@ class FinanceController {
 
     async createTransfer(req, res, next) {
         const bodyData = req.body
-        const { amount, comment, date, fromAccount, toAccount } = req.body
+        // const { amount, comment, date, fromAccount, toAccount } = req.body
 
         await models.finance.create({
-            account: fromAccount,
-            amount: Number(amount) * -1,
+            account: bodyData.data.fromAccount,
+            amount: bodyData.data.amount * -1,
             financeCategoryId: 6, 
             contragentId: null,
-            comment,
-            date,
+            comment: bodyData.data.comment,
+            date: bodyData.data.date,
         })
 
         await models.finance.create({
-            account: toAccount,
-            amount: Number(amount),
+            account: bodyData.data.toAccount,
+            amount: bodyData.data.amount,
             financeCategoryId: 6,
             contragentId: null,
-            comment,
-            date,
+            comment: bodyData.data.comment,
+            date: bodyData.data.date,
         })
 
         return res.status(200).json({message: 'Transfer Created'})
