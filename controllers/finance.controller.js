@@ -64,7 +64,6 @@ class FinanceController {
 
     async createTransfer(req, res, next) {
         const bodyData = req.body
-        // const { amount, comment, date, fromAccount, toAccount } = req.body
 
         await models.finance.create({
             account: bodyData.data.fromAccount,
@@ -84,7 +83,7 @@ class FinanceController {
             date: bodyData.data.date,
         })
 
-        return res.status(200).json({message: 'Transfer Created'})
+        return res.status(200).json({message: 'Перевод подтвержден'})
     }
 
     async getReportData(req, res, next) { 

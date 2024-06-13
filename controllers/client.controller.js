@@ -64,37 +64,37 @@ class ClientController {
     async updateClient(req, res, next) {
         const { id } = req.params
         const { name, surname, contact, telegrammId, status, password } = req.body
-
+    
         const updateObj = {
             name,
             surname,
             contact,
             telegrammId,
             status,
-            password,
         }
-
+    
         if (password !== undefined && password !== null && password !== '') {
             const hashedPass = await bcrypt.hash(password, 10)
             updateObj.password = hashedPass
         }
-
+    
         const findedClient = await models.clients.findByPk(id)
-
+    
         await models.contragent.update(
             { contragentName: name, status },
             { where: { contragentName: findedClient.name } },
         )
-
+    
         const updatedClient = await models.clients.update(updateObj, {
             where: {
                 id,
             },
             individualHooks: true,
         })
-
+    
         return res.status(200).json({ message: 'Клиент успешно обновлен', data: updatedClient })
     }
+    
 
     async deleteClient(req, res, next) {
         const { id } = req.params
