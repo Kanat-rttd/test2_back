@@ -9,5 +9,7 @@ router.get('/bread', catchAsync(Controller.breadViewReport))
 router.get('/time', catchAsync(Controller.shiftTimeView))
 router.get('/magazineDebt', catchAsync(Controller.magazineDebtView))
 router.get('/inventoryzation', catchAsync(Controller.inventoryzationView))
+router.get('/sales', catchAsync(Controller.getSalesReportView))
+router.get('/collation', catchAsync(Controller.getCollationReportView))
 
 module.exports = router

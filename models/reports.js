@@ -6,6 +6,25 @@ const breadReportView = sequelize.define('BreadReportViews', {
     Products: { type: DataTypes.STRING },
 })
 
+const reportView = sequelize.define('ReportView', {
+    ClientName: { type: DataTypes.STRING },
+    adjustedDate: { type: DataTypes.DATE },
+    Sales: { type: DataTypes.INTEGER },
+    Returns: { type: DataTypes.INTEGER },
+    Overhead: { type: DataTypes.INTEGER },
+    Expenses: { type: DataTypes.INTEGER },
+    Payments: { type: DataTypes.INTEGER },
+    Credit: { type: DataTypes.INTEGER },
+    Debt: { type: DataTypes.INTEGER },
+})
+
+const salesReportView = sequelize.define('SalesView', {
+    contragentName: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING },
+    adjustedDate: { type: DataTypes.DATE },
+    SalesQuantity: { type: DataTypes.INTEGER },
+})
+
 const shiftTimeView = sequelize.define('shiftTimeViews', {
     Date: { type: DataTypes.DATE },
     personalId: { type: DataTypes.STRING },
@@ -18,4 +37,4 @@ const magazineDebtView = sequelize.define('magazinedebtviews', {
     Debit: { type: DataTypes.INTEGER },
 })
 
-module.exports = { breadReportView, shiftTimeView, magazineDebtView }
+module.exports = { breadReportView, shiftTimeView, magazineDebtView, salesReportView, reportView }

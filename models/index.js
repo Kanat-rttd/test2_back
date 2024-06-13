@@ -3,9 +3,8 @@
 const { goodsDispatch, invoiceData } = require('./goodsDispatch.js')
 const { shiftAccounting, shiftAccountingDetails } = require('./shiftAccounting.js')
 const { debtTransfer, debtCalculationView } = require('./debtTransfer.js')
-const { breadReportView, shiftTimeView, magazineDebtView } = require('./reports.js')
+const { breadReportView, shiftTimeView, magazineDebtView, salesReportView, reportView } = require('./reports.js')
 const { inventorizations } = require('./inventorizationView.js')
-const financeAccount = require('./financeAccount.js')
 
 module.exports = {
     contragent: require('./contragent.js'),
@@ -22,9 +21,9 @@ module.exports = {
     goodsDispatchDetails: require('./goodsDispatchDetails.js'),
     finance: require('./finance.js'),
     financeCategories: require('./financeCategories.js'),
+    financeAccount: require('./financeAccount.js'),
     productPurchase: require('./productPurchase.js'),
     providers: require('./providers.js'),
-    // rawMaterials: require('./rawMaterials.js'),
     goodsDispatch,
     invoiceData,
     magazines: require('./magazines.js'),
@@ -35,12 +34,13 @@ module.exports = {
     shiftAccountingDetails,
     overPrice: require('./overPrice.js'),
     breadReportView,
+    salesReportView,
+    reportView,
     shiftTimeView,
     magazineDebtView,
     factInput: require('./factInput.js'),
     providerGoods: require('./providerGoods.js'),
     place: require('./places.js'),
     adjustments: require('./adjustments.js'),
-    financeAccount: require('./financeAccount.js'),
     inventorizations,
 }

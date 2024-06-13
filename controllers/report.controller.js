@@ -66,12 +66,12 @@ class ReportController {
 
     async inventoryzationView(req, res, next) {
         try {
-            const { productId } = req.query;
-    
-            const filterOptions = {};
-    
+            const { productId } = req.query
+
+            const filterOptions = {}
+
             if (productId) {
-                filterOptions.id = productId;
+                filterOptions.id = productId
             }
 
             const data = await models.inventorizations.findAll({
@@ -87,31 +87,86 @@ class ReportController {
                 where: {
                     ...filterOptions,
                 },
-            });
-    
-            let totalRegister = 0;
-            let totalFact = 0;
-            let divergence = 0;
-    
+            })
+
+            let totalRegister = 0
+            let totalFact = 0
+            let divergence = 0
+
             data.forEach((item) => {
-                totalRegister += Number(item.accountingQuantity);
-                totalFact += Number(item.factQuantity);
-                divergence += Number(item.discrepancy);
-            });
-    
+                totalRegister += Number(item.accountingQuantity)
+                totalFact += Number(item.factQuantity)
+                divergence += Number(item.discrepancy)
+            })
+
             const responseData = {
                 table: data,
                 totalRegister,
                 totalFact,
                 divergence,
-            };
-    
-            return res.json(responseData);
+            }
+
+            return res.json(responseData)
         } catch (error) {
-            return next(error);
+            return next(error)
         }
     }
-    
+
+    async getSalesReportView(req, res, next) {
+        const { startDate, endDate, contragentName } = req.query
+
+        const filterOptions = {}
+
+        if (startDate && endDate) {
+            filterOptions.createdAt = {
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+            }
+        }
+
+        if (contragentName) {
+            filterOptions.contragentName = contragentName
+        }
+
+        const data = await models.salesReportView.findAll({
+            attributes: ['contragentName', 'name', 'adjustedDate', 'SalesQuantity'],
+            where: filterOptions,
+        })
+
+        return res.json(data)
+    }
+
+    async getCollationReportView(req, res, next) {
+        const { startDate, endDate, clientName } = req.query
+
+        const filterOptions = {}
+
+        if (startDate && endDate) {
+            filterOptions.createdAt = {
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+            }
+        }
+
+        if (clientName) {
+            filterOptions.ClientName = clientName
+        }
+
+        const data = await models.reportView.findAll({
+            attributes: [
+                'ClientName',
+                'adjustedDate',
+                'Sales',
+                'Returns',
+                'Overhead',
+                'Expenses',
+                'Payments',
+                'Credit',
+                'Debt',
+            ],
+            where: filterOptions,
+        })
+
+        return res.json(data)
+    }
 }
 
 module.exports = new ReportController()
