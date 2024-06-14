@@ -128,13 +128,25 @@ class ReportController {
         }
 
         const data = await models.salesReportView.findAll({
-            attributes: ['contragentName', 'name', 'adjustedDate', 'SalesQuantity'],
+            attributes: ['name', 'SalesQuantity', 'adjustedDate', 'contragentName'],
             where: filterOptions,
         })
 
-        console.log(data);
+        const totals = {}
+        const responseData = []
 
-        return res.json(data)
+        data.forEach((item) => {
+            if (!totals[item.name]) {
+                totals[item.name] = 0
+            }
+            totals[item.name] += Number(item.SalesQuantity)
+        })
+
+        for (const name in totals) {
+            responseData.push({ name, totalQuantity: totals[name] })
+        }
+
+        return res.json({ reportData: data, totals: responseData })
     }
 
     async getReconciliationReportView(req, res, next) {
@@ -167,7 +179,29 @@ class ReportController {
             where: filterOptions,
         })
 
-        return res.json(data)
+        let totalSales = 0
+        let totalReturns = 0
+        let totalOverhead = 0
+        let totalExpenses = 0
+        let totalPayments = 0
+        let totalCredit = 0
+        let totalDebt = 0
+        data.forEach((item) => {
+            totalSales += Number(item.Sales)
+            totalReturns += Number(item.Returns)
+            totalOverhead += Number(item.Overhead)
+            totalExpenses += Number(item.Expenses)
+            totalPayments += Number(item.Payments)
+            totalCredit += Number(item.Credit)
+            totalDebt += Number(item.Debt)
+        })
+
+        const responseData = {
+            reportData: data,
+            totalSales, totalReturns, totalOverhead, totalExpenses, totalPayments, totalCredit, totalDebt
+        }
+
+        return res.json(responseData)
     }
 }
 
