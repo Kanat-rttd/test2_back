@@ -16,6 +16,8 @@ const reportView = sequelize.define('ReportView', {
     Payments: { type: DataTypes.INTEGER },
     Credit: { type: DataTypes.INTEGER },
     Debt: { type: DataTypes.INTEGER },
+}, {
+    tableName: 'ReportView'
 })
 
 const salesReportView = sequelize.define('SalesView', {
@@ -23,7 +25,10 @@ const salesReportView = sequelize.define('SalesView', {
     name: { type: DataTypes.STRING },
     adjustedDate: { type: DataTypes.DATE },
     SalesQuantity: { type: DataTypes.INTEGER },
-})
+}, {
+    tableName: 'SalesView'
+});
+
 
 const shiftTimeView = sequelize.define('shiftTimeViews', {
     Date: { type: DataTypes.DATE },

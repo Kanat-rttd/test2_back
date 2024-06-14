@@ -118,7 +118,7 @@ class ReportController {
         const filterOptions = {}
 
         if (startDate && endDate) {
-            filterOptions.createdAt = {
+            filterOptions.adjustedDate = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
@@ -132,16 +132,18 @@ class ReportController {
             where: filterOptions,
         })
 
+        console.log(data);
+
         return res.json(data)
     }
 
-    async getCollationReportView(req, res, next) {
+    async getReconciliationReportView(req, res, next) {
         const { startDate, endDate, clientName } = req.query
 
         const filterOptions = {}
 
         if (startDate && endDate) {
-            filterOptions.createdAt = {
+            filterOptions.adjustedDate = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
