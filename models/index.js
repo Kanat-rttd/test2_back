@@ -24,6 +24,7 @@ module.exports = {
     financeAccount: require('./financeAccount.js'),
     productPurchase: require('./productPurchase.js'),
     providers: require('./providers.js'),
+    goodsCategories: require('./goodsCategories.js'),
     goodsDispatch,
     invoiceData,
     magazines: require('./magazines.js'),
