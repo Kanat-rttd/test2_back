@@ -1,12 +1,14 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
 const providers = require('./providers')
+const goodsCategories = require('./goodsCategories')
 
 const providerGoods = sequelize.define(
     'providerGoods',
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         providerId: { type: DataTypes.INTEGER },
+        goodsCategoryId: { type: DataTypes.INTEGER },
         goods: { type: DataTypes.STRING },
         unitOfMeasure: { type: DataTypes.STRING },
         place: { type: DataTypes.STRING },
@@ -46,6 +48,9 @@ const providerGoods = sequelize.define(
         },
     },
 )
+
+goodsCategories.hasMany(providerGoods)
+providerGoods.belongsTo(goodsCategories)
 
 providers.hasMany(providerGoods)
 providerGoods.belongsTo(providers)

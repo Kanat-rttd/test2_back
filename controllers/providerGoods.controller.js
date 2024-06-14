@@ -10,7 +10,7 @@ class ProviderGoodsController {
         if (status) filterOptions.status = status
 
         const data = await models.providerGoods.findAll({
-            attributes: ['id', 'providerId', 'goods', 'unitOfMeasure', 'place', 'status', 'isDeleted'],
+            attributes: ['id', 'providerId', 'goodsCategoryId', 'goods', 'unitOfMeasure', 'place', 'status', 'isDeleted'],
             include: [
                 {
                     attributes: ['id', 'providerName', 'status'],
@@ -36,6 +36,7 @@ class ProviderGoodsController {
 
         const data = {
             providerId: providerGoodsData.providerId,
+            goodsCategoryId: providerGoodsData.goodsCategoryId,
             goods: providerGoodsData.goods,
             unitOfMeasure: providerGoodsData.unitOfMeasure,
             place: placesString,
@@ -60,6 +61,7 @@ class ProviderGoodsController {
 
         const data = {
             providerId: providerGoodsData.providerId,
+            goodsCategoryId: providerGoodsData.goodsCategoryId,
             goods: providerGoodsData.goods,
             unitOfMeasure: providerGoodsData.unitOfMeasure,
             place: placesString,
