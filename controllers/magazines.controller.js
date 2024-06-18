@@ -1,4 +1,5 @@
 const { Op } = require('sequelize')
+const sequelize = require('../config/db')
 const models = require('../models')
 
 class MagazinesController {
@@ -35,22 +36,35 @@ class MagazinesController {
     async createMagazine(req, res, next) {
         const magazineData = req.body
 
-        console.log(magazineData)
+        const existingMagazine = await models.magazines.findOne({ where: { isDeleted: false, name: magazineData.data.name }});
+        if(existingMagazine != null){
+            console.log(existingMagazine);
+            return res.status(409).json({message: 'Магазин уже существует', data: existingMagazine});
+        }
 
-        const createdMagazine = await models.magazines.create({
-            name: magazineData.data.name,
-            clientId: magazineData.data.clientId,
-            status: magazineData.data.status,
-        })
+        const tr = await sequelize.transaction();
 
-        await models.contragent.create({
-            contragentName: magazineData.data.name,
-            status: magazineData.data.status,
-            mainId: createdMagazine.id,
-            type: 'магазин',
-        })
+        try{
+            const createdMagazine = await models.magazines.create({
+                name: magazineData.data.name,
+                clientId: magazineData.data.clientId,
+                status: magazineData.data.status,
+            },{ transaction: tr });
+    
+            const createdContragent = await models.contragent.create({
+                contragentName: magazineData.data.name,
+                status: magazineData.data.status,
+                mainId: createdMagazine.id,
+                type: 'магазин',
+            },{ transaction: tr })
 
-        return res.status(200).json({ message: 'Магазин успешно создан', data: createdMagazine })
+            await tr.commit();
+    
+            return res.status(200).json({ message: 'Магазин успешно создан', data: createdMagazine })
+        }catch(ex){
+            console.log(ex);
+            await tr.rollback();
+        }
     }
 
     async updateMagazine(req, res, next) {
