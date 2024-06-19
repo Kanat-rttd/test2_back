@@ -97,7 +97,7 @@ class IndividualPricesController {
             where: {
                 clientId: individualPriceData.clientId,
                 productId: individualPriceData.detail[0].id,
-                isDeleted: false
+                isDeleted: false,
             },
         })
         if (data.length > 0) {
