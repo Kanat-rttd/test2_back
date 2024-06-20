@@ -16,11 +16,11 @@ const clients = sequelize.define(
     {
         hooks: {
             beforeCreate: async (client) => {
-                const { phone, name } = client
+                const { contact, name } = client
 
                 const existingClientPhone = await clients.findOne({
                     where: {
-                        phone,
+                        contact,
                         isDeleted: false,
                     },
                 })
@@ -40,14 +40,14 @@ const clients = sequelize.define(
                 }
             },
             beforeUpdate: async (client) => {
-                const { phone, name } = client
+                const { contact, name } = client
 
                 const currentClient = await clients.findByPk(client.id)
 
-                if (phone !== currentClient.phone) {
+                if (contact !== currentClient.contact) {
                     const existingClientPhone = await clients.findOne({
                         where: {
-                            phone,
+                            contact,
                             isDeleted: false,
                         },
                     })
