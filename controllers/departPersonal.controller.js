@@ -1,4 +1,5 @@
 const { Op } = require('sequelize')
+const sequelize = require('../config/db')
 const models = require('../models')
 
 class DepartPersonalController {
@@ -32,30 +33,47 @@ class DepartPersonalController {
     async createDepartPersonal(req, res, next) {
         const departPersonalData = req.body
 
-        const createdPersonal = await models.departPersonal.create({
-            name: departPersonalData.name,
-            surname: departPersonalData.surname,
-            status: departPersonalData.status,
-            userClass: departPersonalData.userClass,
-            fixSalary: departPersonalData.fixSalary,
-            bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId,
+        const existingDepartPersonal = await models.departPersonal.findOne({
+            where: { isDeleted: false, name: departPersonalData.name },
         })
-        console.log(createdPersonal)
+        if (existingDepartPersonal != null) {
+            console.log(existingDepartPersonal)
+            throw new Error('Пользователь с таким именем уже существует')
+        }
 
-        await models.contragent.create({
-            contragentName: departPersonalData.name,
-            status: departPersonalData.status,
-            mainId: createdPersonal.id,
-            type: 'цехперсонал',
-        })
+        const tr = await sequelize.transaction()
 
-        return res.status(200).json({ message: 'Персонал успешно создан', data: createdPersonal })
+        try {
+            const createdPersonal = await models.departPersonal.create({
+                name: departPersonalData.name,
+                surname: departPersonalData.surname,
+                status: departPersonalData.status,
+                userClass: departPersonalData.userClass,
+                fixSalary: departPersonalData.fixSalary,
+                bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId,
+            })
+
+            await models.contragent.create({
+                contragentName: departPersonalData.name,
+                status: departPersonalData.status,
+                mainId: createdPersonal.id,
+                type: 'цехперсонал',
+            })
+
+            await tr.commit()
+
+            return res.status(200).json({ message: 'Персонал успешно создан', data: createdPersonal })
+        } catch (error) {
+            console.log(error)
+            await tr.rollback()
+        }
     }
 
     async updateDepartPersonal(req, res, next) {
         const { id } = req.params
-
         const { name, userClass, surname, status, fixSalary, bakingFacilityUnitId } = req.body
+
+        const findedPersonal = await models.departPersonal.findByPk(id)
 
         const updateObj = {
             name,
@@ -66,46 +84,72 @@ class DepartPersonalController {
             bakingFacilityUnitId,
         }
 
-        const findedPersonal = await models.departPersonal.findByPk(id)
+        if (name !== findedPersonal.name) {
+            const existingDepartPersonal = await models.departPersonal.findOne({
+                where: { isDeleted: false, name },
+            })
+            if (existingDepartPersonal != null) {
+                console.log(existingDepartPersonal)
+                throw new Error('Пользователь с таким именем уже существует')
+            }
+        }
 
-        await models.contragent.update(
-            { contragentName: name, status },
-            { where: { contragentName: findedPersonal.name } },
-        )
+        const tr = await sequelize.transaction()
 
-         const upadatedPersonal = await models.departPersonal.update(updateObj, {
-            where: {
-                id,
-            },
-            individualHooks: true,
-        })
+        try {
+            await models.contragent.update(
+                { contragentName: name, status },
+                { where: { contragentName: findedPersonal.name } },
+            )
 
-        return res.status(200).json({ message: 'Персонал успешно обновлен', data: upadatedPersonal })
+            const upadatedPersonal = await models.departPersonal.update(updateObj, {
+                where: {
+                    id,
+                },
+                individualHooks: true,
+            })
+            await tr.commit()
+
+            return res.status(200).json({ message: 'Персонал успешно обновлен', data: upadatedPersonal })
+        } catch (error) {
+            console.log(error)
+            await tr.rollback()
+        }
     }
 
     async deletePersonal(req, res) {
         const { id } = req.params
 
-        const findedPersonal = await models.departPersonal.findByPk(id)
+        const tr = await sequelize.transaction()
 
-        await models.contragent.update(
-            {
-                isDeleted: true,
-            },
-            {
-                where: { contragentName: findedPersonal.name },
-            },
-        )
+        try {
+            const findedPersonal = await models.departPersonal.findByPk(id)
 
-        const deletedUser = await models.departPersonal.update(
-            { isDeleted: true },
-            {
-                where: {
-                    id,
+            await models.contragent.update(
+                {
+                    isDeleted: true,
                 },
-            },
-        )
-        return res.status(200).json({ message: 'Персонал успешно удален', data: deletedUser })
+                {
+                    where: { contragentName: findedPersonal.name },
+                },
+            )
+
+            const deletedUser = await models.departPersonal.update(
+                { isDeleted: true },
+                {
+                    where: {
+                        id,
+                    },
+                },
+            )
+
+            await tr.commit()
+
+            return res.status(200).json({ message: 'Персонал успешно удален', data: deletedUser })
+        } catch (error) {
+            console.log(error)
+            await tr.rollback()
+        }
     }
 }
 

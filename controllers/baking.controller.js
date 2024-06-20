@@ -25,7 +25,7 @@ class BakingController {
             }
 
             if (facilityUnit) {
-                filterOptions.facilityUnit = facilityUnit
+                filterOptions.id = facilityUnit
             }
 
             const bakingData = await models.baking.findAll({
@@ -103,13 +103,13 @@ class BakingController {
             console.log(totals)
 
             const formattedTotals = {
-                totalFlour: parseFloat(totals[0].totalFlour).toFixed(2),
-                totalSalt: parseFloat(totals[0].totalSalt).toFixed(2),
-                totalYeast: parseFloat(totals[0].totalYeast).toFixed(2),
-                totalMalt: parseFloat(totals[0].totalMalt).toFixed(2),
-                totalButter: parseFloat(totals[0].totalButter).toFixed(2),
-                totalOutput: parseFloat(totals[0].totalOutput).toFixed(2),
-                totalDefective: parseFloat(totals[0].totalDefective).toFixed(2),
+                totalFlour: parseFloat(totals[0].totalFlour),
+                totalSalt: parseFloat(totals[0].totalSalt),
+                totalYeast: parseFloat(totals[0].totalYeast),
+                totalMalt: parseFloat(totals[0].totalMalt),
+                totalButter: parseFloat(totals[0].totalButter),
+                totalOutput: parseFloat(totals[0].totalOutput),
+                totalDefective: parseFloat(totals[0].totalDefective),
             }
             const data = {
                 bakingData,
