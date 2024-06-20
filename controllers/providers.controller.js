@@ -61,19 +61,21 @@ class ProvidersController {
         const { id } = req.params
         const { providerName, status } = req.body
 
-        const existingProvider = await models.providers.findOne({
-            where: { isDeleted: false, providerName },
-        })
-        if (existingProvider != null) {
-            console.log(existingProvider)
-            throw new Error('Поставщик с таким названием уже существует')
+        const findedProvider = await models.providers.findByPk(id)
+
+        if (providerName !== findedProvider.providerName) {
+            const existingProvider = await models.providers.findOne({
+                where: { isDeleted: false, providerName },
+            })
+            if (existingProvider != null) {
+                console.log(existingProvider)
+                throw new Error('Поставщик с таким названием уже существует')
+            }
         }
 
         const tr = await sequelize.transaction()
 
         try {
-            const findedProvider = await models.providers.findByPk(id)
-
             await models.contragent.update(
                 { contragentName: providerName, status },
                 { where: { contragentName: findedProvider.providerName } },
