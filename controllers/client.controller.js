@@ -28,21 +28,22 @@ class ClientController {
     async createClient(req, res, next) {
         const clientData = req.body
         const tr = await sequelize.transaction()
+
+        const existingClientName = await models.clients.findOne({
+            where: { isDeleted: false, name: clientData.name },
+        })
+        if (existingClientName != null) {
+            throw new Error('Пользователь с таким именем уже существует')
+        }
+
+        const existingClientPhone = await models.clients.findOne({
+            where: { isDeleted: false, contact: clientData.contact },
+        })
+        if (existingClientPhone != null) {
+            throw new Error('Пользователь с таким телефоном уже существует')
+        }
+
         try {
-            const existingClientName = await models.clients.findOne({
-                where: { isDeleted: false, name: clientData.name },
-            })
-            if (existingClientName != null) {
-                throw new Error('Пользователь с таким именем уже существует')
-            }
-
-            const existingClientPhone = await models.clients.findOne({
-                where: { isDeleted: false, contact: clientData.contact },
-            })
-            if (existingClientPhone != null) {
-                throw new Error('Пользователь с таким телефоном уже существует')
-            }
-
             const hashedPass = await bcrypt.hash(clientData.password, 10)
 
             const createdClient = await models.clients.create({
@@ -75,22 +76,28 @@ class ClientController {
         const { id } = req.params
         const { name, surname, contact, telegrammId, status, password } = req.body
 
+        const findedClient = await models.clients.findByPk(id)
+
         const tr = await sequelize.transaction()
-        try {
+        if (name !== findedClient.name) {
             const existingClientName = await models.clients.findOne({
                 where: { isDeleted: false, name },
             })
             if (existingClientName != null) {
                 throw new Error('Пользователь с таким именем уже существует')
             }
+        }
 
+        if (contact !== findedClient.contact) {
             const existingClientPhone = await models.clients.findOne({
                 where: { isDeleted: false, contact },
             })
             if (existingClientPhone != null) {
                 throw new Error('Пользователь с таким телефоном уже существует')
             }
+        }
 
+        try {
             const updateObj = {
                 name,
                 surname,
@@ -103,8 +110,6 @@ class ClientController {
                 const hashedPass = await bcrypt.hash(password, 10)
                 updateObj.password = hashedPass
             }
-
-            const findedClient = await models.clients.findByPk(id)
 
             await models.contragent.update(
                 { contragentName: name, status },

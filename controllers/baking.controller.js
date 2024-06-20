@@ -25,7 +25,7 @@ class BakingController {
             }
 
             if (facilityUnit) {
-                filterOptions.facilityUnit = facilityUnit
+                filterOptions.id = facilityUnit
             }
 
             const bakingData = await models.baking.findAll({
