@@ -87,7 +87,7 @@ const users = sequelize.define(
                             name: 'Default User',
                             userClass: 'Admin',
                             pass: hashedPass,
-                            permission: `[{"label":"Admin"}]`,
+                            permission: `[{"label":"Админ"}]`,
                         })
                         console.log('Default user created successfully.')
                     }
