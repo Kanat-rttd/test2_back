@@ -77,8 +77,9 @@ class MagazinesController {
 
     async updateMagazine(req, res, next) {
         const { id } = req.params
-
         const magazineData = req.body
+
+        const findedMagazine = await models.magazines.findByPk(id)
 
         const updateObj = {
             name: magazineData.name,
@@ -86,19 +87,19 @@ class MagazinesController {
             status: magazineData.status,
         }
 
-        const existingMagazine = await models.magazines.findOne({
-            where: { isDeleted: false, name: magazineData.name },
-        })
-        if (existingMagazine != null) {
-            console.log(existingMagazine)
-            return res.status(409).json({ message: 'Такой магазин уже существует', data: existingMagazine })
+        if (magazineData.name !== findedMagazine.name) {
+            const existingMagazine = await models.magazines.findOne({
+                where: { isDeleted: false, name: magazineData.name },
+            })
+            if (existingMagazine != null) {
+                console.log(existingMagazine)
+                return res.status(409).json({ message: 'Такой магазин уже существует', data: existingMagazine })
+            }
         }
 
         const tr = await sequelize.transaction()
 
         try {
-            const findedMagazine = await models.magazines.findByPk(id)
-
             await models.contragent.update(
                 { contragentName: magazineData.name, status: magazineData.status },
                 { where: { contragentName: findedMagazine.name } },
