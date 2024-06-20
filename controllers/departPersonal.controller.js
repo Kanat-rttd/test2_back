@@ -71,8 +71,9 @@ class DepartPersonalController {
 
     async updateDepartPersonal(req, res, next) {
         const { id } = req.params
-
         const { name, userClass, surname, status, fixSalary, bakingFacilityUnitId } = req.body
+
+        const findedPersonal = await models.departPersonal.findByPk(id)
 
         const updateObj = {
             name,
@@ -82,20 +83,20 @@ class DepartPersonalController {
             fixSalary,
             bakingFacilityUnitId,
         }
-        
-        const existingDepartPersonal = await models.departPersonal.findOne({
-            where: { isDeleted: false, name},
-        })
-        if (existingDepartPersonal != null) {
-            console.log(existingDepartPersonal)
-            throw new Error('Пользователь с таким именем уже существует')
+
+        if (name !== findedPersonal.name) {
+            const existingDepartPersonal = await models.departPersonal.findOne({
+                where: { isDeleted: false, name },
+            })
+            if (existingDepartPersonal != null) {
+                console.log(existingDepartPersonal)
+                throw new Error('Пользователь с таким именем уже существует')
+            }
         }
 
         const tr = await sequelize.transaction()
 
         try {
-            const findedPersonal = await models.departPersonal.findByPk(id)
-
             await models.contragent.update(
                 { contragentName: name, status },
                 { where: { contragentName: findedPersonal.name } },
