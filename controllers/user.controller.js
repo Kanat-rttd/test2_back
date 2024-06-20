@@ -59,9 +59,9 @@ class UserController {
 
         console.log(data)
 
-        await models.users.create(data)
+        const createdUser = await models.users.create(data)
 
-        return res.status(200).send('User Created')
+        return res.status(200).json({message: 'Пользователь успешно создан', data: createdUser})
     }
 
     async updateUser(req, res, next) {
@@ -87,13 +87,13 @@ class UserController {
             updateObj.pass = hashedPass
         }
 
-        await models.users.update(updateObj, {
+        const updatedUser = await models.users.update(updateObj, {
             where: {
                 id,
             },
             individualHooks: true,
         })
-        return res.status(200).send('User updated')
+        return res.status(200).json({message: 'Пользователь успешно обновлен', data: updatedUser})
     }
 
     async deleteUser(req, res) {
