@@ -10,7 +10,7 @@ class FactInputController {
             let filterOptions = {}
 
             if (productId) {
-                filterOptions.providerGoodId = productId
+                filterOptions.goodsCategoryId = productId
             }
 
             if (place) {
@@ -18,7 +18,7 @@ class FactInputController {
             }
 
             const data = await models.factInput.findAll({
-                attributes: ['id', 'providerGoodId', 'place', 'unitOfMeasure', 'quantity', 'updatedAt'],
+                attributes: ['id', 'goodsCategoryId', 'place', 'quantity', 'updatedAt'],
                 where: {
                     isDeleted: {
                         [Op.ne]: 1,
@@ -27,8 +27,8 @@ class FactInputController {
                 },
                 include: [
                     {
-                        model: models.providerGoods,
-                        attributes: ['goods'],
+                        model: models.goodsCategories,
+                        attributes: ['id', 'category', 'unitOfMeasure'],
                     },
                 ],
             })
@@ -37,9 +37,9 @@ class FactInputController {
 
             const table = data.map((item) => ({
                 id: item.id,
-                name: item.providerGood.goods,
+                name: item.goodsCategory.category,
                 place: item.place,
-                unitOfMeasure: item.unitOfMeasure,
+                unitOfMeasure: item.goodsCategory.unitOfMeasure,
                 quantity: Number(item.quantity),
                 updatedAt: item.updatedAt,
             }))
@@ -61,26 +61,12 @@ class FactInputController {
     async createFactInput(req, res, next) {
         const factInputData = req.body
 
-        // const factInput = factInputData.map((input) => ({
-        //     providerGoodId: input.id,
-        //     place: input.place,
-        //     unitOfMeasure: input.unitOfMeasure,
-        //     quantity: input.quantity,
-        // }))
-
-        // await models.factInput.bulkCreate(factInput)
-
-        // res.status(200).json({
-        //     status: 'success',
-        //     message: 'Заказ успешно создан',
-        // })
-
         try {
-            await Promise.all(factInputData.map(async (input) => {
+            await Promise.all(factInputData.details.map(async (input) => {
                 const [factInput, created] = await models.factInput.findOrCreate({
                     where: {
-                        providerGoodId: input.id,
-                        place: input.place
+                        goodsCategoryId: input.goodsCategoryId,
+                        place: factInputData.place
                     },
                     defaults: {
                         unitOfMeasure: input.unitOfMeasure,
@@ -121,15 +107,16 @@ class FactInputController {
             quantity,
         }
 
-        // console.log(id, individualPriceData.detail[0].id, individualPriceData.detail[0].price)
-
         await models.factInput.update(updateObj, {
             where: {
                 id,
             },
         })
 
-        return res.status(200).send('Fact input updated')
+        return res.status(200).json({
+            status: 'success',
+            message: 'Запись успешно обновлена',
+        });
     }
 
     async deleteFactInput(req, res) {
@@ -144,7 +131,7 @@ class FactInputController {
             },
         )
 
-        return res.status(200).json({ message: 'Fact input deleted', data: deletedUser })
+        return res.status(200).json({ message: 'Запись успешно удалена', data: deletedUser })
     }
 }
 
