@@ -110,7 +110,7 @@ class DepartPersonalController {
             })
             await tr.commit()
 
-            return res.status(200).json({ message: '!!!!!!!!!!!!!!! Персонал успешно обновлен', data: upadatedPersonal })
+            return res.status(200).json({ message: 'Персонал успешно обновлен', data: upadatedPersonal })
         } catch (error) {
             console.log(error)
             await tr.rollback()

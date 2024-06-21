@@ -33,21 +33,9 @@ class FactInputController {
                 ],
             })
 
-            console.log(data)
-
-            const table = data.map((item) => ({
-                id: item.id,
-                name: item.goodsCategory.category,
-                place: item.place,
-                unitOfMeasure: item.goodsCategory.unitOfMeasure,
-                quantity: Number(item.quantity),
-                updatedAt: item.updatedAt,
-            }))
-
-            const totalFact = table.reduce((total, item) => total + item.quantity, 0)
+            const totalFact = data.reduce((total, item) => total + Number(item.quantity), 0)
 
             const responseData = {
-                table,
                 totalFact,
                 data: data,
             }
