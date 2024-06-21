@@ -76,7 +76,8 @@ class FactInputController {
     
                 if (!created) {
                     await factInput.update({
-                        quantity: input.quantity
+                        quantity: input.quantity,
+                        isDeleted: false
                     });
                 }
             }));
