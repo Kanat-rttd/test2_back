@@ -1,6 +1,5 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const providerGoods = require('./providerGoods')
 const goodsCategories = require('./goodsCategories')
 
 const factInput = sequelize.define('factInput', {

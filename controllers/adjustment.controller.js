@@ -17,11 +17,11 @@ class AdjustmentController {
         }
 
         const data = await models.adjustments.findAll({
-            attributes: ['quantity', 'providerGoodId', 'createdAt'],
+            attributes: ['quantity', 'goodsCategoryId', 'createdAt'],
             include: [
                 {
-                    attributes: ['goods', 'providerName'],
-                    model: models.providerGoods,
+                    model: models.goodsCategories,
+                    attributes: ['id', 'category', 'unitOfMeasure'],
                 },
             ],
             where: filterOptions,
