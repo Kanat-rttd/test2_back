@@ -5,7 +5,7 @@ const sequelize = require('../config/db')
 class FinanceController {
     async getAll(req, res, next) {
         try {
-            const { startDate, endDate } = req.query
+            const { startDate, endDate, categoryId, accountName } = req.query
 
             const filterOptions = {}
 
@@ -16,6 +16,14 @@ class FinanceController {
                         new Date(endDate).setHours(23, 59, 59, 999),
                     ],
                 }
+            }
+
+            if(categoryId){
+                filterOptions.financeCategoryId = categoryId
+            }
+
+            if(accountName){
+                filterOptions.account = accountName
             }
 
             let { sortOrder } = req.query
@@ -32,11 +40,15 @@ class FinanceController {
                         model: models.financeCategories,
                         attributes: ['id', 'name', 'type'],
                     },
+                    {
+                        model: models.financeAccount,
+                        attributes: ['id', 'name'],
+                    },
                 ],
                 where: {
-                    // isDeleted: {
-                    //     [Op.ne]: 1,
-                    // },
+                    isDeleted: {
+                        [Op.ne]: 1,
+                    },
                     ...filterOptions,
                 },
             })

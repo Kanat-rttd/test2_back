@@ -2,6 +2,7 @@ const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
 const contragent = require('./contragent')
 const financeCategories = require('./financeCategories')
+const financeAccount = require('./financeAccount')
 
 const finance = sequelize.define('finance', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -17,8 +18,10 @@ const finance = sequelize.define('finance', {
 
 contragent.hasMany(finance)
 financeCategories.hasMany(finance)
+financeAccount.hasMany(finance)
 
 finance.belongsTo(contragent)
 finance.belongsTo(financeCategories)
+finance.belongsTo(financeAccount)
 
 module.exports = finance
