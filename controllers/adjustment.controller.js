@@ -36,7 +36,7 @@ class AdjustmentController {
         console.log(adjustmentData)
 
         const createdAdjustment = await models.adjustments.create({
-            providerGoodId: adjustmentData.item.id,
+            goodsCategoryId: adjustmentData.item.id,
             quantity: adjustmentData.qty,
             comment: adjustmentData.Comment,
         })
