@@ -5,8 +5,20 @@ const sequelize = require('../config/db')
 class FinanceController {
     async getAll(req, res, next) {
         try {
+            const { startDate, endDate } = req.query
+
+            const filterOptions = {}
+
+            if (startDate && endDate) {
+                filterOptions.date = {
+                    [Op.between]: [
+                        new Date(startDate).setHours(0, 0, 0, 0),
+                        new Date(endDate).setHours(23, 59, 59, 999),
+                    ],
+                }
+            }
+
             let { sortOrder } = req.query
-            // console.log(sortOrder)
 
             sortOrder = sortOrder || ''
 
@@ -21,6 +33,12 @@ class FinanceController {
                         attributes: ['id', 'name', 'type'],
                     },
                 ],
+                where: {
+                    // isDeleted: {
+                    //     [Op.ne]: 1,
+                    // },
+                    ...filterOptions,
+                },
             })
 
             // console.log(data)
@@ -68,7 +86,7 @@ class FinanceController {
         await models.finance.create({
             account: bodyData.data.fromAccount,
             amount: bodyData.data.amount * -1,
-            financeCategoryId: 6, 
+            financeCategoryId: 6,
             contragentId: null,
             comment: bodyData.data.comment,
             date: bodyData.data.date,
@@ -83,10 +101,10 @@ class FinanceController {
             date: bodyData.data.date,
         })
 
-        return res.status(200).json({message: 'Перевод подтвержден'})
+        return res.status(200).json({ message: 'Перевод подтвержден' })
     }
 
-    async getReportData(req, res, next) { 
+    async getReportData(req, res, next) {
         const rawData = await models.finance.findAll({
             attributes: ['amount', 'financeCategoryId', 'comment'],
             include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
