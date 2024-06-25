@@ -3,6 +3,7 @@ const { DataTypes } = require('sequelize')
 // const rawMaterials = require('./rawMaterials')
 const providerGoods = require('./providerGoods')
 const providers = require('./providers')
+const goodsCategories = require('./goodsCategories')
 
 // const productPurchase = sequelize.define('productPurchase', {
 //     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -21,7 +22,7 @@ const productPurchase = sequelize.define('productPurchase', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     date: { type: DataTypes.DATE },
     providerId: { type: DataTypes.INTEGER },
-    providerGoodId: { type: DataTypes.INTEGER },
+    goodsCategoryId: { type: DataTypes.INTEGER },
     quantity: { type: DataTypes.INTEGER },
     price: { type: DataTypes.INTEGER },
     deliverySum: { type: DataTypes.INTEGER },
@@ -32,8 +33,8 @@ const productPurchase = sequelize.define('productPurchase', {
 
 // rawMaterials.hasMany(productPurchase, {foreignKey:'rawMaterialId'})
 // productPurchase.belongsTo(rawMaterials, {foreignKey:'rawMaterialId'})
-providerGoods.hasMany(productPurchase)
-productPurchase.belongsTo(providerGoods)
+goodsCategories.hasMany(productPurchase)
+productPurchase.belongsTo(goodsCategories)
 
 providers.hasMany(productPurchase)
 productPurchase.belongsTo(providers)
