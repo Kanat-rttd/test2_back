@@ -10,15 +10,11 @@ class ProviderGoodsController {
         if (status) filterOptions.status = status
 
         const data = await models.providerGoods.findAll({
-            attributes: ['id', 'providerId', 'goodsCategoryId', 'goods', 'place', 'status', 'isDeleted'],
+            attributes: ['id', 'providerId', 'goodsCategoryId', 'goods', 'place', 'status', 'isDeleted', 'unitOfMeasure'],
             include: [
                 {
                     attributes: ['id', 'providerName', 'status'],
                     model: models.providers,
-                },
-                {
-                    attributes: ['id', 'unitOfMeasure'],
-                    model: models.goodsCategories,
                 },
             ],
             where: {

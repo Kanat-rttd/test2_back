@@ -13,6 +13,7 @@ const providerGoods = sequelize.define(
         place: { type: DataTypes.STRING },
         status: { type: DataTypes.STRING },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+        unitOfMeasure: { type: DataTypes.STRING },
     },
     {
         hooks: {
