@@ -9,6 +9,7 @@ const { baking, bakingDetails } = require('./baking.js')
 
 module.exports = {
     contragent: require('./contragent.js'),
+    contragentType: require('./contragentType.js'),
     users: require('./users.js'),
     requests: require('./requests.js'),
     clients: require('./clients.js'),
