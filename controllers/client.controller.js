@@ -35,6 +35,7 @@ class ClientController {
         if (existingClientName != null) {
             throw new Error('Пользователь с таким именем уже существует')
         }
+        console.log(clientData);
 
         const existingClientPhone = await models.clients.findOne({
             where: { isDeleted: false, contact: clientData.contact },
