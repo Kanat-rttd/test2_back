@@ -94,9 +94,9 @@ class ReportController {
             let divergence = 0
 
             data.forEach((item) => {
-                totalRegister += Number(item.accountingQuantity)
+                totalRegister += Number(item.accQuantity)
                 totalFact += Number(item.factQuantity)
-                divergence += Number(item.discrepancy)
+                divergence += Number(item.difference)
             })
 
             const responseData = {
