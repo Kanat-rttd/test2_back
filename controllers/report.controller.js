@@ -75,15 +75,7 @@ class ReportController {
             }
 
             const data = await models.inventorizations.findAll({
-                attributes: [
-                    'id',
-                    'goods',
-                    'unitOfMeasure',
-                    'accountingQuantity',
-                    'factQuantity',
-                    'adjustments',
-                    'discrepancy',
-                ],
+                attributes: ['id', 'category', 'accQuantity', 'factQuantity', 'adjusment', 'difference'],
                 where: {
                     ...filterOptions,
                 },
@@ -198,7 +190,13 @@ class ReportController {
 
         const responseData = {
             reportData: data,
-            totalSales, totalReturns, totalOverhead, totalExpenses, totalPayments, totalCredit, totalDebt
+            totalSales,
+            totalReturns,
+            totalOverhead,
+            totalExpenses,
+            totalPayments,
+            totalCredit,
+            totalDebt,
         }
 
         return res.json(responseData)
