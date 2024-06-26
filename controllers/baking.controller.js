@@ -64,88 +64,38 @@ class BakingController {
                 },
             })
 
-            const totals = await models.baking.findAll({
-                attributes: [
-                    [fn('SUM', fn('DISTINCT', col('output'))), 'totalOutput'],
-                    [fn('SUM', fn('DISTINCT', col('defective'))), 'totalDefective'],
-                    [
-                        fn(
-                            'SUM',
-                            literal(
-                                'CASE WHEN bakingDetails.goodsCategoryId = 1 THEN bakingDetails.quantity ELSE 0 END',
-                            ),
-                        ),
-                        'totalFlour',
-                    ],
-                    [
-                        fn(
-                            'SUM',
-                            literal(
-                                'CASE WHEN bakingDetails.goodsCategoryId = 2 THEN bakingDetails.quantity ELSE 0 END',
-                            ),
-                        ),
-                        'totalSalt',
-                    ],
-                    [
-                        fn(
-                            'SUM',
-                            literal(
-                                'CASE WHEN bakingDetails.goodsCategoryId = 3 THEN bakingDetails.quantity ELSE 0 END',
-                            ),
-                        ),
-                        'totalYeast',
-                    ],
-                    [
-                        fn(
-                            'SUM',
-                            literal(
-                                'CASE WHEN bakingDetails.goodsCategoryId = 4 THEN bakingDetails.quantity ELSE 0 END',
-                            ),
-                        ),
-                        'totalMalt',
-                    ],
-                    [
-                        fn(
-                            'SUM',
-                            literal(
-                                'CASE WHEN bakingDetails.goodsCategoryId = 5 THEN bakingDetails.quantity ELSE 0 END',
-                            ),
-                        ),
-                        'totalButter',
-                    ],
-                ],
-                include: [
-                    {
-                        model: models.bakingDetails,
-                        attributes: [],
-                        include: [
-                            {
-                                model: models.goodsCategories,
-                                attributes: [],
-                            },
-                        ],
-                    },
-                ],
-                where: {
-                    isDeleted: {
-                        [Op.ne]: 1,
-                    },
-                    ...filterOptionsDate,
-                },
-                raw: true,
+            const categoryMap = {
+                Мука: 'totalFlour',
+                Соль: 'totalSalt',
+                Дрожжи: 'totalYeast',
+                Солод: 'totalMalt',
+                Масло: 'totalButter',
+            }
+
+            const result = {
+                totalFlour: 0,
+                totalSalt: 0,
+                totalYeast: 0,
+                totalMalt: 0,
+                totalButter: 0,
+                totalOutput: 0,
+                totalDefective: 0,
+            }
+
+            baking.forEach((baking) => {
+                baking.bakingDetails.forEach((detail) => {
+                    const categoryKey = categoryMap[detail.goodsCategory.category]
+                    if (categoryKey) {
+                        result[categoryKey] += detail.quantity
+                    }
+                })
+                result.totalOutput += baking.output
+                result.totalDefective += baking.defective
             })
 
             const data = {
-                bakingData: baking, // Предполагается, что bakingData получено из вашего предыдущего запроса
-                totals: {
-                    totalFlour: parseFloat(totals[0].totalFlour),
-                    totalSalt: parseFloat(totals[0].totalSalt),
-                    totalYeast: parseFloat(totals[0].totalYeast),
-                    totalMalt: parseFloat(totals[0].totalMalt),
-                    totalButter: parseFloat(totals[0].totalButter),
-                    totalOutput: parseFloat(totals[0].totalOutput),
-                    totalDefective: parseFloat(totals[0].totalDefective),
-                },
+                bakingData: baking,
+                totals: result,
             }
 
             return res.json(data)
