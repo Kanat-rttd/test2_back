@@ -5,6 +5,7 @@ const { shiftAccounting, shiftAccountingDetails } = require('./shiftAccounting.j
 const { debtTransfer, debtCalculationView } = require('./debtTransfer.js')
 const { breadReportView, shiftTimeView, magazineDebtView, salesReportView, reportView } = require('./reports.js')
 const { inventorizations } = require('./inventorizationView.js')
+const { baking, bakingDetails } = require('./baking.js')
 
 module.exports = {
     contragent: require('./contragent.js'),
@@ -12,7 +13,8 @@ module.exports = {
     requests: require('./requests.js'),
     clients: require('./clients.js'),
     products: require('./products.js'),
-    baking: require('./baking.js'),
+    baking,
+    bakingDetails,
     user: require('./users.js'),
     order: require('./order.js'),
     orderDetails: require('./orderDetails.js'),

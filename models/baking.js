@@ -1,6 +1,7 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
 const product = require('./products')
+const goodsCategories = require('./goodsCategories')
 
 const baking = sequelize.define('baking', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -21,6 +22,9 @@ const bakingDetails = sequelize.define('bakingDetails', {
 
 product.hasMany(baking)
 baking.belongsTo(product)
+
+goodsCategories.hasMany(bakingDetails)
+bakingDetails.belongsTo(goodsCategories)
 
 baking.hasMany(bakingDetails)
 bakingDetails.belongsTo(baking)

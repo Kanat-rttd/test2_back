@@ -1,5 +1,5 @@
 const models = require('../models')
-const { Op } = require('sequelize')
+const { Op, fn, col, literal } = require('sequelize')
 const Sequelize = require('../config/db')
 const dayjs = require('dayjs')
 
@@ -28,21 +28,19 @@ class BakingController {
                 filterOptions.id = facilityUnit
             }
 
-            const bakingData = await models.baking.findAll({
-                attributes: [
-                    'id',
-                    'flour',
-                    'salt',
-                    'yeast',
-                    'malt',
-                    'butter',
-                    'temperature',
-                    'dateTime',
-                    'output',
-                    'defective',
-                ],
-                required: true,
+            const baking = await models.baking.findAll({
+                attributes: ['id', 'productId', 'temperature', 'output', 'defective', 'dateTime', 'createdAt'],
                 include: [
+                    {
+                        model: models.bakingDetails,
+                        attributes: ['id', 'bakingId', 'goodsCategoryId', 'quantity'],
+                        include: [
+                            {
+                                model: models.goodsCategories,
+                                attributes: ['category'],
+                            },
+                        ],
+                    },
                     {
                         attributes: ['name', 'id'],
                         model: models.products,
@@ -57,6 +55,7 @@ class BakingController {
                         ],
                     },
                 ],
+                required: true,
                 where: {
                     isDeleted: {
                         [Op.ne]: 1,
@@ -64,30 +63,65 @@ class BakingController {
                     ...filterOptionsDate,
                 },
             })
-            console.log(bakingData)
 
             const totals = await models.baking.findAll({
                 attributes: [
-                    [Sequelize.literal('SUM(flour)'), 'totalFlour'],
-                    [Sequelize.literal('SUM(salt)'), 'totalSalt'],
-                    [Sequelize.literal('SUM(yeast)'), 'totalYeast'],
-                    [Sequelize.literal('SUM(malt)'), 'totalMalt'],
-                    [Sequelize.literal('SUM(butter)'), 'totalButter'],
-                    [Sequelize.literal('SUM(output)'), 'totalOutput'],
-                    [Sequelize.literal('SUM(defective)'), 'totalDefective'],
+                    [fn('SUM', fn('DISTINCT', col('output'))), 'totalOutput'],
+                    [fn('SUM', fn('DISTINCT', col('defective'))), 'totalDefective'],
+                    [
+                        fn(
+                            'SUM',
+                            literal(
+                                'CASE WHEN bakingDetails.goodsCategoryId = 1 THEN bakingDetails.quantity ELSE 0 END',
+                            ),
+                        ),
+                        'totalFlour',
+                    ],
+                    [
+                        fn(
+                            'SUM',
+                            literal(
+                                'CASE WHEN bakingDetails.goodsCategoryId = 2 THEN bakingDetails.quantity ELSE 0 END',
+                            ),
+                        ),
+                        'totalSalt',
+                    ],
+                    [
+                        fn(
+                            'SUM',
+                            literal(
+                                'CASE WHEN bakingDetails.goodsCategoryId = 3 THEN bakingDetails.quantity ELSE 0 END',
+                            ),
+                        ),
+                        'totalYeast',
+                    ],
+                    [
+                        fn(
+                            'SUM',
+                            literal(
+                                'CASE WHEN bakingDetails.goodsCategoryId = 4 THEN bakingDetails.quantity ELSE 0 END',
+                            ),
+                        ),
+                        'totalMalt',
+                    ],
+                    [
+                        fn(
+                            'SUM',
+                            literal(
+                                'CASE WHEN bakingDetails.goodsCategoryId = 5 THEN bakingDetails.quantity ELSE 0 END',
+                            ),
+                        ),
+                        'totalButter',
+                    ],
                 ],
-                required: true,
                 include: [
                     {
-                        model: models.products,
-                        required: true,
+                        model: models.bakingDetails,
                         attributes: [],
                         include: [
                             {
+                                model: models.goodsCategories,
                                 attributes: [],
-                                model: models.bakingFacilityUnits,
-                                where: filterOptions,
-                                required: true,
                             },
                         ],
                     },
@@ -100,20 +134,18 @@ class BakingController {
                 },
                 raw: true,
             })
-            console.log(totals)
 
-            const formattedTotals = {
-                totalFlour: parseFloat(totals[0].totalFlour),
-                totalSalt: parseFloat(totals[0].totalSalt),
-                totalYeast: parseFloat(totals[0].totalYeast),
-                totalMalt: parseFloat(totals[0].totalMalt),
-                totalButter: parseFloat(totals[0].totalButter),
-                totalOutput: parseFloat(totals[0].totalOutput),
-                totalDefective: parseFloat(totals[0].totalDefective),
-            }
             const data = {
-                bakingData,
-                totals: formattedTotals,
+                bakingData: baking, // Предполагается, что bakingData получено из вашего предыдущего запроса
+                totals: {
+                    totalFlour: parseFloat(totals[0].totalFlour),
+                    totalSalt: parseFloat(totals[0].totalSalt),
+                    totalYeast: parseFloat(totals[0].totalYeast),
+                    totalMalt: parseFloat(totals[0].totalMalt),
+                    totalButter: parseFloat(totals[0].totalButter),
+                    totalOutput: parseFloat(totals[0].totalOutput),
+                    totalDefective: parseFloat(totals[0].totalDefective),
+                },
             }
 
             return res.json(data)
@@ -123,22 +155,30 @@ class BakingController {
     }
 
     async createBaking(req, res, next) {
-        const { breadType, flour, salt, yeast, malt, butter, temperature, dateTime, output, defective } = req.body
+        const bakingData = req.body
 
-        await models.baking.create({
-            productId: breadType,
-            flour,
-            salt,
-            yeast,
-            malt,
-            butter,
-            temperature,
-            dateTime,
-            output,
-            defective,
+        const createdBaking = await models.baking.create({
+            temperature: bakingData.temperature,
+            productId: bakingData.breadType,
+            output: bakingData.output,
+            defective: bakingData.defective,
+            dateTime: bakingData.dateTime,
         })
 
-        return res.status(200).send('Baking Created')
+        const bakingDetails = bakingData.bakingDetails.map((detail) => {
+            return {
+                bakingId: createdBaking.id,
+                goodsCategoryId: detail.goodsCategoryId,
+                quantity: detail.quantity,
+            }
+        })
+
+        await models.bakingDetails.bulkCreate(bakingDetails)
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Выпечка успешно создана',
+        })
     }
 
     async updateBaking(req, res) {
