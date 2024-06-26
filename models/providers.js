@@ -6,7 +6,7 @@ const providers = sequelize.define(
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         providerName: { type: DataTypes.STRING },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {

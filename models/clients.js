@@ -10,7 +10,7 @@ const clients = sequelize.define(
         contact: { type: DataTypes.STRING },
         telegrammId: { type: DataTypes.STRING },
         password: { type: DataTypes.STRING },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {

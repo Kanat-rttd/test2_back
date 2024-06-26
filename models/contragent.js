@@ -6,7 +6,7 @@ const contragent = sequelize.define('contragent', {
     mainId: { type: DataTypes.INTEGER },
     contragentName: { type: DataTypes.STRING },
     type: { type: DataTypes.ENUM(['реализатор', 'поставщик', 'цехперсонал', 'магазин']) },
-    status: { type: DataTypes.STRING },
+    status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 

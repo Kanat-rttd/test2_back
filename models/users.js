@@ -10,7 +10,7 @@ const users = sequelize.define(
         name: { type: DataTypes.STRING },
         surname: { type: DataTypes.STRING },
         permission: { type: DataTypes.STRING },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         fixSalary: { type: DataTypes.STRING },
         pass: { type: DataTypes.STRING, require: true },
         userClass: { type: DataTypes.STRING },

@@ -8,7 +8,7 @@ const products = sequelize.define(
         name: { type: DataTypes.STRING },
         price: { type: DataTypes.INTEGER },
         costPrice: { type: DataTypes.INTEGER },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {

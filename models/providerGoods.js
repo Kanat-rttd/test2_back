@@ -11,7 +11,7 @@ const providerGoods = sequelize.define(
         goodsCategoryId: { type: DataTypes.INTEGER },
         goods: { type: DataTypes.STRING },
         place: { type: DataTypes.STRING },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
         unitOfMeasure: { type: DataTypes.STRING },
     },

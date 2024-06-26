@@ -8,7 +8,7 @@ const departPersonal = sequelize.define(
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         name: { type: DataTypes.STRING },
         surname: { type: DataTypes.STRING },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         userClass: { type: DataTypes.STRING },
         fixSalary: { type: DataTypes.STRING },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },

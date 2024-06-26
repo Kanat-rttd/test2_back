@@ -8,7 +8,7 @@ const magazines = sequelize.define(
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         name: { type: DataTypes.STRING },
         clientId: { type: DataTypes.INTEGER },
-        status: { type: DataTypes.STRING },
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
         isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
