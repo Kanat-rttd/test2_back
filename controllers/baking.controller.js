@@ -65,11 +65,11 @@ class BakingController {
             })
 
             const categoryMap = {
-                Мука: 'totalFlour',
-                Соль: 'totalSalt',
-                Дрожжи: 'totalYeast',
-                Солод: 'totalMalt',
-                Масло: 'totalButter',
+                Мука: 'flour',
+                Соль: 'salt',
+                Дрожжи: 'yeast',
+                Солод: 'malt',
+                Масло: 'butter',
             }
 
             const result = {
@@ -82,19 +82,55 @@ class BakingController {
                 totalDefective: 0,
             }
 
-            baking.forEach((baking) => {
-                baking.bakingDetails.forEach((detail) => {
+            const bakingData = baking.map((bakingItem) => {
+                let details = {
+                    flour: {},
+                    salt: {},
+                    yeast: {},
+                    malt: {},
+                    butter: {},
+                }
+
+                bakingItem.bakingDetails.forEach((detail) => {
                     const categoryKey = categoryMap[detail.goodsCategory.category]
                     if (categoryKey) {
-                        result[categoryKey] += detail.quantity
+                        result[`total${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`] += detail.quantity
+                        details[categoryKey] = {
+                            bakingId: detail.bakingId,
+                            goodsCategoryId: detail.goodsCategoryId,
+                            id: detail.id,
+                            quantity: detail.quantity,
+                        }
                     }
                 })
-                result.totalOutput += baking.output
-                result.totalDefective += baking.defective
+
+                result.totalOutput += bakingItem.output
+                result.totalDefective += bakingItem.defective
+
+                return {
+                    id: bakingItem.id,
+                    temperature: bakingItem.temperature,
+                    output: bakingItem.output,
+                    defective: bakingItem.defective,
+                    dateTime: bakingItem.dateTime,
+                    bakingDetails: bakingItem.bakingDetails.map((detail) => ({
+                        bakingId: detail.bakingId,
+                        goodsCategoryId: detail.goodsCategoryId,
+                        id: detail.id,
+                        quantity: detail.quantity,
+                    })),
+                    product: bakingItem.product
+                        ? {
+                              name: bakingItem.product.name,
+                              id: bakingItem.product.id,
+                          }
+                        : undefined,
+                    ...details,
+                }
             })
 
             const data = {
-                bakingData: baking,
+                bakingData: bakingData,
                 totals: result,
             }
 
