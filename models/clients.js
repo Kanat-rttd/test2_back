@@ -1,5 +1,6 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
+const models = require('../models')
 
 const clients = sequelize.define(
     'clients',
@@ -18,12 +19,15 @@ const clients = sequelize.define(
             beforeCreate: async (client) => {
                 const { contact, name } = client
 
+                console.log(contact, name)
+
                 const existingClientPhone = await clients.findOne({
                     where: {
                         contact,
                         isDeleted: false,
                     },
                 })
+
                 const existingClientName = await clients.findOne({
                     where: {
                         name,

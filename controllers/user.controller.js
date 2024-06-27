@@ -59,9 +59,9 @@ class UserController {
 
         console.log(data)
 
-        const createdUser = await models.users.create(data)
+        await models.users.create(data)
 
-        return res.status(200).json({message: 'Пользователь успешно создан', data: createdUser})
+        return res.status(200).send('User Created')
     }
 
     async updateUser(req, res, next) {
@@ -87,13 +87,12 @@ class UserController {
             updateObj.pass = hashedPass
         }
 
-        const updatedUser = await models.users.update(updateObj, {
+        await models.users.update(updateObj, {
             where: {
                 id,
             },
-            individualHooks: true,
         })
-        return res.status(200).json({message: 'Пользователь успешно обновлен', data: updatedUser})
+        return res.status(200).send('User updated')
     }
 
     async deleteUser(req, res) {
@@ -113,30 +112,59 @@ class UserController {
     }
 
     async authenticateUser(req, res, next) {
-        const { phone, pass } = req.body
-        const user = await models.users.findOne({ where: { phone } })
+        try {
+            const { phone, pass } = req.body
 
-        if (!user) {
-            return res.status(401).send('Такого пользователя не существует')
+            if (!phone || !pass) {
+                return res.status(400).send('Телефон и пароль обязательны для ввода')
+            }
+
+            const [user, client] = await Promise.all([
+                models.users.findOne({ where: { phone } }),
+                models.clients.findOne({ where: { contact: phone } }),
+            ])
+
+            if (!user && !client) {
+                return res.status(401).send('Пользователь или клиент не найден')
+            }
+
+            let passCheck = false
+            let tokenPayload = {}
+
+            if (user) {
+                passCheck = await bcrypt.compare(pass, user.pass)
+                if (passCheck) {
+                    tokenPayload = { userId: user.id, phone: user.phone, class: user.permission }
+                }
+            }
+
+            if (client && !passCheck) {
+                passCheck = await bcrypt.compare(pass, client.password)
+                if (passCheck) {
+                    tokenPayload = { clientId: client.id, phone: client.contact, class: '[{ "label": "Реализатор" }]' }
+                }
+            }
+
+            if (!passCheck) {
+                return res.status(401).send('Неверный логин или пароль')
+            }
+
+            const token = jwt.sign(tokenPayload, '1C6981FDFC9D65A5B68BCA02313AE8C0191D2A9559BFA37C5D4D5FF620D76D96', {
+                expiresIn: '12h',
+            })
+
+            return res.status(200).json({ token, status: 'success' })
+        } catch (error) {
+            console.error(error)
+            return res.status(500).send('Произошла ошибка на сервере')
         }
-
-        const passCheck = await bcrypt.compare(pass, user.pass)
-
-        if (!passCheck) {
-            return res.status(401).send('Неверный логин или пароль')
-        }
-
-        const token = jwt.sign(
-            { userId: user.id, phone: user.phone, class: user.permission },
-            '1C6981FDFC9D65A5B68BCA02313AE8C0191D2A9559BFA37C5D4D5FF620D76D96',
-            { expiresIn: '12h' },
-        )
-
-        return res.status(200).json({ token, status: 'success' })
     }
 
     async check(req, res, next) {
+        const currentTime = Math.floor(Date.now() / 1000)
+
         const authToken = req.header('Authorization')
+
         if (!authToken) {
             return res.status(401).json({ message: 'Токен отсутствует' })
         }
@@ -145,18 +173,17 @@ class UserController {
         const tokenData = tokenDecode.jwtDecode(token)
 
         const user = await models.users.findByPk(tokenData.userId)
-
-        if (!user) {
-            return res.status(401).json({ message: 'Такого пользователя не существует' })
-        }
-
-        const currentTime = Math.floor(Date.now() / 1000)
+        const client = await models.clients.findByPk(tokenData.clientId)
 
         if (!(currentTime < tokenData.exp)) {
             return res.status(401).json({ message: 'Время сессий истекло' })
-        }
+        } else {
+            if (user || client) {
+                return res.json({ token })
+            }
 
-        return res.json({ token })
+            return res.status(401).json({ message: 'Такого пользователя не существует' })
+        }
     }
 }
 
