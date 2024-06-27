@@ -15,6 +15,3 @@ contragentType.hasMany(contragent)
 contragent.belongsTo(contragentType)
 
 module.exports = contragent
-
-
-// type: DataTypes.ENUM(['реализатор', 'поставщик', 'цехперсонал', 'магазин'])

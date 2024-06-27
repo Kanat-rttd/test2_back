@@ -53,11 +53,15 @@ class DepartPersonalController {
                 bakingFacilityUnitId: departPersonalData.bakingFacilityUnitId,
             })
 
+            const finedCantragentType = await models.contragentType.findOne({
+                where: {type: 'цехперсонал'}
+            })
+
             await models.contragent.create({
                 contragentName: departPersonalData.name,
                 status: departPersonalData.status,
                 mainId: createdPersonal.id,
-                type: 'цехперсонал',
+                contragentTypeId: finedCantragentType.id,
             })
 
             await tr.commit()

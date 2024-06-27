@@ -41,11 +41,15 @@ class ProvidersController {
                 status,
             })
 
+            const finedCantragentType = await models.contragentType.findOne({
+                where: {type: 'поставщик'}
+            })
+
             await models.contragent.create({
                 contragentName: providerName,
                 status,
                 mainId: createdProvider.id,
-                type: 'поставщик',
+                contragentTypeId: finedCantragentType.id,
             })
 
             await tr.commit()

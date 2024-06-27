@@ -56,12 +56,16 @@ class MagazinesController {
                 { transaction: tr },
             )
 
+            const finedCantragentType = await models.contragentType.findOne({
+                where: {type: 'магазин'}
+            })
+
             const createdContragent = await models.contragent.create(
                 {
                     contragentName: magazineData.data.name,
                     status: magazineData.data.status,
                     mainId: createdMagazine.id,
-                    type: 'магазин',
+                    contragentTypeId: finedCantragentType.id,
                 },
                 { transaction: tr },
             )

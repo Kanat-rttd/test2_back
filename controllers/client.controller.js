@@ -56,11 +56,15 @@ class ClientController {
                 password: hashedPass,
             })
 
+            const finedCantragentType = await models.contragentType.findOne({
+                where: {type: 'реализатор'}
+            })
+
             await models.contragent.create({
                 contragentName: clientData.name,
                 status: clientData.status,
                 mainId: createdClient.id,
-                type: 'реализатор',
+                contragentTypeId: finedCantragentType.id,
             })
 
             await tr.commit()
