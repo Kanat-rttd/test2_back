@@ -60,6 +60,8 @@ class ClientController {
                 where: {type: 'реализатор'}
             })
 
+            console.log(finedCantragentType);
+
             await models.contragent.create({
                 contragentName: clientData.name,
                 status: clientData.status,
