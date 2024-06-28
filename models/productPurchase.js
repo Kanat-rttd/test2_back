@@ -36,6 +36,9 @@ const productPurchase = sequelize.define('productPurchase', {
 goodsCategories.hasMany(productPurchase)
 productPurchase.belongsTo(goodsCategories)
 
+providerGoods.hasMany(productPurchase)
+productPurchase.belongsTo(providerGoods)
+
 providers.hasMany(productPurchase)
 productPurchase.belongsTo(providers)
 

@@ -53,9 +53,14 @@ class ProductPurchaseController {
                         // required: true,
                     },
                     {
+                        attributes: ['id', 'goods'],
+                        model: models.providerGoods,
+                        where: rawMaterialFilterOptions,
+                        // required: true,
+                    },
+                    {
                         attributes: ['id', [col('category'), 'name'], 'unitOfMeasure'],
                         model: models.goodsCategories,
-                        where: rawMaterialFilterOptions,
                         // required: true,
                     },
                 ],
@@ -91,8 +96,6 @@ class ProductPurchaseController {
 
     async createPurchase(req, res, next) {
         const purchaseData = req.body
-
-        // console.log(purchaseData)
 
         let totalSum = Number(purchaseData.quantity) * Number(purchaseData.price) + Number(purchaseData.deliverySum)
 
