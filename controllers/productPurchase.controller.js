@@ -13,7 +13,7 @@ class ProductPurchaseController {
             const rawMaterialFilterOptions = {}
 
             if (startDate && endDate) {
-                dateFilterOptions.createdAt = {
+                dateFilterOptions.date = {
                     [Op.between]: [
                         new Date(startDate).setHours(0, 0, 0, 0),
                         new Date(endDate).setHours(23, 59, 59, 999),
