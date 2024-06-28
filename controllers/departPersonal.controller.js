@@ -4,11 +4,17 @@ const models = require('../models')
 
 class DepartPersonalController {
     async getAll(req, res, next) {
-        const { status } = req.query
-        console.log('query Recieved', status)
+        const { status, facilityUnit } = req.query
+
         let filterOptions = {}
+        let filterOptionsFacilityUnit = {}
+
         if (status) {
             filterOptions.status = status
+        }
+
+        if (facilityUnit) {
+            filterOptionsFacilityUnit.id = facilityUnit
         }
 
         const data = await models.departPersonal.findAll({
@@ -17,6 +23,7 @@ class DepartPersonalController {
                 {
                     model: models.bakingFacilityUnits,
                     attributes: ['id', 'facilityUnit'],
+                    where: filterOptionsFacilityUnit,
                 },
             ],
             where: {
@@ -54,7 +61,7 @@ class DepartPersonalController {
             })
 
             const finedCantragentType = await models.contragentType.findOne({
-                where: {type: 'цехперсонал'}
+                where: { type: 'цехперсонал' },
             })
 
             await models.contragent.create({
