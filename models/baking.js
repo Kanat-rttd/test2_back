@@ -26,6 +26,11 @@ baking.belongsTo(product)
 goodsCategories.hasMany(bakingDetails)
 bakingDetails.belongsTo(goodsCategories)
 
+bakingDetails.belongsTo(goodsCategories, { as: 'bd', foreignKey: 'goodsCategoryId' })
+goodsCategories.hasMany(bakingDetails, { as: 'bd', foreignKey: 'goodsCategoryId' })
+bakingDetails.belongsTo(goodsCategories, { as: 'bd_expenses', foreignKey: 'goodsCategoryId' })
+goodsCategories.hasMany(bakingDetails, { as: 'bd_expenses', foreignKey: 'goodsCategoryId' })
+
 baking.hasMany(bakingDetails)
 bakingDetails.belongsTo(baking)
 

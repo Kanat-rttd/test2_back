@@ -12,4 +12,9 @@ const adjustments = sequelize.define('adjustments', {
 goodsCategories.hasMany(adjustments)
 adjustments.belongsTo(goodsCategories)
 
+adjustments.belongsTo(goodsCategories, { as: 'ad', foreignKey: 'goodsCategoryId' })
+goodsCategories.hasMany(adjustments, { as: 'ad', foreignKey: 'goodsCategoryId' })
+adjustments.belongsTo(goodsCategories, { as: 'period_ad', foreignKey: 'goodsCategoryId' })
+goodsCategories.hasMany(adjustments, { as: 'period_ad', foreignKey: 'goodsCategoryId' })
+
 module.exports = adjustments
