@@ -11,5 +11,6 @@ router.get('/magazineDebt', catchAsync(Controller.magazineDebtView))
 router.get('/inventoryzation', catchAsync(Controller.inventoryzationView))
 router.get('/sales', catchAsync(Controller.getSalesReportView))
 router.get('/reconciliation', catchAsync(Controller.getReconciliationReportView))
+router.get('/remainRawMaterials', catchAsync(Controller.getRemainRawMaterials))
 
 module.exports = router

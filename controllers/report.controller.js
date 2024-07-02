@@ -1,5 +1,6 @@
 const models = require('../models')
 const { Op } = require('sequelize')
+const sequelize = require('../config/db')
 
 class ReportController {
     async breadViewReport(req, res, next) {
@@ -208,6 +209,209 @@ class ReportController {
         }
 
         return res.json(responseData)
+    }
+
+    // async getRemainRawMaterials(req, res, next) {
+    //     const { Op, fn, col, literal } = require('sequelize')
+
+    //     const startDate = '2024-06-29'
+    //     const endDate = '2024-07-04'
+
+    //     const result = await models.goodsCategories.findAll({
+    //         attributes: [
+    //             'id',
+    //             'category',
+    //             'unitOfMeasure',
+    //             [
+    //                 literal(`(
+    //     (COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0))
+    //     + COALESCE(ad.adjustment, 0)
+    //   )`),
+    //                 'ОстатокНаНачало',
+    //             ],
+    //             [fn('COALESCE', col('bd_expenses.bakingExpenses'), 0), 'Расход'],
+    //             [fn('COALESCE', col('pp_expenses.purchaseExpenses'), 0), 'Приход'],
+    //             [fn('COALESCE', col('period_ad.periodAdjustment'), 0), 'КорректировкаЗаПериод'],
+    //             [
+    //                 literal(`(
+    //     ((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0))
+    //     + COALESCE(ad.adjustment, 0))
+    //     + COALESCE(pp_expenses.purchaseExpenses, 0)
+    //     - COALESCE(bd_expenses.bakingExpenses, 0)
+    //     + COALESCE(period_ad.periodAdjustment, 0)
+    //   )`),
+    //                 'ОстатокНаКонец',
+    //             ],
+    //         ],
+    //         include: [
+    //             {
+    //                 model: models.productPurchase,
+    //                 attributes: [],
+    //                 where: { date: { [Op.lte]: startDate } },
+    //                 required: false,
+    //                 duplicating: false,
+    //                 as: 'pp',
+    //                 attributes: [[fn('SUM', col('quantity')), 'totalQuantity']],
+    //                 group: ['goodsCategoryId'],
+    //             },
+    //             {
+    //                 model: models.bakingDetails,
+    //                 attributes: [],
+    //                 where: { createdAt: { [Op.lte]: startDate } },
+    //                 required: false,
+    //                 duplicating: false,
+    //                 as: 'bd',
+    //                 attributes: [[fn('SUM', col('quantity')), 'bakingQuantity']],
+    //                 group: ['goodsCategoryId'],
+    //             },
+    //             {
+    //                 model: models.bakingDetails,
+    //                 attributes: [],
+    //                 where: {
+    //                     createdAt: {
+    //                         [Op.gt]: startDate,
+    //                         [Op.lte]: endDate,
+    //                     },
+    //                 },
+    //                 required: false,
+    //                 duplicating: false,
+    //                 as: 'bd_expenses',
+    //                 attributes: [[fn('SUM', col('quantity')), 'bakingExpenses']],
+    //                 group: ['goodsCategoryId'],
+    //             },
+    //             {
+    //                 model: models.productPurchase,
+    //                 attributes: [],
+    //                 where: {
+    //                     date: {
+    //                         [Op.gt]: startDate,
+    //                         [Op.lte]: endDate,
+    //                     },
+    //                 },
+    //                 required: false,
+    //                 duplicating: false,
+    //                 as: 'pp_expenses',
+    //                 attributes: [[fn('SUM', col('quantity')), 'purchaseExpenses']],
+    //                 group: ['goodsCategoryId'],
+    //             },
+    //             {
+    //                 model: models.adjustments,
+    //                 attributes: [],
+    //                 where: { createdAt: { [Op.lte]: startDate } },
+    //                 required: false,
+    //                 duplicating: false,
+    //                 as: 'ad',
+    //                 attributes: [[fn('SUM', col('quantity')), 'adjustment']],
+    //                 group: ['goodsCategoryId'],
+    //             },
+    //             {
+    //                 model: models.adjustments,
+    //                 attributes: [],
+    //                 where: {
+    //                     createdAt: {
+    //                         [Op.gt]: startDate,
+    //                         [Op.lte]: endDate,
+    //                     },
+    //                 },
+    //                 required: false,
+    //                 duplicating: false,
+    //                 as: 'period_ad',
+    //                 attributes: [[fn('SUM', col('quantity')), 'periodAdjustment']],
+    //                 group: ['goodsCategoryId'],
+    //             },
+    //         ],
+    //         group: [
+    //             'GoodsCategory.id',
+    //             'pp.goodsCategoryId',
+    //             'bd.goodsCategoryId',
+    //             'bd_expenses.goodsCategoryId',
+    //             'pp_expenses.goodsCategoryId',
+    //             'ad.goodsCategoryId',
+    //             'period_ad.goodsCategoryId',
+    //         ],
+    //     })
+
+    //     return res.json(result)
+    // }
+
+    async getRemainRawMaterials(req, res, next) {
+        const startDate = '2024-06-29'
+        const endDate = '2024-07-04'
+
+        const sqlQuery = `
+            SELECT 
+                gc.id, 
+                gc.category, 
+                gc.unitOfMeasure, 
+                ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) AS ОстатокНаНачало,
+                COALESCE(bd_expenses.bakingExpenses, 0) AS Расход,
+                COALESCE(pp_expenses.purchaseExpenses, 0) AS Приход,
+                COALESCE(period_ad.periodAdjustment, 0) AS КорректировкаЗаПериод,
+                ( ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) + COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) + COALESCE(period_ad.periodAdjustment, 0) ) AS ОстатокНаКонец
+            FROM 
+                goodsCategories gc
+            LEFT JOIN (
+                SELECT 
+                    productPurchases.goodsCategoryId AS goodsCategoryId, 
+                    SUM(CASE WHEN productPurchases.date <= '${startDate}' THEN productPurchases.quantity ELSE 0 END) AS totalQuantity
+                FROM 
+                    productPurchases 
+                GROUP BY 
+                    productPurchases.goodsCategoryId
+            ) pp ON gc.id = pp.goodsCategoryId
+            LEFT JOIN (
+                SELECT 
+                    bakingDetails.goodsCategoryId AS goodsCategoryId, 
+                    SUM(CASE WHEN bakingDetails.createdAt <= '${startDate}' THEN bakingDetails.quantity ELSE 0 END) AS bakingQuantity 
+                FROM 
+                    bakingDetails 
+                GROUP BY 
+                    bakingDetails.goodsCategoryId
+            ) bd ON gc.id = bd.goodsCategoryId
+            LEFT JOIN (
+                SELECT 
+                    bakingDetails.goodsCategoryId AS goodsCategoryId, 
+                    SUM(CASE WHEN bakingDetails.createdAt > '${startDate}' AND bakingDetails.createdAt <= '${endDate}' THEN bakingDetails.quantity ELSE 0 END) AS bakingExpenses 
+                FROM 
+                    bakingDetails 
+                GROUP BY 
+                    bakingDetails.goodsCategoryId
+            ) bd_expenses ON gc.id = bd_expenses.goodsCategoryId
+            LEFT JOIN (
+                SELECT 
+                    productPurchases.goodsCategoryId AS goodsCategoryId, 
+                    SUM(CASE WHEN productPurchases.date > '${startDate}' AND productPurchases.date <= '${endDate}' THEN productPurchases.quantity ELSE 0 END) AS purchaseExpenses 
+                FROM 
+                    productPurchases 
+                GROUP BY 
+                    productPurchases.goodsCategoryId
+            ) pp_expenses ON gc.id = pp_expenses.goodsCategoryId
+            LEFT JOIN (
+                SELECT 
+                    adjustments.goodsCategoryId AS goodsCategoryId, 
+                    SUM(CASE WHEN adjustments.createdAt <= '${startDate}' THEN adjustments.quantity ELSE 0 END) AS adjustment 
+                FROM 
+                    adjustments 
+                GROUP BY 
+                    adjustments.goodsCategoryId
+            ) ad ON gc.id = ad.goodsCategoryId
+            LEFT JOIN (
+                SELECT 
+                    adjustments.goodsCategoryId AS goodsCategoryId, 
+                    SUM(CASE WHEN adjustments.createdAt > '${startDate}' AND adjustments.createdAt <= '${endDate}' THEN adjustments.quantity ELSE 0 END) AS periodAdjustment
+                FROM 
+                    adjustments 
+                GROUP BY 
+                    adjustments.goodsCategoryId
+            ) period_ad ON gc.id = period_ad.goodsCategoryId;
+        `
+
+        try {
+            const result = await sequelize.query(sqlQuery, { type: sequelize.QueryTypes.SELECT })
+            return res.json(result)
+        } catch (error) {
+            return next(error)
+        }
     }
 }
 
