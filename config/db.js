@@ -13,6 +13,6 @@ module.exports = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process
         requestTimeout: 5000, // set request timeout to 5 seconds
         useUTC: true,
     },
-    timezone: '+05:00',
+    timezone: '+06:00',
     // logging: false //TODO: LOG
 })

@@ -143,6 +143,8 @@ class BakingController {
     async createBaking(req, res, next) {
         const bakingData = req.body
 
+        console.log('Время:', bakingData.dateTime)
+
         const createdBaking = await models.baking.create({
             temperature: bakingData.temperature,
             productId: bakingData.breadType,
