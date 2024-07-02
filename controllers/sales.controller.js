@@ -96,6 +96,8 @@ class SalesController {
     async createSale(req, res, next) {
         const sales = req.body
 
+        console.log(sales)
+
         const order = await models.order.create({
             clientId: sales.clientId,
             date: sales.date,
@@ -227,6 +229,32 @@ class SalesController {
         res.status(200).json({
             status: 'success',
             data: orders,
+        })
+    }
+
+    async saveOrderChanges(req, res, next) {
+        const orders = req.body
+        const { id } = req.params
+
+        for (const order of orders) {
+            const { orderDetailsId, productId, orderedQuantity } = order
+
+            await models.orderDetails.update(
+                {
+                    orderedQuantity,
+                },
+                {
+                    where: {
+                        id: orderDetailsId,
+                        productId: productId,
+                    },
+                },
+            )
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Заказ успешно обновлен',
         })
     }
 }

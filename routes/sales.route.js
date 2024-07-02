@@ -12,5 +12,6 @@ router.delete('/:id', catchAsync(Controller.deleteSale))
 router.get('/:id', catchAsync(Controller.getOrderById))
 router.put('/status/:id', catchAsync(Controller.setDoneStatus))
 router.post('/status/test', catchAsync(Controller.getByFacilityUnit))
+router.put('/order/:id', catchAsync(Controller.saveOrderChanges))
 
 module.exports = router
