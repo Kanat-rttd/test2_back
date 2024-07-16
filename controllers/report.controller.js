@@ -212,19 +212,20 @@ class ReportController {
     }
 
     async getRemainRawMaterials(req, res, next) {
-        const startDate = '2024-06-29'
-        const endDate = '2024-07-04'
+        console.log('query ', req.query)
 
-        const sqlQuery = `
+        const { startDate, endDate } = req.query
+
+        const sqlQuery = `  
             SELECT
                 gc.id,
                 gc.category,
                 gc.unitOfMeasure,
-                ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) AS ОстатокНаНачало,
-                COALESCE(bd_expenses.bakingExpenses, 0) AS Расход,
-                COALESCE(pp_expenses.purchaseExpenses, 0) AS Приход,
-                COALESCE(period_ad.periodAdjustment, 0) AS КорректировкаЗаПериод,
-                ( ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) + COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) + COALESCE(period_ad.periodAdjustment, 0) ) AS ОстатокНаКонец
+                ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) AS openingStock,
+                COALESCE(bd_expenses.bakingExpenses, 0) AS consumption,
+                COALESCE(pp_expenses.purchaseExpenses, 0) AS incoming,
+                COALESCE(period_ad.periodAdjustment, 0) AS adjustmentPeriod,
+                ( ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) + COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) + COALESCE(period_ad.periodAdjustment, 0) ) AS closingStock
             FROM
                 goodsCategories gc
             LEFT JOIN (
@@ -281,6 +282,109 @@ class ReportController {
                 GROUP BY
                     adjustments.goodsCategoryId
             ) period_ad ON gc.id = period_ad.goodsCategoryId;
+        `
+
+        try {
+            const result = await sequelize.query(sqlQuery, { type: sequelize.QueryTypes.SELECT })
+            return res.json(result)
+        } catch (error) {
+            return next(error)
+        }
+    }
+
+    async getRemainProducts(req, res, next) {
+        console.log('query ', req.query)
+
+        const { startDate, endDate } = req.query
+
+        const sqlQuery = `
+        SELECT 
+        p.id, 
+        p.name, 
+        COALESCE(b.totalQuantity, 0) AS production, 
+        COALESCE(gdd_dispatch.dispatch, 0) AS distribution, 
+        COALESCE(gdd_return.Vozvrat, 0) AS returns, 
+        (
+          COALESCE(b.totalQuantity, 0) - COALESCE(gdd_dispatch.dispatch, 0) + COALESCE(gdd_return.Vozvrat, 0)
+        ) AS openingStock, 
+        COALESCE(b_period.periodBaking, 0) AS productionPeriod, 
+        COALESCE(gdd_period_dispatch.periodDispatch, 0) AS distributionPeriod, 
+        COALESCE(b_defective.defectiveBaking, 0) AS defect, 
+        COALESCE(gdd_period_return.periodVozvrat, 0) AS returnsPeriod, 
+        (
+          COALESCE(b.totalQuantity, 0) - COALESCE(gdd_dispatch.dispatch, 0) + COALESCE(gdd_return.Vozvrat, 0) 
+          + COALESCE(b_period.periodBaking, 0) - COALESCE(gdd_period_dispatch.periodDispatch, 0) 
+          + COALESCE(gdd_period_return.periodVozvrat, 0)
+        ) AS closingStock 
+      FROM 
+        products p 
+        LEFT JOIN (
+          SELECT 
+            bakings.productId, 
+            SUM(CASE WHEN bakings.dateTime <= '${startDate}' THEN bakings.output ELSE 0 END) AS totalQuantity 
+          FROM 
+            bakings 
+          GROUP BY 
+            bakings.productId
+        ) b ON p.id = b.productId 
+        LEFT JOIN (
+          SELECT 
+            gdd.productId, 
+            SUM(CASE WHEN g.dispatch = 0 AND gdd.createdAt <= '${startDate}' THEN gdd.quantity ELSE 0 END) AS dispatch 
+          FROM 
+            goodsDispatchDetails gdd 
+            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
+          GROUP BY 
+            gdd.productId
+        ) gdd_dispatch ON p.id = gdd_dispatch.productId 
+        LEFT JOIN (
+          SELECT 
+            gdd.productId, 
+            SUM(CASE WHEN g.dispatch = 1 AND gdd.createdAt <= '${startDate}' THEN gdd.quantity ELSE 0 END) AS Vozvrat 
+          FROM 
+            goodsDispatchDetails gdd 
+            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
+          GROUP BY 
+            gdd.productId
+        ) gdd_return ON p.id = gdd_return.productId 
+        LEFT JOIN (
+          SELECT 
+            bakings.productId, 
+            SUM(CASE WHEN bakings.dateTime > '${startDate}' AND bakings.dateTime <= '${endDate}' THEN bakings.output ELSE 0 END) AS periodBaking 
+          FROM 
+            bakings 
+          GROUP BY 
+            bakings.productId
+        ) b_period ON p.id = b_period.productId 
+        LEFT JOIN (
+          SELECT 
+            gdd.productId, 
+            SUM(CASE WHEN g.dispatch = 0 AND gdd.createdAt > '${startDate}' AND gdd.createdAt <= '${endDate}' THEN gdd.quantity ELSE 0 END) AS periodDispatch 
+          FROM 
+            goodsDispatchDetails gdd 
+            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
+          GROUP BY 
+            gdd.productId
+        ) gdd_period_dispatch ON p.id = gdd_period_dispatch.productId 
+        LEFT JOIN (
+          SELECT 
+            bakings.productId, 
+            SUM(CASE WHEN bakings.dateTime > '${startDate}' AND bakings.dateTime <= '${endDate}' THEN bakings.defective ELSE 0 END) AS defectiveBaking 
+          FROM 
+            bakings 
+          GROUP BY 
+            bakings.productId
+        ) b_defective ON p.id = b_defective.productId 
+        LEFT JOIN (
+          SELECT 
+            gdd.productId, 
+            SUM(CASE WHEN g.dispatch = 1 AND gdd.createdAt > '${startDate}' AND gdd.createdAt <= '${endDate}' THEN gdd.quantity ELSE 0 END) AS periodVozvrat 
+          FROM 
+            goodsDispatchDetails gdd 
+            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
+          GROUP BY 
+            gdd.productId
+        ) gdd_period_return ON p.id = gdd_period_return.productId;
         `
 
         try {
