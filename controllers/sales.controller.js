@@ -62,6 +62,7 @@ class SalesController {
                 },
                 ...filterOptionsDate,
             },
+            order: [['id', 'DESC']],
         })
 
         res.status(200).json(orders)
