@@ -394,6 +394,41 @@ class ReportController {
             return next(error)
         }
     }
+
+    async getDebtPurchases(req, res, next) {
+        const { providerId } = req.query
+        console.log('Received query parameters:', providerId)
+
+        const filterOptions = {}
+
+        if (providerId) {
+            filterOptions.id = providerId
+        }
+
+        const debts = await models.purchaseDebtView.findAll({
+            attributes: [[sequelize.fn('SUM', sequelize.col('debt')), 'totals']],
+            where: {
+                status: {
+                    [Op.eq]: sequelize.literal(`'Не оплачено' COLLATE utf8mb4_unicode_ci`),
+                },
+                ...filterOptions,
+            },
+        })
+
+        const data = await models.purchaseDebtView.findAll({
+            attributes: ['id', 'providerName', 'totalDebt', 'debt', 'status'],
+            where: {
+                status: {
+                    [Op.eq]: sequelize.literal(`'Не оплачено' COLLATE utf8mb4_unicode_ci`),
+                },
+                ...filterOptions,
+            },
+        })
+
+        const totalDebt = debts.length > 0 ? debts[0].dataValues.totals : 0
+
+        return res.json({ totalDebt, data })
+    }
 }
 
 module.exports = new ReportController()
