@@ -1,4 +1,4 @@
-process.env.TZ = 'Asia/Almaty'
+// process.env.TZ = 'Asia/Almaty'
 require('dotenv').config()
 const express = require('express')
 const errorHandler = require('./filters/errorHandler')
@@ -25,7 +25,7 @@ app.use(errorHandler)
 const start = async () => {
     try {
         await sequelize.authenticate()
-        await sequelize.sync({ alter: true })
+        // await sequelize.sync({ alter: true })
         app.listen(PORT, () => console.log(`App started on port ${PORT}`))
     } catch (e) {
         console.error(e.message)

@@ -18,11 +18,11 @@ class FinanceController {
                 }
             }
 
-            if(categoryId){
+            if (categoryId) {
                 filterOptions.financeCategoryId = categoryId
             }
 
-            if(accountName){
+            if (accountName) {
                 filterOptions.account = accountName
             }
 
@@ -71,7 +71,7 @@ class FinanceController {
             contragentId: bodyData.data.contragentId,
             comment: bodyData.data.comment,
             date: bodyData.data.date,
-            invoiceNumber: bodyData.invoiceNumber,
+            invoiceNumber: bodyData.data.invoiceNumber,
         })
 
         return res.status(200).send('Arrival Created')

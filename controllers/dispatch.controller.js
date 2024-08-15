@@ -90,7 +90,6 @@ class DispatchController {
             if (!dispatchItem.dispatch) {
                 const dispatchDetails = dispatchItem.goodsDispatchDetails
 
-
                 dispatchDetails.forEach((detail) => {
                     if (detail.price !== null) {
                         totalPrice += detail.quantity * detail.price
@@ -205,6 +204,9 @@ class DispatchController {
             ],
             where: {
                 isDeleted: {
+                    [Op.ne]: 1,
+                },
+                dispatch: {
                     [Op.ne]: 1,
                 },
                 ...filterOptions,

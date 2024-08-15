@@ -286,7 +286,29 @@ class ReportController {
 
         try {
             const result = await sequelize.query(sqlQuery, { type: sequelize.QueryTypes.SELECT })
-            return res.json(result)
+
+            // Инициализация объекта для хранения тоталов
+            const totals = {
+                openingStock: 0,
+                consumption: 0,
+                incoming: 0,
+                adjustmentPeriod: 0,
+                closingStock: 0,
+            }
+
+            // Вычисление тоталов
+            result.forEach((item) => {
+                totals.openingStock += item.openingStock
+                totals.consumption += item.consumption
+                totals.incoming += parseFloat(item.incoming) // Преобразуем incoming в число, если это строка
+                totals.adjustmentPeriod += item.adjustmentPeriod
+                totals.closingStock += item.closingStock
+            })
+
+            return res.json({
+                data: result,
+                totals: totals,
+            })
         } catch (error) {
             return next(error)
         }
@@ -389,7 +411,35 @@ class ReportController {
 
         try {
             const result = await sequelize.query(sqlQuery, { type: sequelize.QueryTypes.SELECT })
-            return res.json(result)
+
+            const totals = {
+                production: 0,
+                distribution: 0,
+                returns: 0,
+                openingStock: 0,
+                productionPeriod: 0,
+                distributionPeriod: 0,
+                defect: 0,
+                returnsPeriod: 0,
+                closingStock: 0,
+            }
+
+            result.forEach((item) => {
+                totals.production += parseFloat(item.production)
+                totals.distribution += parseFloat(item.distribution)
+                totals.returns += parseFloat(item.returns)
+                totals.openingStock += parseFloat(item.openingStock)
+                totals.productionPeriod += parseFloat(item.productionPeriod)
+                totals.distributionPeriod += parseFloat(item.distributionPeriod)
+                totals.defect += parseFloat(item.defect)
+                totals.returnsPeriod += parseFloat(item.returnsPeriod)
+                totals.closingStock += parseFloat(item.closingStock)
+            })
+
+            return res.json({
+                data: result,
+                totals: totals,
+            })
         } catch (error) {
             return next(error)
         }

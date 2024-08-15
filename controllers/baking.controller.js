@@ -64,6 +64,8 @@ class BakingController {
                 },
             })
 
+            console.log(baking)
+
             const categoryMap = {
                 Мука: 'flour',
                 Соль: 'salt',
