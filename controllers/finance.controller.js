@@ -64,6 +64,34 @@ class FinanceController {
         const bodyData = req.body
         console.log(bodyData)
 
+        const contragentInfo = await models.contragent.findOne({
+            where: { id: bodyData.data.contragentId },
+            include: [
+                {
+                    model: models.overPrices,
+                },
+            ],
+        })
+
+        const existingDetail = await models.overPriceDetails.findOne({
+            where: { contragentId: bodyData.data.contragentId },
+        })
+
+        if (contragentInfo.contragentTypeId == 1 && contragentInfo.overPrices[0].price) {
+            if (existingDetail) {
+                await existingDetail.update({
+                    amount: existingDetail.amount + contragentInfo.overPrices[0].price,
+                })
+            } else {
+                await models.overPriceDetails.create({
+                    contragentId: bodyData.data.contragentId,
+                    amount: contragentInfo.overPrices[0].price,
+                })
+            }
+        } else {
+            console.log('Отсутствует сверху для данного реализатора')
+        }
+
         await models.finance.create({
             account: bodyData.data.account,
             amount: bodyData.data.amount,

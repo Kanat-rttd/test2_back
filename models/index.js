@@ -13,6 +13,7 @@ const {
 } = require('./reports.js')
 const { inventorizations } = require('./inventorizationView.js')
 const { baking, bakingDetails } = require('./baking.js')
+const { overPrices, overPriceDetails } = require('./overPrice.js')
 
 module.exports = {
     contragent: require('./contragent.js'),
@@ -43,7 +44,8 @@ module.exports = {
     departPersonal: require('./departPersonal.js'),
     shiftAccounting,
     shiftAccountingDetails,
-    overPrice: require('./overPrice.js'),
+    overPrices,
+    overPriceDetails,
     breadReportView,
     salesReportView,
     reportView,

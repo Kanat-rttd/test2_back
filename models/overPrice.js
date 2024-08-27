@@ -65,7 +65,16 @@ const overPrices = sequelize.define(
     },
 )
 
+const overPriceDetails = sequelize.define('overPriceDetails', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    contragentId: { type: DataTypes.INTEGER },
+    amount: { type: DataTypes.FLOAT, defaultValue: false },
+})
+
 contragent.hasMany(overPrices)
 overPrices.belongsTo(contragent)
 
-module.exports = overPrices
+contragent.hasMany(overPriceDetails)
+overPriceDetails.belongsTo(contragent)
+
+module.exports = { overPrices, overPriceDetails }
