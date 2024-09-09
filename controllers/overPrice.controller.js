@@ -18,7 +18,7 @@ class OverPriceController {
                 filterOptionsDate.year = year
             }
 
-            const data = await models.overPrice.findAll({
+            const data = await models.overPrices.findAll({
                 attributes: ['id', 'price', 'contragentId', 'month', 'year', 'isDeleted'],
                 include: [
                     {
@@ -44,7 +44,7 @@ class OverPriceController {
     async createOverPrice(req, res, next) {
         const overPriceData = req.body
 
-        const createdOverPrice = await models.overPrice.create({
+        const createdOverPrice = await models.overPrices.create({
             price: overPriceData.data.price,
             contragentId: overPriceData.data.contragentId,
             month: overPriceData.data.month,
@@ -66,7 +66,7 @@ class OverPriceController {
             month,
         }
 
-        const updatedData = await models.overPrice.update(updateObj, {
+        const updatedData = await models.overPrices.update(updateObj, {
             where: {
                 id,
             },
@@ -79,7 +79,7 @@ class OverPriceController {
     async delOverPrice(req, res) {
         const { id } = req.params
 
-        const deletedOverPrice = await models.overPrice.update(
+        const deletedOverPrice = await models.overPrices.update(
             {
                 isDeleted: true,
             },
@@ -95,7 +95,7 @@ class OverPriceController {
 
     async getClientsForFilter(req, res, next) {
         try {
-            const data = await models.overPrice.findAll({
+            const data = await models.overPrices.findAll({
                 attributes: ['contragentId'],
                 include: [
                     {
