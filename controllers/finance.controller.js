@@ -61,11 +61,11 @@ class FinanceController {
     }
 
     async createArrival(req, res, next) {
-        const bodyData = req.body
+        const { data } = req.body
         console.log(bodyData)
 
         const contragentInfo = await models.contragent.findOne({
-            where: { id: bodyData.data.contragentId },
+            where: { id: data.contragentId },
             include: [
                 {
                     model: models.overPrices,
@@ -73,8 +73,8 @@ class FinanceController {
             ],
         })
 
-        const existingDetail = await models.overPriceDetails.findOne({
-            where: { contragentId: bodyData.data.contragentId },
+        const existingDetail = await models.overPrices.findOne({
+            where: { contragentId: data.contragentId },
         })
 
         if (contragentInfo.contragentTypeId == 1 && contragentInfo.overPrices[0].price) {
@@ -83,8 +83,8 @@ class FinanceController {
                     amount: existingDetail.amount + contragentInfo.overPrices[0].price,
                 })
             } else {
-                await models.overPriceDetails.create({
-                    contragentId: bodyData.data.contragentId,
+                await models.overPrices.create({
+                    contragentId: data.contragentId,
                     amount: contragentInfo.overPrices[0].price,
                 })
             }
@@ -93,13 +93,13 @@ class FinanceController {
         }
 
         await models.finance.create({
-            account: bodyData.data.account,
-            amount: bodyData.data.amount,
-            financeCategoryId: bodyData.data.financeCategoryId,
-            contragentId: bodyData.data.contragentId,
-            comment: bodyData.data.comment,
-            date: bodyData.data.date,
-            invoiceNumber: bodyData.data.invoiceNumber,
+            account: data.account,
+            amount: data.amount,
+            financeCategoryId: data.financeCategoryId,
+            contragentId: data.contragentId,
+            comment: data.comment,
+            date: data.date,
+            invoiceNumber: data.invoiceNumber,
         })
 
         return res.status(200).send('Arrival Created')
