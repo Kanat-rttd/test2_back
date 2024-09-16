@@ -62,7 +62,6 @@ class FinanceController {
 
     async createArrival(req, res, next) {
         const { data } = req.body
-        console.log(bodyData)
 
         const contragentInfo = await models.contragent.findOne({
             where: { id: data.contragentId },
