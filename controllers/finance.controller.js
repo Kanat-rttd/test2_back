@@ -5,30 +5,24 @@ const sequelize = require('../config/db')
 class FinanceController {
     async getAll(req, res, next) {
         try {
-            const { startDate, endDate, categoryId, accountName } = req.query
+            const { startDate, endDate, categoryId, accountName, sortOrder = '' } = req.query
 
-            const filterOptions = {}
-
-            if (startDate && endDate) {
-                filterOptions.date = {
-                    [Op.between]: [
-                        new Date(startDate).setHours(0, 0, 0, 0),
-                        new Date(endDate).setHours(23, 59, 59, 999),
-                    ],
-                }
+            const whereClauses = {
+                where: {
+                    isDeleted: { [Op.ne]: 1 },
+                    ...(startDate &&
+                        endDate && {
+                            date: {
+                                [Op.between]: [
+                                    new Date(startDate).setHours(0, 0, 0, 0),
+                                    new Date(endDate).setHours(23, 59, 59, 999),
+                                ],
+                            },
+                        }),
+                    ...(categoryId && { '$category.id$': { [Op.eq]: categoryId } }),
+                    ...(accountName && { '$account.name$': { [Op.eq]: accountName } }),
+                },
             }
-
-            if (categoryId) {
-                filterOptions['$category.id$'] = categoryId
-            }
-
-            if (accountName) {
-                filterOptions['$account.name$'] = accountName
-            }
-
-            let { sortOrder } = req.query
-
-            sortOrder = sortOrder || ''
 
             const order = sortOrder === 'desc' ? [['date', 'DESC']] : [['date', 'ASC']]
 
@@ -47,12 +41,7 @@ class FinanceController {
                         as: 'account',
                     },
                 ],
-                where: {
-                    isDeleted: {
-                        [Op.ne]: 1,
-                    },
-                    ...filterOptions,
-                },
+                ...whereClauses,
             })
 
             // console.log(data)
@@ -148,15 +137,19 @@ class FinanceController {
     async getReportData(req, res, next) {
         const { accountName } = req.params
 
+        const whereClauses = {
+            where: {
+                ...(accountName && { '$account.name$': { [Op.eq]: accountName } }),
+            },
+        }
+
         const rawData = await models.finance.findAll({
             attributes: ['amount', 'financeCategoryId', 'comment'],
             include: [
-                { model: models.financeCategories, attributes: ['name', 'type'] },
+                { model: models.financeCategories, attributes: ['name', 'type'], as: 'category' },
                 { model: models.financeAccount, attributes: ['name'], as: 'account' },
             ],
-            where: {
-                '%account.name%': accountName,
-            },
+            ...whereClauses,
         })
 
         // Инициализация общей суммы
