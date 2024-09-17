@@ -20,7 +20,7 @@ class FinanceController {
                             },
                         }),
                     ...(categoryId && { '$category.id$': { [Op.eq]: categoryId } }),
-                    ...(accountName && { '$account.name$': { [Op.eq]: accountName } }),
+                    ...(accountName && { account: { [Op.eq]: accountName } }),
                 },
             }
 
@@ -33,12 +33,6 @@ class FinanceController {
                     {
                         model: models.financeCategories,
                         attributes: ['id', 'name', 'type'],
-                        as: 'category',
-                    },
-                    {
-                        model: models.financeAccount,
-                        attributes: ['id', 'name'],
-                        as: 'account',
                     },
                 ],
                 ...whereClauses,
@@ -139,16 +133,13 @@ class FinanceController {
 
         const whereClauses = {
             where: {
-                ...(accountName && { '$account.name$': { [Op.eq]: accountName } }),
+                ...(accountName && { account: { [Op.eq]: accountName } }),
             },
         }
 
         const rawData = await models.finance.findAll({
             attributes: ['amount', 'financeCategoryId', 'comment'],
-            include: [
-                { model: models.financeCategories, attributes: ['name', 'type'], as: 'category' },
-                { model: models.financeAccount, attributes: ['name'], as: 'account' },
-            ],
+            include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
             ...whereClauses,
         })
 
