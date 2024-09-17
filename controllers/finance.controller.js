@@ -144,9 +144,12 @@ class FinanceController {
     }
 
     async getReportData(req, res, next) {
+        const { accountName } = req.params
+
         const rawData = await models.finance.findAll({
-            attributes: ['amount', 'financeCategoryId', 'comment'],
+            attributes: ['amount', 'financeCategoryId', 'comment', 'account'],
             include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
+            where: { account: accountName },
         })
 
         // Инициализация общей суммы
