@@ -156,6 +156,8 @@ class FinanceController {
             },
         })
 
+        return res.json(rawData)
+
         // Инициализация общей суммы
         let initial = 0
 
