@@ -10,9 +10,9 @@ module.exports = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process
     connectionTimeoutMillis: 2000,
     dialectOptions: {
         connectTimeout: 5000, // set connect timeout to 5 seconds
-        requestTimeout: 5000, // set request timeout to 5 seconds
-        useUTC: true,
+        // requestTimeout: 5000, // set request timeout to 5 seconds
+        // useUTC: true,
     },
     timezone: '+05:00',
-    // logging: false //TODO: LOG
+    logging: console.log,
 })

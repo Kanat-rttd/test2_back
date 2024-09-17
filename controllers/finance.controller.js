@@ -19,8 +19,8 @@ class FinanceController {
                                 ],
                             },
                         }),
-                    ...(categoryId && { $categoryId$: { [Op.eq]: categoryId } }),
-                    ...(accountName && { $accountName$: { [Op.eq]: accountName } }),
+                    ...(categoryId && { '$financeCategory.id$': { [Op.eq]: categoryId } }),
+                    ...(accountName && { '$financeAccount.name$': { [Op.eq]: accountName } }),
                 },
             }
 
@@ -33,12 +33,10 @@ class FinanceController {
                     {
                         model: models.financeCategories,
                         attributes: ['id', 'name', 'type'],
-                        as: 'category',
                     },
                     {
                         model: models.financeAccount,
                         attributes: ['id', 'name'],
-                        as: 'account',
                     },
                 ],
                 ...whereClauses,

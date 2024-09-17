@@ -12,13 +12,13 @@ const goodsDispatch = sequelize.define('goodsDispatch', {
 })
 
 const invoiceData = sequelize.define('invoiceData', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, defaultValue: false },
+    id: { type: DataTypes.INTEGER, primaryKey: true },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
-    createdAt: { type: DataTypes.DATE, defaultValue: false },
-    updatedAt: { type: DataTypes.DATE, defaultValue: false },
-    contragentId: { type: DataTypes.INTEGER, defaultValue: false },
-    dispatch: { type: DataTypes.INTEGER, defaultValue: false },
-    invoiceNumber: { type: DataTypes.INTEGER, defaultValue: false },
+    contragentId: { type: DataTypes.INTEGER },
+    dispatch: { type: DataTypes.INTEGER },
+    invoiceNumber: { type: DataTypes.INTEGER },
+    createdAt: { type: DataTypes.DATE },
+    updatedAt: { type: DataTypes.DATE },
 })
 
 contragent.hasMany(goodsDispatch)
