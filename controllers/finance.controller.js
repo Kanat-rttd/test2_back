@@ -19,11 +19,11 @@ class FinanceController {
             }
 
             if (categoryId) {
-                filterOptions.financeCategoryId = categoryId
+                filterOptions['$category.id$'] = categoryId
             }
 
             if (accountName) {
-                filterOptions.account = accountName
+                filterOptions['$account.name$'] = accountName
             }
 
             let { sortOrder } = req.query
@@ -33,16 +33,18 @@ class FinanceController {
             const order = sortOrder === 'desc' ? [['date', 'DESC']] : [['date', 'ASC']]
 
             const data = await models.finance.findAll({
-                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'contragentId', 'account', 'comment'],
+                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'contragentId', 'comment'],
                 order: order,
                 include: [
                     {
                         model: models.financeCategories,
                         attributes: ['id', 'name', 'type'],
+                        as: 'category',
                     },
                     {
                         model: models.financeAccount,
                         attributes: ['id', 'name'],
+                        as: 'account',
                     },
                 ],
                 where: {
@@ -144,17 +146,15 @@ class FinanceController {
     }
 
     async getReportData(req, res, next) {
-        const { accountName } = req.params
+        const { accountId } = req.params
 
         const rawData = await models.finance.findAll({
             attributes: ['amount', 'financeCategoryId', 'comment'],
             include: [
                 { model: models.financeCategories, attributes: ['name', 'type'] },
-                { model: models.financeAccount, attributes: ['name'] },
+                { model: models.financeAccount, attributes: ['id'] },
             ],
-            where: {
-                name: accountName,
-            },
+            where: {},
         })
 
         // Инициализация общей суммы
