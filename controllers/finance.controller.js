@@ -147,16 +147,15 @@ class FinanceController {
         const { accountName } = req.params
 
         const rawData = await models.finance.findAll({
-            attributes: ['amount', 'financeCategoryId', 'comment', 'account'],
-            include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
+            attributes: ['amount', 'financeCategoryId', 'comment'],
+            include: [
+                { model: models.financeCategories, attributes: ['name', 'type'] },
+                { model: models.financeAccount, attributes: ['name'] },
+            ],
             where: {
-                account: {
-                    [Op.eq]: accountName,
-                },
+                name: accountName,
             },
         })
-
-        return res.json(rawData)
 
         // Инициализация общей суммы
         let initial = 0
