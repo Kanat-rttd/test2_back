@@ -150,7 +150,9 @@ class FinanceController {
             attributes: ['amount', 'financeCategoryId', 'comment', 'account'],
             include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
             where: {
-                account: accountName,
+                account: {
+                    [Op.eq]: accountName,
+                },
             },
         })
 
