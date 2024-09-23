@@ -153,7 +153,10 @@ class FinanceController {
             ...whereClauses,
         })
 
-        console.log("@RAW", rawData)
+        console.log(
+            '@RAW ACCOUNT',
+            rawData.map((r) => r.dataValues.financeAccount),
+        )
 
         // Инициализация общей суммы
         let initial = 0
