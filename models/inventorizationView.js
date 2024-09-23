@@ -12,5 +12,4 @@ const inventorizations = sequelize.define('inventorizations', {
     discrepancy: { type: DataTypes.INTEGER },
 })
 
-
 module.exports = { inventorizations }

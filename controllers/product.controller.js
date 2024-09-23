@@ -42,7 +42,7 @@ class ProductController {
             status,
         })
 
-        return res.status(200).json({message: 'Продукт успешно создан', data: createdProduct})
+        return res.status(200).json({ message: 'Продукт успешно создан', data: createdProduct })
     }
 
     async findByFilters(req, res, next) {
@@ -96,9 +96,8 @@ class ProductController {
                 },
                 individualHooks: true,
             },
-            
         )
-        return res.status(200).json({message: 'Продукт успешно обнавлен', data: updatedProduct})
+        return res.status(200).json({ message: 'Продукт успешно обнавлен', data: updatedProduct })
     }
 
     async deleteProduct(req, res, next) {
@@ -123,7 +122,7 @@ class ProductController {
                 },
             },
         )
-        return res.status(200).json({message: 'Продукт успешно удален', data: deletedProduct})
+        return res.status(200).json({ message: 'Продукт успешно удален', data: deletedProduct })
     }
 
     async getBreadNames(req, res, next) {
@@ -133,7 +132,6 @@ class ProductController {
                 isDeleted: {
                     [Op.ne]: 1,
                 },
-
             },
         })
 

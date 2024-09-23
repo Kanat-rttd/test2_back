@@ -50,36 +50,38 @@ class FactInputController {
         const factInputData = req.body
 
         try {
-            await Promise.all(factInputData.details.map(async (input) => {
-                const [factInput, created] = await models.factInput.findOrCreate({
-                    where: {
-                        goodsCategoryId: input.goodsCategoryId,
-                        place: factInputData.place
-                    },
-                    defaults: {
-                        unitOfMeasure: input.unitOfMeasure,
-                        quantity: input.quantity,
+            await Promise.all(
+                factInputData.details.map(async (input) => {
+                    const [factInput, created] = await models.factInput.findOrCreate({
+                        where: {
+                            goodsCategoryId: input.goodsCategoryId,
+                            place: factInputData.place,
+                        },
+                        defaults: {
+                            unitOfMeasure: input.unitOfMeasure,
+                            quantity: input.quantity,
+                        },
+                    })
+
+                    if (!created) {
+                        await factInput.update({
+                            quantity: input.quantity,
+                            isDeleted: false,
+                        })
                     }
-                });
-    
-                if (!created) {
-                    await factInput.update({
-                        quantity: input.quantity,
-                        isDeleted: false
-                    });
-                }
-            }));
-    
+                }),
+            )
+
             res.status(200).json({
                 status: 'success',
                 message: 'Запись успешно создана',
-            });
+            })
         } catch (error) {
-            console.error('Ошибка при создании записи:', error);
+            console.error('Ошибка при создании записи:', error)
             res.status(500).json({
                 status: 'error',
                 message: 'Произошла ошибка при создании записи',
-            });
+            })
         }
     }
 
@@ -105,7 +107,7 @@ class FactInputController {
         return res.status(200).json({
             status: 'success',
             message: 'Запись успешно обновлена',
-        });
+        })
     }
 
     async deleteFactInput(req, res) {

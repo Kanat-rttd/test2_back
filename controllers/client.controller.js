@@ -35,7 +35,7 @@ class ClientController {
         if (existingClientName != null) {
             throw new Error('Пользователь с таким именем уже существует')
         }
-        console.log(clientData);
+        console.log(clientData)
 
         const existingClientPhone = await models.clients.findOne({
             where: { isDeleted: false, contact: clientData.contact },
@@ -57,10 +57,10 @@ class ClientController {
             })
 
             const finedCantragentType = await models.contragentType.findOne({
-                where: {type: 'реализатор'}
+                where: { type: 'реализатор' },
             })
 
-            console.log(finedCantragentType);
+            console.log(finedCantragentType)
 
             await models.contragent.create({
                 contragentName: clientData.name,

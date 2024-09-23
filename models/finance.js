@@ -10,7 +10,6 @@ const finance = sequelize.define('finance', {
     date: { type: DataTypes.DATE },
     financeCategoryId: { type: DataTypes.INTEGER },
     contragentId: { type: DataTypes.INTEGER },
-    account: { type: DataTypes.STRING },
     comment: { type: DataTypes.STRING },
     invoiceNumber: { type: DataTypes.INTEGER },
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
