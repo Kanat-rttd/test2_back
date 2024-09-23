@@ -156,7 +156,7 @@ class ReportController {
         const filterOptions = {}
 
         if (startDate && endDate) {
-            filterOptions.AdjustedDate = {
+            filterOptions.adjustedDate = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
@@ -165,10 +165,10 @@ class ReportController {
             filterOptions.ClientName = clientName
         }
 
-        const data = await models.debtCalculationView.findAll({
+        const data = await models.reportView.findAll({
             attributes: [
                 'ClientName',
-                'AdjustedDate',
+                'adjustedDate',
                 'Sales',
                 'Returns',
                 'Overhead',
@@ -216,72 +216,90 @@ class ReportController {
 
         const { startDate, endDate } = req.query
 
-        const sqlQuery = `  
+        const sqlQuery = `
             SELECT
                 gc.id,
                 gc.category,
                 gc.unitOfMeasure,
-                ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) AS openingStock,
+                ((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0)) +
+                 COALESCE(ad.adjustment, 0)) AS openingStock,
                 COALESCE(bd_expenses.bakingExpenses, 0) AS consumption,
                 COALESCE(pp_expenses.purchaseExpenses, 0) AS incoming,
                 COALESCE(period_ad.periodAdjustment, 0) AS adjustmentPeriod,
-                ( ( ( COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0) ) + COALESCE(ad.adjustment, 0) ) + COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) + COALESCE(period_ad.periodAdjustment, 0) ) AS closingStock
+                (((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0)) + COALESCE(ad.adjustment, 0)) +
+                 COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) +
+                 COALESCE(period_ad.periodAdjustment, 0)) AS closingStock
             FROM
-                goodsCategories gc
-            LEFT JOIN (
-                SELECT
-                    productPurchases.goodsCategoryId AS goodsCategoryId,
-                    SUM(CASE WHEN productPurchases.date <= '${startDate}' THEN productPurchases.quantity ELSE 0 END) AS totalQuantity
-                FROM
-                    productPurchases
-                GROUP BY
-                    productPurchases.goodsCategoryId
-            ) pp ON gc.id = pp.goodsCategoryId
-            LEFT JOIN (
-                SELECT
-                    bakingDetails.goodsCategoryId AS goodsCategoryId,
-                    SUM(CASE WHEN bakingDetails.createdAt <= '${startDate}' THEN bakingDetails.quantity ELSE 0 END) AS bakingQuantity
-                FROM
-                    bakingDetails
-                GROUP BY
-                    bakingDetails.goodsCategoryId
-            ) bd ON gc.id = bd.goodsCategoryId
-            LEFT JOIN (
-                SELECT
-                    bakingDetails.goodsCategoryId AS goodsCategoryId,
-                    SUM(CASE WHEN bakingDetails.createdAt > '${startDate}' AND bakingDetails.createdAt <= '${endDate}' THEN bakingDetails.quantity ELSE 0 END) AS bakingExpenses
-                FROM
-                    bakingDetails
-                GROUP BY
-                    bakingDetails.goodsCategoryId
-            ) bd_expenses ON gc.id = bd_expenses.goodsCategoryId
-            LEFT JOIN (
-                SELECT
-                    productPurchases.goodsCategoryId AS goodsCategoryId,
-                    SUM(CASE WHEN productPurchases.date > '${startDate}' AND productPurchases.date <= '${endDate}' THEN productPurchases.quantity ELSE 0 END) AS purchaseExpenses
-                FROM
-                    productPurchases
-                GROUP BY
-                    productPurchases.goodsCategoryId
-            ) pp_expenses ON gc.id = pp_expenses.goodsCategoryId
-            LEFT JOIN (
-                SELECT
-                    adjustments.goodsCategoryId AS goodsCategoryId,
-                    SUM(CASE WHEN adjustments.createdAt <= '${startDate}' THEN adjustments.quantity ELSE 0 END) AS adjustment
-                FROM
-                    adjustments
-                GROUP BY
-                    adjustments.goodsCategoryId
-            ) ad ON gc.id = ad.goodsCategoryId
-            LEFT JOIN (
-                SELECT
-                    adjustments.goodsCategoryId AS goodsCategoryId,
-                    SUM(CASE WHEN adjustments.createdAt > '${startDate}' AND adjustments.createdAt <= '${endDate}' THEN adjustments.quantity ELSE 0 END) AS periodAdjustment
-                FROM
-                    adjustments
-                GROUP BY
-                    adjustments.goodsCategoryId
-            ) period_ad ON gc.id = period_ad.goodsCategoryId;
+                goodscategories gc
+                LEFT JOIN (
+                    SELECT
+                        productpurchases.goodscategoryid AS goodsCategoryId,
+                        SUM(CASE
+                                WHEN productpurchases.date <= '${startDate}' THEN productpurchases.quantity
+                                ELSE 0
+                            END) AS totalQuantity
+                    FROM
+                        productpurchases
+                    GROUP BY productpurchases.goodscategoryid
+                ) pp ON gc.id = pp.goodsCategoryId
+                LEFT JOIN (
+                    SELECT
+                        bakingdetails.goodscategoryid AS goodsCategoryId,
+                        SUM(CASE
+                                WHEN bakingdetails.createdat <= '${startDate}' THEN bakingdetails.quantity
+                                ELSE 0
+                            END) AS bakingQuantity
+                    FROM
+                        bakingdetails
+                    GROUP BY bakingdetails.goodscategoryid
+                ) bd ON gc.id = bd.goodsCategoryId
+                LEFT JOIN (
+                    SELECT
+                        bakingdetails.goodscategoryid AS goodsCategoryId,
+                        SUM(CASE
+                                WHEN bakingdetails.createdat > '${startDate}' AND
+                                     bakingdetails.createdat <= '${endDate}' THEN bakingdetails.quantity
+                                ELSE 0
+                            END) AS bakingExpenses
+                    FROM
+                        bakingdetails
+                    GROUP BY bakingdetails.goodscategoryid
+                ) bd_expenses ON gc.id = bd_expenses.goodsCategoryId
+                LEFT JOIN (
+                    SELECT
+                        productpurchases.goodscategoryid AS goodsCategoryId,
+                        SUM(CASE
+                                WHEN productpurchases.date > '${startDate}' AND productpurchases.date <= '${endDate}'
+                                    THEN productpurchases.quantity
+                                ELSE 0
+                            END) AS purchaseExpenses
+                    FROM
+                        productpurchases
+                    GROUP BY productpurchases.goodscategoryid
+                ) pp_expenses ON gc.id = pp_expenses.goodsCategoryId
+                LEFT JOIN (
+                    SELECT
+                        adjustments.goodscategoryid AS goodsCategoryId,
+                        SUM(CASE
+                                WHEN adjustments.createdat <= '${startDate}' THEN adjustments.quantity
+                                ELSE 0
+                            END) AS adjustment
+                    FROM
+                        adjustments
+                    GROUP BY adjustments.goodscategoryid
+                ) ad ON gc.id = ad.goodsCategoryId
+                LEFT JOIN (
+                    SELECT
+                        adjustments.goodscategoryid AS goodsCategoryId,
+                        SUM(CASE
+                                WHEN adjustments.createdat > '${startDate}' AND adjustments.createdat <= '${endDate}'
+                                    THEN adjustments.quantity
+                                ELSE 0
+                            END) AS periodAdjustment
+                    FROM
+                        adjustments
+                    GROUP BY adjustments.goodscategoryid
+                ) period_ad ON gc.id = period_ad.goodsCategoryId;
         `
 
         try {
@@ -320,93 +338,108 @@ class ReportController {
         const { startDate, endDate } = req.query
 
         const sqlQuery = `
-        SELECT 
-        p.id, 
-        p.name, 
-        COALESCE(b.totalQuantity, 0) AS production, 
-        COALESCE(gdd_dispatch.dispatch, 0) AS distribution, 
-        COALESCE(gdd_return.Vozvrat, 0) AS returns, 
-        (
-          COALESCE(b.totalQuantity, 0) - COALESCE(gdd_dispatch.dispatch, 0) + COALESCE(gdd_return.Vozvrat, 0)
-        ) AS openingStock, 
-        COALESCE(b_period.periodBaking, 0) AS productionPeriod, 
-        COALESCE(gdd_period_dispatch.periodDispatch, 0) AS distributionPeriod, 
-        COALESCE(b_defective.defectiveBaking, 0) AS defect, 
-        COALESCE(gdd_period_return.periodVozvrat, 0) AS returnsPeriod, 
-        (
-          COALESCE(b.totalQuantity, 0) - COALESCE(gdd_dispatch.dispatch, 0) + COALESCE(gdd_return.Vozvrat, 0) 
-          + COALESCE(b_period.periodBaking, 0) - COALESCE(gdd_period_dispatch.periodDispatch, 0) 
-          + COALESCE(gdd_period_return.periodVozvrat, 0)
-        ) AS closingStock 
-      FROM 
-        products p 
-        LEFT JOIN (
-          SELECT 
-            bakings.productId, 
-            SUM(CASE WHEN bakings.dateTime <= '${startDate}' THEN bakings.output ELSE 0 END) AS totalQuantity 
-          FROM 
-            bakings 
-          GROUP BY 
-            bakings.productId
-        ) b ON p.id = b.productId 
-        LEFT JOIN (
-          SELECT 
-            gdd.productId, 
-            SUM(CASE WHEN g.dispatch = 0 AND gdd.createdAt <= '${startDate}' THEN gdd.quantity ELSE 0 END) AS dispatch 
-          FROM 
-            goodsDispatchDetails gdd 
-            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
-          GROUP BY 
-            gdd.productId
-        ) gdd_dispatch ON p.id = gdd_dispatch.productId 
-        LEFT JOIN (
-          SELECT 
-            gdd.productId, 
-            SUM(CASE WHEN g.dispatch = 1 AND gdd.createdAt <= '${startDate}' THEN gdd.quantity ELSE 0 END) AS Vozvrat 
-          FROM 
-            goodsDispatchDetails gdd 
-            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
-          GROUP BY 
-            gdd.productId
-        ) gdd_return ON p.id = gdd_return.productId 
-        LEFT JOIN (
-          SELECT 
-            bakings.productId, 
-            SUM(CASE WHEN bakings.dateTime > '${startDate}' AND bakings.dateTime <= '${endDate}' THEN bakings.output ELSE 0 END) AS periodBaking 
-          FROM 
-            bakings 
-          GROUP BY 
-            bakings.productId
-        ) b_period ON p.id = b_period.productId 
-        LEFT JOIN (
-          SELECT 
-            gdd.productId, 
-            SUM(CASE WHEN g.dispatch = 0 AND gdd.createdAt > '${startDate}' AND gdd.createdAt <= '${endDate}' THEN gdd.quantity ELSE 0 END) AS periodDispatch 
-          FROM 
-            goodsDispatchDetails gdd 
-            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
-          GROUP BY 
-            gdd.productId
-        ) gdd_period_dispatch ON p.id = gdd_period_dispatch.productId 
-        LEFT JOIN (
-          SELECT 
-            bakings.productId, 
-            SUM(CASE WHEN bakings.dateTime > '${startDate}' AND bakings.dateTime <= '${endDate}' THEN bakings.defective ELSE 0 END) AS defectiveBaking 
-          FROM 
-            bakings 
-          GROUP BY 
-            bakings.productId
-        ) b_defective ON p.id = b_defective.productId 
-        LEFT JOIN (
-          SELECT 
-            gdd.productId, 
-            SUM(CASE WHEN g.dispatch = 1 AND gdd.createdAt > '${startDate}' AND gdd.createdAt <= '${endDate}' THEN gdd.quantity ELSE 0 END) AS periodVozvrat 
-          FROM 
-            goodsDispatchDetails gdd 
-            JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id 
-          GROUP BY 
-            gdd.productId
-        ) gdd_period_return ON p.id = gdd_period_return.productId;
+            SELECT
+                p.id,
+                p.name,
+                COALESCE(b.totalQuantity, 0) AS production,
+                COALESCE(gdd_dispatch.dispatch, 0) AS distribution,
+                COALESCE(gdd_return.Vozvrat, 0) AS returns,
+                (COALESCE(b.totalQuantity, 0) - COALESCE(gdd_dispatch.dispatch, 0) +
+                 COALESCE(gdd_return.Vozvrat, 0)) AS openingStock,
+                COALESCE(b_period.periodBaking, 0) AS productionPeriod,
+                COALESCE(gdd_period_dispatch.periodDispatch, 0) AS distributionPeriod,
+                COALESCE(b_defective.defectiveBaking, 0) AS defect,
+                COALESCE(gdd_period_return.periodVozvrat, 0) AS returnsPeriod,
+                (COALESCE(b.totalQuantity, 0) - COALESCE(gdd_dispatch.dispatch, 0) + COALESCE(gdd_return.Vozvrat, 0) +
+                 COALESCE(b_period.periodBaking, 0) - COALESCE(gdd_period_dispatch.periodDispatch, 0) +
+                 COALESCE(gdd_period_return.periodVozvrat, 0)) AS closingStock
+            FROM
+                products p
+                LEFT JOIN (
+                    SELECT
+                        bakings.productid,
+                        SUM(CASE
+                                WHEN bakings.datetime <= '${startDate}' THEN bakings.output
+                                ELSE 0
+                            END) AS totalQuantity
+                    FROM
+                        bakings
+                    GROUP BY bakings.productid
+                ) b ON p.id = b.productid
+                LEFT JOIN (
+                    SELECT
+                        gdd.productId,
+                        SUM(CASE
+                                WHEN g.dispatch = 0 AND gdd.createdAt <= '${startDate}' THEN gdd.quantity
+                                ELSE 0
+                            END) AS dispatch
+                    FROM
+                        goodsdispatchdetails gdd
+                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                    GROUP BY gdd.productId
+                ) gdd_dispatch ON p.id = gdd_dispatch.productId
+                LEFT JOIN (
+                    SELECT
+                        gdd.productId,
+                        SUM(CASE
+                                WHEN g.dispatch = 1 AND gdd.createdAt <= '${startDate}' THEN gdd.quantity
+                                ELSE 0
+                            END) AS Vozvrat
+                    FROM
+                        goodsdispatchdetails gdd
+                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                    GROUP BY gdd.productId
+                ) gdd_return ON p.id = gdd_return.productId
+                LEFT JOIN (
+                    SELECT
+                        bakings.productid,
+                        SUM(CASE
+                                WHEN bakings.datetime > '${startDate}' AND bakings.datetime <= '${endDate}'
+                                    THEN bakings.output
+                                ELSE 0
+                            END) AS periodBaking
+                    FROM
+                        bakings
+                    GROUP BY bakings.productid
+                ) b_period ON p.id = b_period.productid
+                LEFT JOIN (
+                    SELECT
+                        gdd.productId,
+                        SUM(CASE
+                                WHEN g.dispatch = 0 AND gdd.createdAt > '${startDate}' AND gdd.createdAt <= '${endDate}'
+                                    THEN gdd.quantity
+                                ELSE 0
+                            END) AS periodDispatch
+                    FROM
+                        goodsdispatchdetails gdd
+                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                    GROUP BY gdd.productId
+                ) gdd_period_dispatch ON p.id = gdd_period_dispatch.productId
+                LEFT JOIN (
+                    SELECT
+                        bakings.productid,
+                        SUM(CASE
+                                WHEN bakings.datetime > '${startDate}' AND bakings.datetime <= '${endDate}'
+                                    THEN bakings.defective
+                                ELSE 0
+                            END) AS defectiveBaking
+                    FROM
+                        bakings
+                    GROUP BY bakings.productid
+                ) b_defective ON p.id = b_defective.productid
+                LEFT JOIN (
+                    SELECT
+                        gdd.productId,
+                        SUM(CASE
+                                WHEN g.dispatch = 1 AND gdd.createdAt > '${startDate}' AND gdd.createdAt <= '${endDate}'
+                                    THEN gdd.quantity
+                                ELSE 0
+                            END) AS periodVozvrat
+                    FROM
+                        goodsdispatchdetails gdd
+                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                    GROUP BY gdd.productId
+                ) gdd_period_return ON p.id = gdd_period_return.productId;
         `
 
         try {
