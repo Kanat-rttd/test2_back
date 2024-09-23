@@ -228,7 +228,6 @@ class FinanceController {
                 totalAmount: result.dataValues.totalAmount || 0,
             }))
 
-
             return res.json(financeAmounts)
         } catch (error) {
             next(error)

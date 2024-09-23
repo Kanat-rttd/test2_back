@@ -156,7 +156,7 @@ class ReportController {
         const filterOptions = {}
 
         if (startDate && endDate) {
-            filterOptions.adjustedDate = {
+            filterOptions.AdjustedDate = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
@@ -165,10 +165,10 @@ class ReportController {
             filterOptions.ClientName = clientName
         }
 
-        const data = await models.reportView.findAll({
+        const data = await models.debtCalculationView.findAll({
             attributes: [
                 'ClientName',
-                'adjustedDate',
+                'AdjustedDate',
                 'Sales',
                 'Returns',
                 'Overhead',

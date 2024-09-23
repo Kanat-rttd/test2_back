@@ -22,6 +22,7 @@ const debtCalculationView = sequelize.define('DebtCalculationViews', {
     Payments: { type: DataTypes.INTEGER },
     Credit: { type: DataTypes.INTEGER },
     Debt: { type: DataTypes.INTEGER },
+    AdjustedDate: { type: DataTypes.DATE },
 })
 
 module.exports = { debtTransfer, debtCalculationView }
