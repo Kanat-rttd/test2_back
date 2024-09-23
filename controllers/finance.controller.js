@@ -133,7 +133,7 @@ class FinanceController {
     }
 
     async getReportData(req, res, next) {
-        const { accountName } = req.params
+        const { accountName } = req.query
 
         console.log('@ACCOUNT_NAME', accountName)
 
