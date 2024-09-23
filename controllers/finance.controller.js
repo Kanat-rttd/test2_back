@@ -42,7 +42,6 @@ class FinanceController {
                 ...whereClauses,
             })
 
-            // console.log(data)
             return res.json(data)
         } catch (error) {
             return next(error)
@@ -135,8 +134,6 @@ class FinanceController {
     async getReportData(req, res, next) {
         const { accountName } = req.query
 
-        console.log('@ACCOUNT_NAME', accountName)
-
         const whereClauses = {
             where: {
                 ...(accountName && { '$financeAccount.name$': { [Op.eq]: accountName } }),
@@ -154,11 +151,6 @@ class FinanceController {
             ],
             ...whereClauses,
         })
-
-        console.log(
-            '@RAW ACCOUNT',
-            rawData.map((r) => r.dataValues.financeAccount),
-        )
 
         // Инициализация общей суммы
         let initial = 0
@@ -236,7 +228,6 @@ class FinanceController {
                 totalAmount: result.dataValues.totalAmount || 0,
             }))
 
-            console.log(financeAmounts)
 
             return res.json(financeAmounts)
         } catch (error) {
