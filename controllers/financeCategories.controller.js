@@ -20,7 +20,7 @@ class FinanceCategories {
                     model: models.contragentType,
                 },
             ],
-            where: {...filterOptions},
+            where: { ...filterOptions },
         })
         return res.json(data)
     }

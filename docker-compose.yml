@@ -1,26 +1,25 @@
 volumes:
-  db:
-
+    db:
 
 services:
-  db:
-    image: mysql:latest
-    restart: always
-    environment:
-      - MYSQL_DATABASE=baker
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=admin
-      - MYSQL_ROOT_PASSWORD=admin
-    ports:
-      - "33306:3306"
-    volumes:
-      - db:/var/lib/mysql
+    db:
+        image: mysql:latest
+        restart: always
+        environment:
+            - MYSQL_DATABASE=baker
+            - MYSQL_USER=admin
+            - MYSQL_PASSWORD=admin
+            - MYSQL_ROOT_PASSWORD=admin
+        ports:
+            - '33306:3306'
+        volumes:
+            - db:/var/lib/mysql
 
-  phpMyAdmin:
-    image: phpmyadmin/phpmyadmin:latest
-    restart: always
-    ports:
-      - "8080:80"
-    environment:
-      - PMA_HOST=db
-      - MYSQL_ROOT_PASSWORD=admin
+    phpMyAdmin:
+        image: phpmyadmin/phpmyadmin:latest
+        restart: always
+        ports:
+            - '8080:80'
+        environment:
+            - PMA_HOST=db
+            - MYSQL_ROOT_PASSWORD=admin

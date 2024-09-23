@@ -57,7 +57,7 @@ class MagazinesController {
             )
 
             const finedCantragentType = await models.contragentType.findOne({
-                where: {type: 'магазин'}
+                where: { type: 'магазин' },
             })
 
             const createdContragent = await models.contragent.create(

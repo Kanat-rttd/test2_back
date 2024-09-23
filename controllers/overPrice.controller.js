@@ -73,7 +73,7 @@ class OverPriceController {
             individualHooks: true,
         })
 
-        return res.status(200).json({message: 'OverPrice updated', data: updatedData})
+        return res.status(200).json({ message: 'OverPrice updated', data: updatedData })
     }
 
     async delOverPrice(req, res) {

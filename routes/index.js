@@ -57,5 +57,4 @@ router.use('/goodsCategories', goodsCategories)
 router.use('/place', placeRouter)
 router.use('/adjustment', adjustmentRouter)
 
-
 module.exports = router

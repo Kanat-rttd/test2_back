@@ -42,7 +42,7 @@ class ProvidersController {
             })
 
             const finedCantragentType = await models.contragentType.findOne({
-                where: {type: 'поставщик'}
+                where: { type: 'поставщик' },
             })
 
             await models.contragent.create({

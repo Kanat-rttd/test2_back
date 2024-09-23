@@ -12,7 +12,7 @@ class ContragentType {
 
         const data = await models.contragentType.findAll({
             attributes: ['id', 'type'],
-            where: {...filterOptions},
+            where: { ...filterOptions },
         })
         return res.json(data)
     }

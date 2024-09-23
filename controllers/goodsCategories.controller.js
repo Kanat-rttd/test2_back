@@ -10,8 +10,8 @@ class GoodsCategories {
             filterOptions.id = categoryId
         }
         const data = await models.goodsCategories.findAll({
-            attributes: ['id', 'category', 'unitOfMeasure' ],
-            where: {...filterOptions},
+            attributes: ['id', 'category', 'unitOfMeasure'],
+            where: { ...filterOptions },
         })
         return res.json(data)
     }

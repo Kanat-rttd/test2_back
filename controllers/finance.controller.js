@@ -81,7 +81,7 @@ class FinanceController {
         }
 
         await models.finance.create({
-            account: data.account,
+            financeAccountId: data.financeAccountId,
             amount: data.amount,
             financeCategoryId: data.financeCategoryId,
             contragentId: data.contragentId,
@@ -97,7 +97,7 @@ class FinanceController {
         const bodyData = req.body
 
         await models.finance.create({
-            account: bodyData.data.account,
+            financeAccountId: bodyData.data.financeAccountId,
             amount: bodyData.data.amount * -1,
             financeCategoryId: bodyData.data.financeCategoryId,
             contragentId: bodyData.data.contragentId,
@@ -112,7 +112,7 @@ class FinanceController {
         const bodyData = req.body
 
         await models.finance.create({
-            account: bodyData.data.fromAccount,
+            financeAccountId: bodyData.data.fromAccountId,
             amount: bodyData.data.amount * -1,
             financeCategoryId: 6,
             contragentId: null,
@@ -121,7 +121,7 @@ class FinanceController {
         })
 
         await models.finance.create({
-            account: bodyData.data.toAccount,
+            financeAccountId: bodyData.data.toAccountId,
             amount: bodyData.data.amount,
             financeCategoryId: 6,
             contragentId: null,
@@ -137,7 +137,7 @@ class FinanceController {
 
         const whereClauses = {
             where: {
-                ...(accountName && { account: { [Op.eq]: accountName } }),
+                ...(accountName && { '$financeAccount.name$': { [Op.eq]: accountName } }),
             },
         }
 

@@ -8,7 +8,7 @@ const order = sequelize.define(
     'order',
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        date: {type: DataTypes.DATE},
+        date: { type: DataTypes.DATE },
         userId: { type: DataTypes.INTEGER },
         clientId: { type: DataTypes.INTEGER },
         statusId: { type: DataTypes.INTEGER, defaultValue: 0 },
