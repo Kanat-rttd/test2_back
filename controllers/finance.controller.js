@@ -143,7 +143,13 @@ class FinanceController {
 
         const rawData = await models.finance.findAll({
             attributes: ['amount', 'financeCategoryId', 'comment'],
-            include: [{ model: models.financeCategories, attributes: ['name', 'type'] }],
+            include: [
+                { model: models.financeCategories, attributes: ['name', 'type'] },
+                {
+                    model: models.financeAccount,
+                    attributes: ['name'],
+                },
+            ],
             ...whereClauses,
         })
 
