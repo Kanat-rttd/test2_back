@@ -135,6 +135,8 @@ class FinanceController {
     async getReportData(req, res, next) {
         const { accountName } = req.params
 
+        console.log('@ACCOUNT_NAME', accountName)
+
         const whereClauses = {
             where: {
                 ...(accountName && { '$financeAccount.name$': { [Op.eq]: accountName } }),
