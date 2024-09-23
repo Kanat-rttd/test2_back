@@ -180,6 +180,8 @@ class ReportController {
             where: filterOptions,
         })
 
+        console.log(data)
+
         let totalSales = 0
         let totalReturns = 0
         let totalOverhead = 0
@@ -187,6 +189,7 @@ class ReportController {
         let totalPayments = 0
         let totalCredit = 0
         let totalDebt = 0
+
         data.forEach((item) => {
             totalSales += Number(item.Sales)
             totalReturns += Number(item.Returns)
