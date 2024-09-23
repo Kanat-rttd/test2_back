@@ -153,6 +153,8 @@ class FinanceController {
             ...whereClauses,
         })
 
+        console.log("@RAW", rawData)
+
         // Инициализация общей суммы
         let initial = 0
 
