@@ -185,33 +185,36 @@ class FinanceController {
             purchasesBeforePromise,
         ])
 
-        // Инициализация общей суммы
         const initial =
             purchasesBefore.reduce((acc, cur) => acc + Number(cur.totalSum), 0) +
             financesBefore.reduce((acc, cur) => acc + Number(cur.amount), 0)
 
-        // Инициализация объекта данных
-        const data = {
+        const operational = finances
+            .filter(({ financeCategoryId }) => financeCategoryId !== 9)
+            .reduce((acc, { amount }) => acc + Number(amount), 0)
+
+        const nonPaidPurchases = purchases.reduce((acc, { totalSum }) => acc + Number(totalSum), 0)
+
+        const debtPayments = finances
+            .filter(({ financeCategoryId }) => financeCategoryId === 9)
+            .reduce((acc, { amount }) => acc + Number(amount), 0)
+
+        console.log('nonPaidPurchases', nonPaidPurchases)
+        console.log('debtPayments', debtPayments)
+
+        const financial = nonPaidPurchases - debtPayments
+
+        const balance = finances
+            .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
+            .reduce((acc, { amount }) => acc + Number(amount), 0)
+
+        return res.json({
             initial,
-            operational: finances
-                .filter(({ financeCategoryId }) => financeCategoryId !== 9)
-                .reduce((acc, { amount }) => acc + Number(amount), 0),
-            financial:
-                purchases
-                    .filter(({ status }) => status !== 'Не оплачено')
-                    .reduce((acc, { totalSum }) => acc + Number(totalSum), 0) -
-                finances
-                    .filter(({ financeCategoryId }) => financeCategoryId === 9)
-                    .reduce((acc, { amount }) => acc + Number(amount), 0),
-            balance: finances
-                .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
-                .reduce((acc, { amount }) => acc + Number(amount), 0),
-        }
-
-        data['total'] = data.initial + data.operational + data.financial
-
-        // Возвращение сформированных данных
-        return res.json(data)
+            operational,
+            financial,
+            balance,
+            total: initial + operational + financial,
+        })
     }
 
     async getFinanceAmountByInvoiceNumber(req, res, next) {
