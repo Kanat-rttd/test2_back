@@ -12,5 +12,6 @@ router.post('/transfer', catchAsync(Controller.createTransfer))
 router.get('/report', catchAsync(Controller.getReportData))
 router.get('/totals', catchAsync(Controller.getAllTotalsWithInvoiceNumbers))
 router.get('/:invoiceNumber', catchAsync(Controller.getFinanceAmountByInvoiceNumber))
+router.delete('/:id', catchAsync(Controller.deleteFinance))
 
 module.exports = router
