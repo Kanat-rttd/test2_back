@@ -132,67 +132,83 @@ class FinanceController {
     }
 
     async getReportData(req, res, next) {
-        const { accountName } = req.query
+        const { startDate, endDate } = req.query
 
-        const whereClauses = {
-            where: {
-                ...(accountName && { '$financeAccount.name$': { [Op.eq]: accountName } }),
-            },
+        const datesClauses = {
+            ...(startDate &&
+                endDate && {
+                    date: {
+                        [Op.between]: [
+                            new Date(startDate).setHours(0, 0, 0, 0),
+                            new Date(endDate).setHours(23, 59, 59, 999),
+                        ],
+                    },
+                }),
         }
 
-        const rawData = await models.finance.findAll({
-            attributes: ['amount', 'financeCategoryId', 'comment'],
-            include: [
-                { model: models.financeCategories, attributes: ['name', 'type'] },
-                {
-                    model: models.financeAccount,
-                    attributes: ['name'],
-                },
-            ],
-            ...whereClauses,
+        const financesPromise = models.finance.findAll({
+            attributes: ['amount', 'financeCategoryId', 'comment', 'date'],
+            include: [{ model: models.financeCategories, attributes: ['id', 'name', 'type'] }],
+            where: {
+                ...datesClauses,
+            },
         })
 
+        const financesBeforePromise = models.finance.findAll({
+            attributes: ['amount', 'financeCategoryId', 'comment', 'date'],
+            where: {
+                date: {
+                    [Op.lte]: new Date(startDate).setHours(0, 0, 0, 0),
+                },
+            },
+        })
+
+        const purchasesPromise = models.productPurchase.findAll({
+            attributes: ['totalSum', 'date', 'status'],
+            where: {
+                ...datesClauses,
+                status: { [Op.eq]: 'Не оплачено' },
+            },
+        })
+
+        const purchasesBeforePromise = models.productPurchase.findAll({
+            attributes: ['totalSum', 'date', 'status'],
+            where: {
+                date: { [Op.lte]: new Date(startDate).setHours(0, 0, 0, 0) },
+            },
+        })
+
+        const [finances, financesBefore, purchases, purchasesBefore] = await Promise.all([
+            financesPromise,
+            financesBeforePromise,
+            purchasesPromise,
+            purchasesBeforePromise,
+        ])
+
         // Инициализация общей суммы
-        let initial = 0
+        const initial =
+            purchasesBefore.reduce((acc, cur) => acc + Number(cur.totalSum), 0) +
+            financesBefore.reduce((acc, cur) => acc + Number(cur.amount), 0)
 
         // Инициализация объекта данных
         const data = {
-            initial: 0,
-            defaultData: [],
-            data: {
-                operational: { total: 0, data: [] },
-                financial: { total: 0, data: [] },
-            },
-            balance: 0,
+            initial,
+            operational: finances
+                .filter(({ financeCategoryId }) => financeCategoryId !== 9)
+                .reduce((acc, { amount }) => acc + Number(amount), 0),
+            financial:
+                purchases
+                    .filter(({ status }) => status !== 'Не оплачено')
+                    .reduce((acc, { totalSum }) => acc + Number(totalSum), 0) -
+                finances
+                    .filter(({ financeCategoryId }) => financeCategoryId === 9)
+                    .reduce((acc, { amount }) => acc + Number(amount), 0),
+            balance: finances
+                .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
+                .reduce((acc, { amount }) => acc + Number(amount), 0),
         }
 
-        // Обработка данных из базы
-        rawData.forEach(({ amount, financeCategory }) => {
-            const { type, name } = financeCategory
-            const total = Number(amount)
-
-            // Обновление общей суммы
-            initial += total
-
-            // Определение категории и добавление данных в соответствующий раздел
-            if (type === 'Операционный') {
-                data.data.operational.total += total
-                data.data.operational.data.push({ name, total })
-            } else if (type === 'Финансовый') {
-                data.data.financial.total += total
-                data.data.financial.data.push({ name, total })
-            } else if (type === 'Обычный') {
-                data.defaultData.push({ name, total })
-            }
-        })
-
-        // Вычисление суммы для баланса (Переводы)
-        data.balance = rawData
-            .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
-            .reduce((acc, { amount }) => acc + Number(amount), 0)
-
-        // Выставление общей суммы
-        data.initial = initial
+        data['total'] = data.initial + data.operational + data.financial
 
         // Возвращение сформированных данных
         return res.json(data)
