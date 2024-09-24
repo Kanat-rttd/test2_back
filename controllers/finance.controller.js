@@ -143,6 +143,7 @@ class FinanceController {
                             new Date(endDate).setHours(23, 59, 59, 999),
                         ],
                     },
+                    isDeleted: { [Op.eq]: false },
                 }),
         }
 
@@ -151,6 +152,7 @@ class FinanceController {
             include: [{ model: models.financeCategories, attributes: ['id', 'name', 'type'] }],
             where: {
                 ...datesClauses,
+                isDeleted: { [Op.eq]: false },
             },
         })
 
@@ -160,6 +162,7 @@ class FinanceController {
                 date: {
                     [Op.lte]: new Date(startDate).setHours(0, 0, 0, 0),
                 },
+                isDeleted: { [Op.eq]: false },
             },
         })
 
@@ -168,6 +171,7 @@ class FinanceController {
             where: {
                 ...datesClauses,
                 status: { [Op.eq]: 'Не оплачено' },
+                isDeleted: { [Op.eq]: false },
             },
         })
 
@@ -251,6 +255,18 @@ class FinanceController {
         } catch (error) {
             next(error)
         }
+    }
+
+    async deleteFinance(req, res) {
+        const {id} = req.params
+        await models.finance.update(
+            {
+                isDeleted: true,
+            },
+            {where: {id: Number(id)}},
+        )
+
+        return res.status(200).json({message: 'Финанс успешно удален'})
     }
 }
 
