@@ -1,7 +1,7 @@
 const models = require('../models')
 const { Op } = require('sequelize')
 const dayjs = require('dayjs')
-import sequelize from '../config/db'
+const sequelize = require('../config/db')
 
 class BakingController {
     async getAll(req, res, next) {
@@ -142,7 +142,7 @@ class BakingController {
         }
     }
 
-    async createBaking(req, res, next) {
+    async createBaking(req, res) {
         const bakingData = req.body
 
         console.log('Время:', bakingData.dateTime)
@@ -225,7 +225,7 @@ class BakingController {
     async deleteBaking(req, res) {
         const { id } = req.params
 
-        const deletedBakings = await models.baking.update(
+        await models.baking.update(
             { isDeleted: true },
             {
                 where: {
