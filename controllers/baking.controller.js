@@ -197,7 +197,7 @@ class BakingController {
                 quantity: bd.quantity,
             })),
             {
-                fields: ['id', 'bakingId', 'goodsCategoryId'],
+                fields: ['bakingId', 'goodsCategoryId', 'quantity'],
                 updateOnDuplicate: ['bakingId', 'goodsCategoryId'],
             },
         )
