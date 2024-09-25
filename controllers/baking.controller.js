@@ -174,6 +174,8 @@ class BakingController {
         const { id } = req.params
         const { breadType, temperature, dateTime, output, defective, bakingDetails } = req.body
 
+        console.log(bakingDetails)
+
         const updateObj = {
             productId: breadType,
             temperature,
