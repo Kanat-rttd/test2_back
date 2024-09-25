@@ -190,12 +190,16 @@ class BakingController {
             },
         })
 
-        await models.bakingDetails.upsert(
+        await models.bakingDetails.bulkCreate(
             bakingDetails.map((bd) => ({
                 bakingId: id,
                 goodsCategoryId: bd.goodsCategoryId,
                 quantity: bd.quantity,
             })),
+            {
+                fields: ['id', 'bakingId', 'goodsCategoryId'],
+                updateOnDuplicate: ['bakingId', 'goodsCategoryId'],
+            },
         )
 
         return res.status(200).json({ message: 'Выпечка успешно обновлена', data: updateObj })
