@@ -1,6 +1,7 @@
 const models = require('../models')
 const { Op } = require('sequelize')
 const dayjs = require('dayjs')
+import sequelize from '../config/db'
 
 class BakingController {
     async getAll(req, res, next) {
@@ -184,25 +185,41 @@ class BakingController {
             defective,
         }
 
-        await models.baking.update(updateObj, {
-            where: {
-                id,
-            },
-        })
+        const t = await sequelize.transaction()
 
-        await models.bakingDetails.bulkCreate(
-            bakingDetails.map((bd) => ({
-                bakingId: id,
-                goodsCategoryId: bd.goodsCategoryId,
-                quantity: bd.quantity,
-            })),
-            {
-                fields: ['bakingId', 'goodsCategoryId', 'quantity'],
-                updateOnDuplicate: ['bakingId', 'goodsCategoryId'],
-            },
-        )
+        try {
+            await models.baking.update(updateObj, {
+                where: {
+                    id,
+                },
+                transaction: t,
+            })
 
-        return res.status(200).json({ message: 'Выпечка успешно обновлена', data: updateObj })
+            await models.bakingDetails.destroy({
+                where: {
+                    bakingId: id,
+                },
+                transaction: t,
+            })
+
+            await models.bakingDetails.bulkCreate(
+                bakingDetails.map((bd) => ({
+                    id: bd.id,
+                    bakingId: id,
+                    goodsCategoryId: bd.goodsCategoryId,
+                    quantity: bd.quantity,
+                })),
+                {
+                    transaction: t,
+                },
+            )
+
+            await t.commit()
+            return res.status(200).json({ message: 'Выпечка успешно обновлена', data: updateObj })
+        } catch (e) {
+            await t.rollback()
+            throw e
+        }
     }
 
     async deleteBaking(req, res) {

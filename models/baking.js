@@ -13,12 +13,23 @@ const baking = sequelize.define('baking', {
     isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 
-const bakingDetails = sequelize.define('bakingDetails', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    bakingId: { type: DataTypes.INTEGER },
-    goodsCategoryId: { type: DataTypes.INTEGER },
-    quantity: { type: DataTypes.FLOAT },
-})
+const bakingDetails = sequelize.define(
+    'bakingDetails',
+    {
+        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        bakingId: { type: DataTypes.INTEGER },
+        goodsCategoryId: { type: DataTypes.INTEGER },
+        quantity: { type: DataTypes.FLOAT },
+    },
+    {
+        indexes: [
+            {
+                unique: true,
+                fields: ['bakingId', 'goodsCategoryId'],
+            },
+        ],
+    },
+)
 
 product.hasMany(baking)
 baking.belongsTo(product)
