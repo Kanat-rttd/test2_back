@@ -1,6 +1,5 @@
 const models = require('../models')
-const { Op, fn, col, literal } = require('sequelize')
-const Sequelize = require('../config/db')
+const { Op } = require('sequelize')
 const dayjs = require('dayjs')
 
 class BakingController {
@@ -173,15 +172,10 @@ class BakingController {
 
     async updateBaking(req, res) {
         const { id } = req.params
-        const { breadType, flour, salt, yeast, malt, butter, temperature, dateTime, output, defective } = req.body
+        const { breadType, temperature, dateTime, output, defective, bakingDetails } = req.body
 
         const updateObj = {
             productId: breadType,
-            flour,
-            salt,
-            yeast,
-            malt,
-            butter,
             temperature,
             dateTime,
             output,
@@ -193,6 +187,14 @@ class BakingController {
                 id,
             },
         })
+
+        await models.bakingDetails.upsert(
+            bakingDetails.map((bd) => ({
+                bakingId: id,
+                goodsCategoryId: bakingDetails.goodsCategoryId,
+                quantity: bakingDetails.quantity,
+            })),
+        )
 
         return res.status(200).json({ message: 'Выпечка успешно обновлена', data: updateObj })
     }
