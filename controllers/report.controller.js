@@ -233,7 +233,7 @@ class ReportController {
                  COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) +
                  COALESCE(period_ad.periodAdjustment, 0)) AS closingStock
             FROM
-                goodsСategories gc
+                goodsCategories gc
                 LEFT JOIN (
                     SELECT
                         productPurchases.goodsCategoryId AS goodsCategoryId,
