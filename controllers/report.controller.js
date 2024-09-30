@@ -360,15 +360,15 @@ class ReportController {
                 products p
                 LEFT JOIN (
                     SELECT
-                        bakings.productid,
+                        bakings.productId,
                         SUM(CASE
                                 WHEN bakings.datetime <= '${startDate}' THEN bakings.output
                                 ELSE 0
                             END) AS totalQuantity
                     FROM
                         bakings
-                    GROUP BY bakings.productid
-                ) b ON p.id = b.productid
+                    GROUP BY bakings.productId
+                ) b ON p.id = b.productId
                 LEFT JOIN (
                     SELECT
                         gdd.productId,
@@ -377,8 +377,8 @@ class ReportController {
                                 ELSE 0
                             END) AS dispatch
                     FROM
-                        goodsdispatchdetails gdd
-                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                        goodsDispatchDetails gdd
+                        JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id
                     GROUP BY gdd.productId
                 ) gdd_dispatch ON p.id = gdd_dispatch.productId
                 LEFT JOIN (
@@ -389,13 +389,13 @@ class ReportController {
                                 ELSE 0
                             END) AS Vozvrat
                     FROM
-                        goodsdispatchdetails gdd
-                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                        goodsDispatchDetails gdd
+                        JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id
                     GROUP BY gdd.productId
                 ) gdd_return ON p.id = gdd_return.productId
                 LEFT JOIN (
                     SELECT
-                        bakings.productid,
+                        bakings.productId,
                         SUM(CASE
                                 WHEN bakings.datetime > '${startDate}' AND bakings.datetime <= '${endDate}'
                                     THEN bakings.output
@@ -403,8 +403,8 @@ class ReportController {
                             END) AS periodBaking
                     FROM
                         bakings
-                    GROUP BY bakings.productid
-                ) b_period ON p.id = b_period.productid
+                    GROUP BY bakings.productId
+                ) b_period ON p.id = b_period.productId
                 LEFT JOIN (
                     SELECT
                         gdd.productId,
@@ -414,13 +414,13 @@ class ReportController {
                                 ELSE 0
                             END) AS periodDispatch
                     FROM
-                        goodsdispatchdetails gdd
-                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                        goodsDispatchDetails gdd
+                        JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id
                     GROUP BY gdd.productId
                 ) gdd_period_dispatch ON p.id = gdd_period_dispatch.productId
                 LEFT JOIN (
                     SELECT
-                        bakings.productid,
+                        bakings.productId,
                         SUM(CASE
                                 WHEN bakings.datetime > '${startDate}' AND bakings.datetime <= '${endDate}'
                                     THEN bakings.defective
@@ -428,8 +428,8 @@ class ReportController {
                             END) AS defectiveBaking
                     FROM
                         bakings
-                    GROUP BY bakings.productid
-                ) b_defective ON p.id = b_defective.productid
+                    GROUP BY bakings.productId
+                ) b_defective ON p.id = b_defective.productId
                 LEFT JOIN (
                     SELECT
                         gdd.productId,
@@ -439,8 +439,8 @@ class ReportController {
                                 ELSE 0
                             END) AS periodVozvrat
                     FROM
-                        goodsdispatchdetails gdd
-                        JOIN goodsdispatches g ON gdd.goodsDispatchId = g.id
+                        goodsDispatchDetails gdd
+                        JOIN goodsDispatches g ON gdd.goodsDispatchId = g.id
                     GROUP BY gdd.productId
                 ) gdd_period_return ON p.id = gdd_period_return.productId;
         `
