@@ -233,75 +233,75 @@ class ReportController {
                  COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) +
                  COALESCE(period_ad.periodAdjustment, 0)) AS closingStock
             FROM
-                goodscategories gc
+                goodsСategories gc
                 LEFT JOIN (
                     SELECT
-                        productpurchases.goodscategoryid AS goodsCategoryId,
+                        productPurchases.goodsCategoryId AS goodsCategoryId,
                         SUM(CASE
-                                WHEN productpurchases.date <= '${startDate}' THEN productpurchases.quantity
+                                WHEN productPurchases.date <= '${startDate}' THEN productPurchases.quantity
                                 ELSE 0
                             END) AS totalQuantity
                     FROM
-                        productpurchases
-                    GROUP BY productpurchases.goodscategoryid
+                        productPurchases
+                    GROUP BY productPurchases.goodsCategoryId
                 ) pp ON gc.id = pp.goodsCategoryId
                 LEFT JOIN (
                     SELECT
-                        bakingdetails.goodscategoryid AS goodsCategoryId,
+                        bakingDetails.goodsCategoryId AS goodsCategoryId,
                         SUM(CASE
-                                WHEN bakingdetails.createdat <= '${startDate}' THEN bakingdetails.quantity
+                                WHEN bakingDetails.createdAt <= '${startDate}' THEN bakingDetails.quantity
                                 ELSE 0
                             END) AS bakingQuantity
                     FROM
-                        bakingdetails
-                    GROUP BY bakingdetails.goodscategoryid
+                        bakingDetails
+                    GROUP BY bakingDetails.goodsCategoryId
                 ) bd ON gc.id = bd.goodsCategoryId
                 LEFT JOIN (
                     SELECT
-                        bakingdetails.goodscategoryid AS goodsCategoryId,
+                        bakingDetails.goodsCategoryId AS goodsCategoryId,
                         SUM(CASE
-                                WHEN bakingdetails.createdat > '${startDate}' AND
-                                     bakingdetails.createdat <= '${endDate}' THEN bakingdetails.quantity
+                                WHEN bakingDetails.createdAt > '${startDate}' AND
+                                     bakingDetails.createdAt <= '${endDate}' THEN bakingDetails.quantity
                                 ELSE 0
                             END) AS bakingExpenses
                     FROM
-                        bakingdetails
-                    GROUP BY bakingdetails.goodscategoryid
+                        bakingDetails
+                    GROUP BY bakingDetails.goodsCategoryId
                 ) bd_expenses ON gc.id = bd_expenses.goodsCategoryId
                 LEFT JOIN (
                     SELECT
-                        productpurchases.goodscategoryid AS goodsCategoryId,
+                        productPurchases.goodsCategoryId AS goodsCategoryId,
                         SUM(CASE
-                                WHEN productpurchases.date > '${startDate}' AND productpurchases.date <= '${endDate}'
-                                    THEN productpurchases.quantity
+                                WHEN productPurchases.date > '${startDate}' AND productPurchases.date <= '${endDate}'
+                                    THEN productPurchases.quantity
                                 ELSE 0
                             END) AS purchaseExpenses
                     FROM
-                        productpurchases
-                    GROUP BY productpurchases.goodscategoryid
+                        productPurchases
+                    GROUP BY productPurchases.goodsCategoryId
                 ) pp_expenses ON gc.id = pp_expenses.goodsCategoryId
                 LEFT JOIN (
                     SELECT
-                        adjustments.goodscategoryid AS goodsCategoryId,
+                        adjustments.goodsCategoryId AS goodsCategoryId,
                         SUM(CASE
-                                WHEN adjustments.createdat <= '${startDate}' THEN adjustments.quantity
+                                WHEN adjustments.createdAt <= '${startDate}' THEN adjustments.quantity
                                 ELSE 0
                             END) AS adjustment
                     FROM
                         adjustments
-                    GROUP BY adjustments.goodscategoryid
+                    GROUP BY adjustments.goodsCategoryId
                 ) ad ON gc.id = ad.goodsCategoryId
                 LEFT JOIN (
                     SELECT
-                        adjustments.goodscategoryid AS goodsCategoryId,
+                        adjustments.goodsCategoryId AS goodsCategoryId,
                         SUM(CASE
-                                WHEN adjustments.createdat > '${startDate}' AND adjustments.createdat <= '${endDate}'
+                                WHEN adjustments.createdAt > '${startDate}' AND adjustments.createdAt <= '${endDate}'
                                     THEN adjustments.quantity
                                 ELSE 0
                             END) AS periodAdjustment
                     FROM
                         adjustments
-                    GROUP BY adjustments.goodscategoryid
+                    GROUP BY adjustments.goodsCategoryId
                 ) period_ad ON gc.id = period_ad.goodsCategoryId;
         `
 
