@@ -3,11 +3,12 @@ const models = require('../models')
 
 class ProviderGoodsController {
     async getAll(req, res, next) {
-        const { status } = req.query
+        const { status, providerId } = req.query
         console.log('query Recieved', status)
         let filterOptions = {}
 
         if (status) filterOptions.status = status
+        if (providerId) filterOptions.providerId = providerId
 
         const data = await models.providerGoods.findAll({
             attributes: [
