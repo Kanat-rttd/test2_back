@@ -326,6 +326,10 @@ class ReportController {
                 totals.closingStock += parseFloat(item.closingStock)
             })
 
+            Object.entries(totals).forEach(([key, value]) => {
+                totals[key] = value.toFixed(2)
+            })
+
             return res.json({
                 data: result,
                 totals: totals,
