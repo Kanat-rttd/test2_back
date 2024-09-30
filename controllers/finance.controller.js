@@ -206,7 +206,7 @@ class FinanceController {
         console.log('nonPaidPurchases', nonPaidPurchases)
         console.log('debtPayments', debtPayments)
 
-        const financial = nonPaidPurchases - debtPayments
+        const financial = nonPaidPurchases + debtPayments
 
         const balance = finances
             .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
