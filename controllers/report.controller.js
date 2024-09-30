@@ -224,14 +224,14 @@ class ReportController {
                 gc.id,
                 gc.category,
                 gc.unitOfMeasure,
-                ((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0)) +
-                 COALESCE(ad.adjustment, 0)) AS openingStock,
-                COALESCE(bd_expenses.bakingExpenses, 0) AS consumption,
-                COALESCE(pp_expenses.purchaseExpenses, 0) AS incoming,
+                CAST(((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0)) +
+                 COALESCE(ad.adjustment, 0)) AS DECIMAL(7, 2)) AS openingStock,
+                CAST(COALESCE(bd_expenses.bakingExpenses, 0) AS DECIMAL(7,2)) AS consumption,
+                CAST(COALESCE(pp_expenses.purchaseExpenses, 0) AS DECIMAL(7,2)) AS incoming,
                 COALESCE(period_ad.periodAdjustment, 0) AS adjustmentPeriod,
-                (((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0)) + COALESCE(ad.adjustment, 0)) +
+                CAST((((COALESCE(pp.totalQuantity, 0) - COALESCE(bd.bakingQuantity, 0)) + COALESCE(ad.adjustment, 0)) +
                  COALESCE(pp_expenses.purchaseExpenses, 0) - COALESCE(bd_expenses.bakingExpenses, 0) +
-                 COALESCE(period_ad.periodAdjustment, 0)) AS closingStock
+                 COALESCE(period_ad.periodAdjustment, 0)) AS DECIMAL(7,2)) AS closingStock
             FROM
                 goodsCategories gc
                 LEFT JOIN (
