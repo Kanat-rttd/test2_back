@@ -319,11 +319,11 @@ class ReportController {
 
             // Вычисление тоталов
             result.forEach((item) => {
-                totals.openingStock += item.openingStock
-                totals.consumption += item.consumption
+                totals.openingStock += parseFloat(item.openingStock)
+                totals.consumption += parseFloat(item.consumption)
                 totals.incoming += parseFloat(item.incoming) // Преобразуем incoming в число, если это строка
-                totals.adjustmentPeriod += item.adjustmentPeriod
-                totals.closingStock += item.closingStock
+                totals.adjustmentPeriod += parseFloat(item.adjustmentPeriod)
+                totals.closingStock += parseFloat(item.closingStock)
             })
 
             return res.json({
