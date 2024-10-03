@@ -1,4 +1,5 @@
 const models = require('../models')
+const { Op } = require('sequelize')
 
 class AdjustmentController {
     async getAll(req, res, next) {
@@ -17,7 +18,7 @@ class AdjustmentController {
         }
 
         const data = await models.adjustments.findAll({
-            attributes: ['quantity', 'goodsCategoryId', 'createdAt'],
+            attributes: ['quantity', 'goodsCategoryId', 'createdAt', 'comment'],
             include: [
                 {
                     model: models.goodsCategories,
