@@ -27,7 +27,9 @@ const placeRouter = require('./place.route')
 const adjustmentRouter = require('./adjustment.route')
 const financeAccountRouter = require('./financeAccount.route')
 const goodsCategories = require('./goodsCategories.route')
-let router = Router()
+const spreadSheetRouter = require('./spreadsheet.route')
+
+const router = Router()
 
 router.use('/contragent', contragentRouter)
 router.use('/contragentType', contragentTypeRouter)
@@ -56,5 +58,6 @@ router.use('/providerGoods', providerGoodsRouter)
 router.use('/goodsCategories', goodsCategories)
 router.use('/place', placeRouter)
 router.use('/adjustment', adjustmentRouter)
+router.use('/spreadsheet', spreadSheetRouter)
 
 module.exports = router
