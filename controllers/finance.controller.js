@@ -48,7 +48,7 @@ class FinanceController {
         }
     }
 
-    async createArrival(req, res, next) {
+    async createArrival(req, res) {
         const { data } = req.body
 
         const contragentInfo = await models.contragent.findOne({
@@ -61,10 +61,14 @@ class FinanceController {
         })
 
         const existingDetail = await models.overPrices.findOne({
-            where: { contragentId: data.contragentId },
+            where: { contragentId: +data.contragentId },
         })
 
-        if (contragentInfo.contragentTypeId == 1 && contragentInfo.overPrices[0].price) {
+        if (
+            contragentInfo.contragentTypeId === 1 &&
+            contragentInfo.overPrices[0] &&
+            contragentInfo.overPrices[0].price
+        ) {
             if (existingDetail) {
                 await existingDetail.update({
                     amount: existingDetail.amount + contragentInfo.overPrices[0].price,
@@ -92,7 +96,7 @@ class FinanceController {
         return res.status(200).send('Arrival Created')
     }
 
-    async createConsumption(req, res, next) {
+    async createConsumption(req, res) {
         const bodyData = req.body
 
         await models.finance.create({
@@ -107,7 +111,7 @@ class FinanceController {
         return res.status(200).send('Consumption Created')
     }
 
-    async createTransfer(req, res, next) {
+    async createTransfer(req, res) {
         const bodyData = req.body
 
         await models.finance.create({
@@ -131,7 +135,7 @@ class FinanceController {
         return res.status(200).json({ message: 'Перевод подтвержден' })
     }
 
-    async getReportData(req, res, next) {
+    async getReportData(req, res) {
         const { startDate, endDate } = req.query
 
         const datesClauses = {
