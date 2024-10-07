@@ -2,8 +2,8 @@ const models = require('../models')
 const { Op } = require('sequelize')
 
 class AdjustmentController {
-    async getAll(req, res, next) {
-        const { startDate, endDate, providerGoodId } = req.query
+    async getAll(req, res) {
+        const { startDate, endDate, goodsCategoryId } = req.query
 
         const filterOptions = {}
 
@@ -13,8 +13,8 @@ class AdjustmentController {
             }
         }
 
-        if (providerGoodId) {
-            filterOptions.providerGoodId = providerGoodId
+        if (goodsCategoryId) {
+            filterOptions.goodsCategoryId = { [Op.eq]: goodsCategoryId }
         }
 
         const data = await models.adjustments.findAll({
@@ -31,7 +31,7 @@ class AdjustmentController {
         return res.json(data)
     }
 
-    async createAdjustment(req, res, next) {
+    async createAdjustment(req, res) {
         const adjustmentData = req.body
 
         console.log(adjustmentData)
