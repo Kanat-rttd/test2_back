@@ -1,7 +1,8 @@
 const { Router } = require('express')
 const Controller = require('../controllers/user.controller')
 const catchAsync = require('../filters/catchAsync')
-let router = Router()
+
+const router = Router()
 
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createUser))

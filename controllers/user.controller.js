@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const tokenDecode = require('jwt-decode')
 
 class UserController {
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { status } = req.query
         console.log('query Recieved', status)
         let filterOptions = {}
@@ -37,7 +37,7 @@ class UserController {
         return res.json(data)
     }
 
-    async createUser(req, res, next) {
+    async createUser(req, res) {
         const userData = req.body
 
         const permissions = userData.permission.map((perms) => ({ label: perms.label }))
@@ -64,7 +64,7 @@ class UserController {
         return res.status(200).send('User Created')
     }
 
-    async updateUser(req, res, next) {
+    async updateUser(req, res) {
         const { id } = req.params
         const userData = req.body
 
@@ -83,8 +83,7 @@ class UserController {
         }
 
         if (userData.pass !== undefined && userData.pass !== null && userData.pass !== '') {
-            const hashedPass = await bcrypt.hash(userData.pass, 10)
-            updateObj.pass = hashedPass
+            updateObj.pass = await bcrypt.hash(userData.pass, 10)
         }
 
         await models.users.update(updateObj, {
@@ -111,7 +110,7 @@ class UserController {
         return res.status(200).json({ message: 'Пользователь успешно удален', data: deletedUser })
     }
 
-    async authenticateUser(req, res, next) {
+    async authenticateUser(req, res) {
         try {
             const { phone, pass } = req.body
 
@@ -126,6 +125,10 @@ class UserController {
 
             if (!user && !client) {
                 return res.status(401).send('Пользователь или клиент не найден')
+            }
+
+            if ((user && !user.status) || (client && !client.status)) {
+                return res.status(401).send('Пользователь не активен')
             }
 
             let passCheck = false
@@ -160,7 +163,7 @@ class UserController {
         }
     }
 
-    async check(req, res, next) {
+    async check(req, res) {
         const currentTime = Math.floor(Date.now() / 1000)
 
         const authToken = req.header('Authorization')
