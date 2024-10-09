@@ -4,7 +4,7 @@ const Controller = require('../controllers/dispatch.controller')
 const { route } = require('./user.route')
 const catchAsync = require('../filters/catchAsync')
 
-let router = Router()
+const router = Router()
 
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createDispatch))

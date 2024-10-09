@@ -83,12 +83,12 @@ CREATE OR REPLACE VIEW DebtCalculationViews AS
         COALESCE(gdd_dispatches_sums.totalsales, 0)    AS sales,
         COALESCE(gdd_returns_sums.totalreturns, 0)     AS returns,
         COALESCE(overhead_sums.overhead, 0)            AS overhead,
-        COALESCE(expenses_sums.totalexpenses, 0)       AS expenses,
+        ABS(COALESCE(expenses_sums.totalexpenses, 0))  AS expenses,
         COALESCE(payments_sums.totalpayments, 0)       AS payments,
         COALESCE(debt_transfers_sums.totaldebit, 0)    AS debit,
         COALESCE(credit_transfers_sums.totalcredit, 0) AS credit,
         COALESCE(gdd_dispatches_sums.totalsales, 0) - COALESCE(gdd_returns_sums.totalreturns, 0) +
-        COALESCE(overhead_sums.overhead, 0) - ABS(COALESCE(expenses_sums.totalexpenses, 0)) -
+        COALESCE(overhead_sums.overhead, 0) + ABS(COALESCE(expenses_sums.totalexpenses, 0)) -
         COALESCE(payments_sums.totalpayments, 0) - COALESCE(debt_transfers_sums.totaldebit, 0) +
         COALESCE(credit_transfers_sums.totalcredit, 0) AS debt
     FROM
