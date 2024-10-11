@@ -2,20 +2,64 @@ const models = require('../models')
 const { Op } = require('sequelize')
 
 class SalesController {
+    async getByClient(req, res) {
+        const { clientId } = req.user
+
+        const orders = await models.order.findAll({
+            attributes: ['id', 'userId', 'totalQuantity', 'createdAt', 'done', 'date'],
+            required: true,
+            include: [
+                {
+                    model: models.orderDetails,
+                    attributes: [['id', 'orderDetailsId'], 'productId', 'orderedQuantity'],
+                    required: true,
+                    include: [
+                        {
+                            model: models.products,
+                            attributes: ['name', 'price'],
+                            required: true,
+                            include: [
+                                {
+                                    model: models.bakingFacilityUnits,
+                                    attributes: ['id', 'facilityUnit'],
+                                    where: facilityFilterOptions,
+                                    required: true,
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    model: models.users,
+                    attributes: ['id', 'name'],
+                },
+                {
+                    model: models.clients,
+                    attributes: ['id', 'name'],
+                },
+            ],
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                clientId: {
+                    [Op.eq]: clientId,
+                },
+            },
+            order: [['id', 'DESC']],
+        })
+
+        res.status(200).json(orders)
+    }
+
     async getAll(req, res) {
-        const { startDate, endDate, facilityUnitId, clientId } = req.query
+        const { startDate, endDate, facilityUnitId } = req.query
 
         let facilityFilterOptions = {}
         let filterOptions = {}
 
         if (facilityUnitId) {
             facilityFilterOptions.id = facilityUnitId
-        }
-
-        if (clientId) {
-            filterOptions.clientId = {
-                [Op.eq]: clientId,
-            }
         }
 
         if (startDate && endDate) {
