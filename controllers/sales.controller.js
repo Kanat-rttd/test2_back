@@ -3,13 +3,19 @@ const { Op } = require('sequelize')
 
 class SalesController {
     async getAll(req, res) {
-        const { startDate, endDate, facilityUnitId } = req.query
+        const { startDate, endDate, facilityUnitId, clientId } = req.query
 
         let facilityFilterOptions = {}
         let filterOptions = {}
 
         if (facilityUnitId) {
             facilityFilterOptions.id = facilityUnitId
+        }
+
+        if (clientId) {
+            filterOptions.clientId = {
+                [Op.eq]: clientId,
+            }
         }
 
         if (startDate && endDate) {
