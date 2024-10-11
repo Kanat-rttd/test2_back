@@ -3,7 +3,27 @@ const { Op } = require('sequelize')
 
 class SalesController {
     async getByClient(req, res) {
+        const { startDate, endDate, facilityUnitId } = req.query
         const { clientId } = req.user
+
+        let facilityFilterOptions = {}
+        let filterOptions = {}
+
+        if (clientId) {
+            filterOptions.clientId = {
+                [Op.eq]: clientId,
+            }
+        }
+
+        if (facilityUnitId) {
+            facilityFilterOptions.id = facilityUnitId
+        }
+
+        if (startDate && endDate) {
+            filterOptions.date = {
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+            }
+        }
 
         const orders = await models.order.findAll({
             attributes: ['id', 'userId', 'totalQuantity', 'createdAt', 'done', 'date'],
@@ -42,9 +62,7 @@ class SalesController {
                 isDeleted: {
                     [Op.ne]: 1,
                 },
-                clientId: {
-                    [Op.eq]: clientId,
-                },
+                ...filterOptions,
             },
             order: [['id', 'DESC']],
         })
