@@ -12,12 +12,6 @@ class SalesController {
             facilityFilterOptions.id = facilityUnitId
         }
 
-        if (req.user) {
-            filterOptions.clientId = {
-                [Op.eq]: req.user.clientId,
-            }
-        }
-
         if (startDate && endDate) {
             filterOptions.date = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
