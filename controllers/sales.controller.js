@@ -1,24 +1,25 @@
-const { col } = require('../config/db')
 const models = require('../models')
 const { Op } = require('sequelize')
-const AppError = require('../filters/appError')
-const dayjs = require('dayjs')
 
 class SalesController {
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { startDate, endDate, facilityUnitId } = req.query
 
-        console.log('Recieved Data ', facilityUnitId)
-
         let facilityFilterOptions = {}
-        let filterOptionsDate = {}
+        let filterOptions = {}
 
         if (facilityUnitId) {
             facilityFilterOptions.id = facilityUnitId
         }
 
+        if (req.user) {
+            filterOptions.clientId = {
+                [Op.eq]: req.user.clientId,
+            }
+        }
+
         if (startDate && endDate) {
-            filterOptionsDate.date = {
+            filterOptions.date = {
                 [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
             }
         }
@@ -60,7 +61,7 @@ class SalesController {
                 isDeleted: {
                     [Op.ne]: 1,
                 },
-                ...filterOptionsDate,
+                ...filterOptions,
             },
             order: [['id', 'DESC']],
         })
@@ -68,7 +69,7 @@ class SalesController {
         res.status(200).json(orders)
     }
 
-    async getOrderById(req, res, next) {
+    async getOrderById(req, res) {
         const { id } = req.params
 
         const orders = await models.order.findOne({
@@ -94,7 +95,7 @@ class SalesController {
         })
     }
 
-    async createSale(req, res, next) {
+    async createSale(req, res) {
         const sales = req.body
 
         console.log(sales)
@@ -119,14 +120,14 @@ class SalesController {
         })
     }
 
-    async updateSale(req, res, next) {
+    async updateSale(req, res) {
         const { id } = req.params
         const sales = req.body
 
         const today = new Date()
         today.setHours(11, 0, 0, 0)
 
-        const order = await models.order.update(
+        await models.order.update(
             {
                 clientId: sales.clientId,
                 date: sales.date,
@@ -151,7 +152,7 @@ class SalesController {
         })
     }
 
-    async deleteSale(req, res, next) {
+    async deleteSale(req, res) {
         const { id } = req.params
 
         await models.order.update(
@@ -169,7 +170,7 @@ class SalesController {
         })
     }
 
-    async setDoneStatus(req, res, next) {
+    async setDoneStatus(req, res) {
         const { id } = req.params
         // console.log(id)
 
@@ -190,7 +191,7 @@ class SalesController {
         })
     }
 
-    async getByFacilityUnit(req, res, next) {
+    async getByFacilityUnit(req, res) {
         const { facilityUnitId } = req.body
 
         const orders = await models.order.findAll({
@@ -233,9 +234,8 @@ class SalesController {
         })
     }
 
-    async saveOrderChanges(req, res, next) {
+    async saveOrderChanges(req, res) {
         const orders = req.body
-        const { id } = req.params
 
         for (const order of orders) {
             const { orderDetailsId, productId, orderedQuantity } = order
