@@ -3,9 +3,8 @@ const sequelize = require('../config/db')
 const models = require('../models')
 
 class MagazinesController {
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const { name, clientId, status } = req.query
-        console.log('query Recieved', name, clientId, status)
         let filterOptions = {}
 
         let filterClient = {}
@@ -33,7 +32,7 @@ class MagazinesController {
         return res.json(data)
     }
 
-    async createMagazine(req, res, next) {
+    async createMagazine(req, res) {
         const magazineData = req.body
 
         const existingMagazine = await models.magazines.findOne({
@@ -79,7 +78,7 @@ class MagazinesController {
         }
     }
 
-    async updateMagazine(req, res, next) {
+    async updateMagazine(req, res) {
         const { id } = req.params
         const { name, status, clientId } = req.body
 
@@ -99,7 +98,15 @@ class MagazinesController {
         const tr = await sequelize.transaction()
 
         try {
-            await models.contragent.update({ contragentName: name, status: status }, { where: { mainId: id } })
+            await models.contragent.update(
+                { contragentName: name, status: status },
+                {
+                    where: {
+                        mainId: id,
+                        contragentTypeId: 4,
+                    },
+                },
+            )
 
             const updatedMagazine = await models.magazines.update(
                 {
@@ -123,7 +130,7 @@ class MagazinesController {
         }
     }
 
-    async deleteMagazine(req, res, next) {
+    async deleteMagazine(req, res) {
         const { id } = req.params
 
         const tr = await sequelize.transaction()
