@@ -81,20 +81,15 @@ class MagazinesController {
 
     async updateMagazine(req, res, next) {
         const { id } = req.params
-        const magazineData = req.body
+        const { name, status, clientId } = req.body
 
-        const findedMagazine = await models.magazines.findByPk(id)
+        const foundMagazine = await models.magazines.findByPk(id)
 
-        const updateObj = {
-            name: magazineData.name,
-            clientId: magazineData.clientId,
-            status: magazineData.status,
-        }
-
-        if (magazineData.name !== findedMagazine.name) {
+        if (name !== foundMagazine.name) {
             const existingMagazine = await models.magazines.findOne({
-                where: { isDeleted: false, name: magazineData.name },
+                where: { isDeleted: false, name },
             })
+
             if (existingMagazine != null) {
                 console.log(existingMagazine)
                 return res.status(409).json({ message: 'Такой магазин уже существует', data: existingMagazine })
@@ -104,17 +99,21 @@ class MagazinesController {
         const tr = await sequelize.transaction()
 
         try {
-            await models.contragent.update(
-                { contragentName: magazineData.name, status: magazineData.status },
-                { where: { contragentName: findedMagazine.name } },
-            )
+            await models.contragent.update({ contragentName: name, status: status }, { where: { mainId: id } })
 
-            const updatedMagazine = await models.magazines.update(updateObj, {
-                where: {
-                    id,
+            const updatedMagazine = await models.magazines.update(
+                {
+                    name,
+                    clientId,
+                    status,
                 },
-                individualHooks: true,
-            })
+                {
+                    where: {
+                        id,
+                    },
+                    individualHooks: true,
+                },
+            )
             await tr.commit()
 
             return res.status(200).json({ message: 'Магазин успешно обновлен', data: updatedMagazine })
