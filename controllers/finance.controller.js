@@ -197,9 +197,12 @@ class FinanceController {
             purchasesBefore.reduce((acc, cur) => acc + Number(cur.totalSum), 0) +
             financesBefore.reduce((acc, cur) => acc + Number(cur.amount), 0)
 
-        const operational = finances
-            .filter(({ financeCategoryId }) => financeCategoryId !== 9)
-            .reduce((acc, { amount }) => acc + Number(amount), 0)
+        const operationalFinances = finances.filter(({ financeCategoryId }) => financeCategoryId !== 9)
+
+        const operational = {
+            items: operationalFinances,
+            total: operationalFinances.reduce((acc, { amount }) => acc + Number(amount), 0),
+        }
 
         const nonPaidPurchases = purchases.reduce((acc, { totalSum }) => acc + Number(totalSum), 0)
 
@@ -210,7 +213,10 @@ class FinanceController {
         console.log('nonPaidPurchases', nonPaidPurchases)
         console.log('debtPayments', debtPayments)
 
-        const financial = nonPaidPurchases + debtPayments
+        const financial = {
+            total: nonPaidPurchases + debtPayments,
+            items: [...purchases, ...finances.filter(({ financeCategoryId }) => financeCategoryId === 9)],
+        }
 
         const balance = finances
             .filter(({ financeCategory }) => financeCategory.type === 'Перевод')
