@@ -227,7 +227,7 @@ class FinanceController {
             operational,
             financial,
             balance,
-            total: initial + operational + financial,
+            total: initial + operational.total + financial.total,
         })
     }
 
