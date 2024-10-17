@@ -24,17 +24,26 @@ WITH gdd_totals AS (
 SELECT
     gdt.contragent_name          AS contragentName,
     gdt.total                    AS goodDispatchesTotal,
-    COALESCE(f_minus.amount, 0)  AS financeMinus,
-    COALESCE(f_plus.amount, 0)   AS financePlus,
-    COALESCE(dt_plus.amount, 0)  AS debtTransfersPlus,
-    COALESCE(dt_minus.amount, 0) AS debtTransfersMinus,
-    gdt.total - COALESCE(f_minus.amount, 0) + COALESCE(f_plus.amount, 0) + COALESCE(dt_plus.amount, 0) -
-    COALESCE(dt_minus.amount, 0) AS debt
+    SUM(COALESCE(f_minus.amount, 0)) AS financeMinus,
+    SUM(COALESCE(f_plus.amount, 0))  AS financePlus,
+    COALESCE(dt_plus.sum, 0)         AS debtTransfersPlus,
+    COALESCE(dt_minus.sum, 0)        AS debtTransfersMinus,
+    gdt.total - SUM(COALESCE(f_minus.amount, 0)) + SUM(COALESCE(f_plus.amount, 0)) + COALESCE(dt_plus.sum, 0) -
+    COALESCE(dt_minus.sum, 0)        AS debt
 FROM
     gd_totals gdt
-    LEFT JOIN finances f_minus ON f_minus.contragentId = gdt.contragent_id AND f_minus.financeCategoryId IN (2, 5)
-    LEFT JOIN finances f_plus ON f_plus.contragentId = gdt.contragent_id AND f_plus.financeCategoryId IN (4)
-    LEFT JOIN debtTransfers dt_plus ON dt_plus.kt = gdt.contragent_id
-    LEFT JOIN debtTransfers dt_minus ON dt_minus.dt = gdt.contragent_id
+    LEFT OUTER JOIN finances f_minus ON f_minus.contragentId = gdt.contragent_id AND f_minus.financeCategoryId IN (2, 5)
+    LEFT OUTER JOIN finances f_plus ON f_plus.contragentId = gdt.contragent_id AND f_plus.financeCategoryId IN (4)
+    LEFT OUTER JOIN (
+        SELECT kt AS kt, SUM(amount) AS sum
+        FROM debtTransfers
+        GROUP BY kt
+    ) dt_minus ON dt_minus.kt = gdt.contragent_id
+    LEFT OUTER JOIN (
+        SELECT dt AS dt, SUM(amount) AS sum
+        FROM debtTransfers
+        GROUP BY dt
+    ) dt_plus ON dt_plus.dt = gdt.contragent_id
 GROUP BY
-    contragentName, debt, goodDispatchesTotal, financeMinus, financePlus, debtTransfersMinus, debtTransfersPlus;
+    gdt.contragent_name, gdt.total, dt_plus.sum, dt_minus.sum;
+
