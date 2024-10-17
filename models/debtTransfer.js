@@ -14,15 +14,12 @@ const debtTransfer = sequelize.define('debtTransfer', {
 })
 
 const debtCalculationView = sequelize.define('DebtCalculationViews', {
-    ClientName: { type: DataTypes.STRING },
-    Sales: { type: DataTypes.INTEGER },
-    Returns: { type: DataTypes.INTEGER },
-    Overhead: { type: DataTypes.INTEGER },
-    Expenses: { type: DataTypes.INTEGER },
-    Payments: { type: DataTypes.INTEGER },
-    Credit: { type: DataTypes.INTEGER },
-    Debt: { type: DataTypes.INTEGER },
-    AdjustedDate: { type: DataTypes.DATE },
+    contragentName: { type: DataTypes.STRING },
+    goodDispatchesTotal: { type: DataTypes.INTEGER },
+    financeMinus: { type: DataTypes.INTEGER },
+    financePlus: { type: DataTypes.INTEGER },
+    debtTransfersPlus: { type: DataTypes.INTEGER },
+    debtTransfersMinus: { type: DataTypes.INTEGER },
 })
 
 module.exports = { debtTransfer, debtCalculationView }

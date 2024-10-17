@@ -20,17 +20,12 @@ class DebtTransferController {
 
     async getAllCalculations(req, res, next) {
         const data = await models.debtCalculationView.findAll({
-            attributes: ['ClientName', 'Sales', 'Returns', 'Overhead', 'Expenses', 'Payments', 'Credit', 'Debt'],
-        })
-
-        let totalDebt = 0
-        data.forEach((item) => {
-            totalDebt += item.Debt
+            attributes: ['contragentName', 'debt'],
         })
 
         const responseData = {
             Data: data,
-            Total: totalDebt,
+            Total: data.reduce((acc, cur) => acc + cur.getDataValue('debt'), 0),
         }
 
         return res.json(responseData)

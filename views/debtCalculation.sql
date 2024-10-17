@@ -1,108 +1,40 @@
-CREATE OR REPLACE VIEW DebtCalculationViews AS
-    WITH gdd_dispatches AS (
-        SELECT
-            gd.contragentid                                                                                      AS contragentid,
-            IF(HOUR(gd.createdat) < 14, CAST(gd.createdat AS DATE),
-               CAST(gd.createdat + INTERVAL 1 DAY AS DATE))                                                      AS adjusteddate,
-            SUM(gdd.quantity * gdd.price)                                                                        AS sales
-        FROM
-            goodsDispatches gd
-            JOIN goodsDispatchDetails gdd ON gd.id = gdd.goodsdispatchid
-        WHERE
-            gd.dispatch = 0
-        GROUP BY gd.contragentid, adjusteddate
-    ), gdd_returns AS (
-        SELECT
-            gd.contragentid                                                                                      AS contragentid,
-            IF(HOUR(gd.createdat) < 14, CAST(gd.createdat AS DATE),
-               CAST(gd.createdat + INTERVAL 1 DAY AS DATE))                                                      AS adjusteddate,
-            SUM(gdd.quantity * gdd.price)                                                                        AS sales
-        FROM
-            goodsDispatches gd
-            JOIN goodsDispatchDetails gdd ON gd.id = gdd.goodsdispatchid
-        WHERE
-            gd.dispatch = 1
-        GROUP BY gd.contragentid, adjusteddate
-    ), gdd_dispatches_sums AS (
-        SELECT
-            gdd_dispatches.contragentid AS contragentid,
-            SUM(gdd_dispatches.sales)   AS totalsales
-        FROM
-            gdd_dispatches
-        GROUP BY gdd_dispatches.contragentid
-    ), gdd_returns_sums AS (
-        SELECT
-            gdd_returns.contragentid AS contragentid,
-            SUM(gdd_returns.sales)   AS totalreturns
-        FROM
-            gdd_returns
-        GROUP BY gdd_returns.contragentid
-    ), expenses_sums AS (
-        SELECT
-            finances.contragentid AS contragentid,
-            SUM(finances.amount)  AS totalexpenses
-        FROM
-            finances
-        WHERE
-            (finances.financecategoryid = (
-                SELECT fc.id FROM financeCategories fc WHERE fc.name = 'Предварительная оплата услуг реализации'
-            ))
-        GROUP BY finances.contragentid
-    ), payments_sums AS (
-        SELECT
-            finances.contragentid AS contragentid,
-            SUM(finances.amount)  AS totalpayments
-        FROM
-            finances
-        WHERE
-            finances.financecategoryid IN (
-                SELECT fc.id
-                FROM financeCategories fc
-                WHERE fc.name IN ('Оплата от реализаторов', 'Сверху (оплата от реализаторов)')
-            )
-        GROUP BY finances.contragentid
-    ), debt_transfers_sums AS (
-        SELECT kt.kt AS contragentid, SUM(kt.amount) AS totaldebit FROM debtTransfers kt GROUP BY kt.kt
-    ), credit_transfers_sums AS (
-        SELECT dt.dt AS contragentid, SUM(dt.amount) AS totalcredit FROM debtTransfers dt GROUP BY dt.dt
-    ), overhead_sums AS (
-        SELECT
-            op.contragentid            AS contragentid,
-            COALESCE(SUM(op.price), 0) AS overhead
-        FROM
-            overPrices op
-        WHERE
-            op.contragentid IN (
-                SELECT gdd_dispatches.contragentid
-                FROM gdd_dispatches
-            )
-        GROUP BY op.contragentid
-    )
+WITH gdd_totals AS (
     SELECT
-        c.contragentname                               AS clientname,
-        COALESCE(gdd_dispatches_sums.totalsales, 0)    AS sales,
-        COALESCE(gdd_returns_sums.totalreturns, 0)     AS returns,
-        COALESCE(overhead_sums.overhead, 0)            AS overhead,
-        ABS(COALESCE(expenses_sums.totalexpenses, 0))  AS expenses,
-        COALESCE(payments_sums.totalpayments, 0)       AS payments,
-        COALESCE(debt_transfers_sums.totaldebit, 0)    AS debit,
-        COALESCE(credit_transfers_sums.totalcredit, 0) AS credit,
-        COALESCE(gdd_dispatches_sums.totalsales, 0) - COALESCE(gdd_returns_sums.totalreturns, 0) +
-        COALESCE(overhead_sums.overhead, 0) + ABS(COALESCE(expenses_sums.totalexpenses, 0)) -
-        COALESCE(payments_sums.totalpayments, 0) - COALESCE(debt_transfers_sums.totaldebit, 0) +
-        COALESCE(credit_transfers_sums.totalcredit, 0) AS debt
+        c.id                          AS contragent_id,
+        c.contragentName              AS contragent_name,
+        SUM(gdd.price * gdd.quantity) AS total,
+        op.price                      AS overhead
     FROM
-        contragents c
-        LEFT JOIN gdd_dispatches_sums ON c.id = gdd_dispatches_sums.contragentid
-        LEFT JOIN gdd_returns_sums ON c.id = gdd_returns_sums.contragentid
-        LEFT JOIN expenses_sums ON c.id = expenses_sums.contragentid
-        LEFT JOIN payments_sums ON c.id = payments_sums.contragentid
-        LEFT JOIN debt_transfers_sums ON c.id = debt_transfers_sums.contragentid
-        LEFT JOIN credit_transfers_sums ON c.id = credit_transfers_sums.contragentid
-        LEFT JOIN overhead_sums ON c.id = overhead_sums.contragentid
-    WHERE
-        c.contragenttypeid = 1
-    GROUP BY
-        c.contragentname, gdd_dispatches_sums.totalsales, gdd_returns_sums.totalreturns, overhead_sums.overhead,
-        expenses_sums.totalexpenses, payments_sums.totalpayments, debt_transfers_sums.totaldebit,
-        credit_transfers_sums.totalcredit
+        goodsDispatches gd
+        LEFT JOIN goodsDispatchDetails gdd ON gdd.goodsDispatchId = gd.id
+        LEFT JOIN overPrices op ON op.contragentId = gd.contragentId AND MONTH(gd.createdAt) = op.month AND
+                                   YEAR(gd.createdAt) = op.year
+        LEFT JOIN contragents c ON c.id = gd.contragentId
+        LEFT JOIN products p ON p.id = gdd.productId
+    GROUP BY gd.id, c.id, c.contragentName, op.price
+), gd_totals AS (
+    SELECT
+        gddt.contragent_id,
+        gddt.contragent_name,
+        SUM(gddt.total + gddt.overhead) AS total
+    FROM
+        gdd_totals gddt
+    GROUP BY gddt.contragent_name, gddt.contragent_id
+)
+SELECT
+    gdt.contragent_name          AS contragentName,
+    gdt.total                    AS goodDispatchesTotal,
+    COALESCE(f_minus.amount, 0)  AS financeMinus,
+    COALESCE(f_plus.amount, 0)   AS financePlus,
+    COALESCE(dt_plus.amount, 0)  AS debtTransfersPlus,
+    COALESCE(dt_minus.amount, 0) AS debtTransfersMinus,
+    gdt.total - COALESCE(f_minus.amount, 0) + COALESCE(f_plus.amount, 0) + COALESCE(dt_plus.amount, 0) -
+    COALESCE(dt_minus.amount, 0) AS debt
+FROM
+    gd_totals gdt
+    LEFT JOIN finances f_minus ON f_minus.contragentId = gdt.contragent_id AND f_minus.financeCategoryId IN (2, 5)
+    LEFT JOIN finances f_plus ON f_plus.contragentId = gdt.contragent_id AND f_plus.financeCategoryId IN (4)
+    LEFT JOIN debtTransfers dt_plus ON dt_plus.kt = gdt.contragent_id
+    LEFT JOIN debtTransfers dt_minus ON dt_minus.dt = gdt.contragent_id
+GROUP BY
+    contragentName, debt, goodDispatchesTotal, financeMinus, financePlus, debtTransfersMinus, debtTransfersPlus;
