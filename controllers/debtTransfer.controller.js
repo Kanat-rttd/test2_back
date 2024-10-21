@@ -19,8 +19,13 @@ class DebtTransferController {
     }
 
     async getAllCalculations(req, res, next) {
+        const { contragentName } = req.query
+
         const data = await models.debtCalculationView.findAll({
             attributes: ['contragentName', 'debt'],
+            where: {
+                ...(contragentName ? { contragentName } : {}),
+            },
         })
 
         const responseData = {
