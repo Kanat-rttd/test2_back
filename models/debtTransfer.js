@@ -1,6 +1,5 @@
 const sequelize = require('../config/db')
 const { DataTypes } = require('sequelize')
-const contragent = require('./contragent')
 
 const debtTransfer = sequelize.define('debtTransfer', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -14,12 +13,17 @@ const debtTransfer = sequelize.define('debtTransfer', {
 })
 
 const debtCalculationView = sequelize.define('DebtCalculationViews', {
-    contragentName: { type: DataTypes.STRING },
-    goodDispatchesTotal: { type: DataTypes.INTEGER },
-    financeMinus: { type: DataTypes.INTEGER },
-    financePlus: { type: DataTypes.INTEGER },
-    debtTransfersPlus: { type: DataTypes.INTEGER },
-    debtTransfersMinus: { type: DataTypes.INTEGER },
+    client: { type: DataTypes.STRING },
+    month: { type: DataTypes.INTEGER },
+    year: { type: DataTypes.INTEGER },
+    sales: { type: DataTypes.INTEGER },
+    returns: { type: DataTypes.INTEGER },
+    overhead: { type: DataTypes.INTEGER },
+    expenses: { type: DataTypes.INTEGER },
+    payments: { type: DataTypes.INTEGER },
+    credit: { type: DataTypes.INTEGER },
+    debit: { type: DataTypes.INTEGER },
+    debt: { type: DataTypes.INTEGER },
 })
 
 module.exports = { debtTransfer, debtCalculationView }

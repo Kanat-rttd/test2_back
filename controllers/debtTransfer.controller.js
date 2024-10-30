@@ -1,7 +1,7 @@
 const models = require('../models')
 
 class DebtTransferController {
-    async getAll(req, res, next) {
+    async getAll(req, res) {
         const data = await models.debtTransfer.findAll({
             attributes: ['id', 'dt', 'kt', 'amount', 'transfer_date', 'invoice_number', 'comment'],
             include: [
@@ -18,13 +18,13 @@ class DebtTransferController {
         return res.json(data)
     }
 
-    async getAllCalculations(req, res, next) {
+    async getAllCalculations(req, res) {
         const { contragentName } = req.query
 
         const data = await models.debtCalculationView.findAll({
-            attributes: ['contragentName', 'debt'],
+            attributes: ['client', 'debt'],
             where: {
-                ...(contragentName ? { contragentName } : {}),
+                ...(contragentName ? { client: contragentName } : {}),
             },
         })
 
@@ -36,7 +36,7 @@ class DebtTransferController {
         return res.json(responseData)
     }
 
-    async createDebtTransfer(req, res, next) {
+    async createDebtTransfer(req, res) {
         const debtTransfer = req.body
 
         console.log(debtTransfer)
