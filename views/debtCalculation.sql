@@ -1,15 +1,14 @@
 SELECT
-    ClientName          AS client,
-    MONTH(adjustedDate) AS month,
-    YEAR(adjustedDate)  AS year,
-    SUM(Credit)         AS credit,
-    SUM(Payments)       AS payments,
-    SUM(Expenses)       AS expenses,
-    SUM(Overhead)       AS overhead,
-    SUM(Returns)        AS returns,
-    SUM(Sales)          AS sales,
-    SUM(Debt)           AS debt
+    ClientName    AS client,
+    SUM(Sales)    AS sales,
+    SUM(Returns)  AS returns,
+    SUM(Overhead) AS overhead,
+    SUM(Expenses) AS expenses,
+    SUM(Payments) AS payments,
+    SUM(Credit)   AS credit,
+    SUM(Debit)    AS debit,
+    SUM(Debt)     AS debt
 FROM
     ReportView
 GROUP BY
-    client, month, year;
+    client;
