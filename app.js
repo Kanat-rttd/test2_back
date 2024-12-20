@@ -8,6 +8,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const router = require('./routes/index')
 const path = require('path')
+const { bot } = require('./bot')
 
 const PORT = process.env.PORT || 5001
 const app = express()
@@ -27,6 +28,8 @@ const start = async () => {
     try {
         await sequelize.authenticate()
         sequelize.sync({ alter: true }).then(() => console.debug('Database synchonized'))
+
+        bot.launch(() => console.log('Bot is running'))
         app.listen(PORT, () => console.log(`App started on port ${PORT}`))
     } catch (e) {
         console.error(e.message)
