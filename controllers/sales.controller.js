@@ -1,5 +1,7 @@
+const { Sequelize } = require('../config/db')
 const models = require('../models')
 const { Op } = require('sequelize')
+const sequelize = require('../config/db')
 
 class SalesController {
     async getByClient(req, res) {
@@ -234,23 +236,73 @@ class SalesController {
 
     async setDoneStatus(req, res) {
         const { id } = req.params
-        // console.log(id)
-
-        await models.order.update(
-            {
-                done: 1,
-            },
-            {
-                where: {
-                    id,
+        const order = await models.order.findByPk(id, {
+            include: [
+                {
+                    model: models.orderDetails,
+                    include: [
+                        {
+                            model: models.products,
+                        },
+                    ],
                 },
-            },
-        )
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Заказ успешно обновлен',
+            ],
         })
+
+        if (!order) {
+            return res.status(404).json({ message: 'Такой заявки нет' })
+        }
+
+        const contragent = await models.contragent.findOne({
+            where: { mainId: order.clientId },
+        })
+
+        console.log(order)
+
+        const transaction = await sequelize.transaction()
+
+        try {
+            await models.order.update(
+                {
+                    done: 1,
+                },
+                {
+                    where: {
+                        id,
+                    },
+                    transaction,
+                },
+            )
+
+            const gd = await models.goodsDispatch.create(
+                {
+                    contragentId: contragent.id,
+                    dispatch: 0,
+                    createdAt: order.updatedAt,
+                },
+                { transaction },
+            )
+
+            await models.goodsDispatchDetails.bulkCreate(
+                order.orderDetails.map((detail) => ({
+                    goodsDispatchId: gd.id,
+                    productId: detail.productId,
+                    quantity: detail.orderedQuantity,
+                    price: detail.product.price,
+                })),
+                { transaction },
+            )
+
+            await transaction.commit()
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Заказ успешно обновлен',
+            })
+        } catch (e) {
+            await transaction.rollback()
+            throw e
+        }
     }
 
     async getByFacilityUnit(req, res) {
