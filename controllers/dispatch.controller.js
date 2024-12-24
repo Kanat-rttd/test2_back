@@ -5,6 +5,7 @@ const moment = require('moment')
 const AppError = require('../filters/appError')
 const Sequelize = require('../config/db')
 const dayjs = require('dayjs')
+const { generateInvoicePdf } = require('../lib/pdf/generateInvoicePdf')
 
 class DispatchController {
     async getAll(req, res, next) {
@@ -299,6 +300,105 @@ class DispatchController {
             },
         )
         return res.status(200).json({ message: 'Поставщик товара успешно удален' })
+    }
+
+    /**
+     *
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async getInvoicePdf(req, res) {
+        const { id } = req.params
+
+        const dispatch = await models.goodsDispatch.findOne({
+            attributes: ['id', 'contragentId', 'createdAt', 'dispatch'],
+            include: [
+                {
+                    model: models.invoiceData,
+                    attributes: ['invoiceNumber'],
+                    as: 'invoiceData',
+                    where: {
+                        invoiceNumber: id,
+                    },
+                },
+                {
+                    model: models.goodsDispatchDetails,
+                    attributes: ['id', 'productId', 'quantity', 'price'],
+                    include: [
+                        {
+                            model: models.products,
+                            attributes: ['id', 'name', 'price'],
+                            include: [
+                                {
+                                    model: models.bakingFacilityUnits,
+                                    attributes: ['id', 'facilityUnit'],
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    model: models.contragent,
+                    attributes: ['id', 'contragentName'],
+                },
+            ],
+            where: {
+                isDeleted: {
+                    [Op.ne]: 1,
+                },
+                dispatch: {
+                    [Op.ne]: 1,
+                },
+            },
+            order: [['createdAt', 'ASC']],
+        })
+
+        const createdAt = dayjs(dispatch.createdAt)
+        const startOfDay = dayjs(dispatch.createdAt).startOf('day').hour(14)
+        const endOfDay = dayjs(dispatch.createdAt).endOf('day').hour(23).minute(59).second(59).millisecond(999)
+
+        const result = {
+            createdAt:
+                createdAt.isAfter(startOfDay) && createdAt.isBefore(endOfDay)
+                    ? dayjs(dispatch.createdAt).add(1, 'day')
+                    : dispatch.createdAt,
+            contragentId: dispatch.contragentId,
+            contragentName: dispatch.contragent.contragentName,
+            invoiceNumber: dispatch.invoiceData.invoiceNumber,
+            totalProducts: [],
+            totalSum: 0,
+        }
+
+        dispatch.goodsDispatchDetails.forEach((detail) => {
+            const foundIndex = result.totalProducts.findIndex((product) => product.id === detail.productId)
+            if (foundIndex === -1) {
+                result.totalProducts.push({
+                    id: detail.productId,
+                    name: detail.product.name,
+                    price: detail.price,
+                    quantity: detail.quantity,
+                    totalPrice: detail.quantity * detail.price,
+                })
+            } else {
+                result.totalProducts[foundIndex].quantity += detail.quantity
+                result.totalProducts[foundIndex].totalPrice += detail.quantity * detail.price
+            }
+
+            result.totalSum += detail.quantity * detail.price
+        })
+
+        const overPrice = await models.overPrices.findOne({
+            where: {
+                contragentId: result.contragentId,
+            },
+        })
+
+        const pdf = await generateInvoicePdf(result, overPrice?.price)
+
+        res.contentType('application/pdf')
+
+        pdf.pipe(res)
+        pdf.end()
     }
 }
 

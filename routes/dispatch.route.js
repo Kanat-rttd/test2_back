@@ -9,6 +9,7 @@ const router = Router()
 router.get('/', catchAsync(Controller.getAll))
 router.post('/', catchAsync(Controller.createDispatch))
 router.get('/invoice', catchAsync(Controller.getInvoiceData))
+router.get('/invoice/:id/pdf', catchAsync(Controller.getInvoicePdf))
 router.put('/:id', catchAsync(Controller.updateDispatch))
 router.put('/delete/:id', catchAsync(Controller.deleteDispatch))
 
