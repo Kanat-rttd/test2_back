@@ -393,7 +393,7 @@ class DispatchController {
             },
         })
 
-        const pdf = await generateInvoicePdf(result, overPrice?.price)
+        const pdf = await generateInvoicePdf(result, overPrice?.price ?? 0)
 
         res.contentType('application/pdf')
 
