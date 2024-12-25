@@ -5,31 +5,56 @@ const sequelize = require('../config/db')
 class FinanceController {
     async getAll(req, res, next) {
         try {
-            const { startDate, endDate, categoryId, accountName, sortOrder = '' } = req.query
+            const { startDate, endDate, categoryId, search, sortOrder = '' } = req.query
 
-            const whereClauses = {
-                where: {
-                    isDeleted: { [Op.ne]: 1 },
-                    ...(startDate &&
-                        endDate && {
-                            date: {
-                                [Op.between]: [
-                                    new Date(startDate).setHours(0, 0, 0, 0),
-                                    new Date(endDate).setHours(23, 59, 59, 999),
-                                ],
-                            },
-                        }),
-                    ...(categoryId && { '$financeCategory.id$': { [Op.eq]: categoryId } }),
-                    ...(accountName && { '$financeAccount.name$': { [Op.eq]: accountName } }),
-                },
+            const whereClauses = []
+
+            if (startDate && endDate) {
+                whereClauses.push({
+                    date: {
+                        [Op.between]: [
+                            new Date(startDate).setHours(0, 0, 0, 0),
+                            new Date(endDate).setHours(23, 59, 59, 999),
+                        ],
+                    },
+                })
+            }
+
+            if (categoryId) {
+                whereClauses.push({
+                    '$financeCategory.id$': {
+                        [Op.eq]: categoryId,
+                    },
+                })
+            }
+
+            if (search) {
+                whereClauses.push({
+                    [Op.or]: [
+                        sequelize.where(
+                            sequelize.fn('LOWER', sequelize.col('comment')),
+                            Op.like,
+                            `%${search.toLowerCase()}%`,
+                        ),
+                        sequelize.where(
+                            sequelize.fn('LOWER', sequelize.col('contragent.contragentName')),
+                            Op.like,
+                            `%${search.toLowerCase()}%`,
+                        ),
+                    ],
+                })
             }
 
             const order = sortOrder === 'desc' ? [['date', 'DESC']] : [['date', 'ASC']]
 
             const data = await models.finance.findAll({
-                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'contragentId', 'comment'],
+                attributes: ['id', 'amount', 'date', 'financeCategoryId', 'comment'],
                 order: order,
                 include: [
+                    {
+                        model: models.contragent,
+                        attributes: ['id', 'contragentName'],
+                    },
                     {
                         model: models.financeCategories,
                         attributes: ['id', 'name', 'type'],
@@ -39,7 +64,7 @@ class FinanceController {
                         attributes: ['id', 'name'],
                     },
                 ],
-                ...whereClauses,
+                where: whereClauses,
             })
 
             return res.json(data)
