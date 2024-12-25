@@ -8,7 +8,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const router = require('./routes/index')
 const path = require('path')
-const { bot } = require('./bot')
+const { bot } = require('./lib/telegram/bot')
 
 const PORT = process.env.PORT || 5001
 const app = express()
