@@ -74,7 +74,7 @@ class ProductPurchaseController {
                     },
                     ...dateFilterOptions,
                 },
-                order: ['createdAt', 'ASC'],
+                order: [['createdAt', 'ASC']],
             })
 
             let totalQuantity = 0
