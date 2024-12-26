@@ -3,9 +3,9 @@ const sequelize = require('../config/db')
 const { Op, col } = require('sequelize')
 
 class ProductPurchaseController {
-    async getAllPruchases(req, res, next) {
+    async getAllPurchases(req, res, next) {
         try {
-            const { startDate, endDate, providerId, rawMaterialId, paymentStatus } = req.query
+            const { startDate, endDate, providerId, rawMaterialId, paymentStatus, goodsCategoryId } = req.query
             console.log('Received query parameters:', startDate, endDate)
 
             const dateFilterOptions = {}
@@ -31,6 +31,10 @@ class ProductPurchaseController {
 
             if (paymentStatus) {
                 dateFilterOptions.status = paymentStatus
+            }
+
+            if (goodsCategoryId) {
+                dateFilterOptions.goodsCategoryId = goodsCategoryId
             }
 
             const data = await models.productPurchase.findAll({
