@@ -1,9 +1,6 @@
 const { col } = require('../config/db')
 const models = require('../models')
 const { Op } = require('sequelize')
-const moment = require('moment')
-const AppError = require('../filters/appError')
-const Sequelize = require('../config/db')
 const dayjs = require('dayjs')
 const { generateInvoicePdf } = require('../lib/pdf/generateInvoicePdf')
 
@@ -152,7 +149,7 @@ class DispatchController {
     }
 
     async getInvoiceData(req, res, next) {
-        const { contragentId, startDate, endDate, status } = req.query
+        const { contragentId, startDate, endDate } = req.query
 
         let filterOptions = {}
 
@@ -291,14 +288,6 @@ class DispatchController {
     async deleteDispatch(req, res) {
         const { id } = req.params
 
-        const deletedDispatch = await models.goodsDispatch.update(
-            { isDeleted: true },
-            {
-                where: {
-                    id,
-                },
-            },
-        )
         return res.status(200).json({ message: 'Поставщик товара успешно удален' })
     }
 
@@ -399,6 +388,40 @@ class DispatchController {
 
         pdf.pipe(res)
         pdf.end()
+    }
+
+    /**
+     *
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     */
+    async changeDate(req, res) {
+        const { newDate } = req.body
+        const { startDate, endDate } = req.query
+
+        if (!newDate || !startDate || !endDate) {
+            return res.status(400).json({ message: 'Отсутствуют обязательные поля' })
+        }
+
+        const dateFrom = dayjs(startDate).add(-1, 'day').set('hours', 14).format('YYYY-MM-DD HH:mm:ss')
+        const dateTo = dayjs(endDate).add(-1, 'day').set('hours', 14).format('YYYY-MM-DD HH:mm:ss')
+
+        await models.goodsDispatch.update(
+            {
+                createdAt: dayjs(newDate).set('hours', 5).format('YYYY-MM-DD HH:mm:ss'),
+            },
+            {
+                where: {
+                    createdAt: {
+                        [Op.between]: [dateFrom, dateTo],
+                    },
+                },
+            },
+        )
+
+        return res.status(200).json({
+            message: 'Вса данные успешно перенесены на новую дату',
+        })
     }
 }
 
