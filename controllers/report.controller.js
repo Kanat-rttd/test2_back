@@ -227,7 +227,8 @@ class ReportController {
             attributes: ['adjustedDate', 'Sales', 'Returns', 'Overhead', 'Payments'],
         })
         const [[fromClient], [toClient]] = await Promise.all([
-            sequelize.query(`
+            sequelize.query(
+                `
                 SELECT
                     m.name AS name,
                     SUM(d.amount) AS total,
@@ -241,10 +242,11 @@ class ReportController {
                     JOIN contragents c ON d.dt = c.id
                     JOIN magazines m ON m.id = c.mainId
                 WHERE
-                    d.kt = 218
+                    d.kt = ${contragentId}
                 GROUP BY
                     d.dt,
-                    adjustedDate`),
+                    adjustedDate`,
+            ),
             sequelize.query(
                 `
                 SELECT
@@ -260,26 +262,30 @@ class ReportController {
                     JOIN contragents c ON d.kt = c.id
                     JOIN magazines m ON m.id = c.mainId
                 WHERE
-                    d.dt = 218
+                    d.dt = ${contragentId}
                 GROUP BY
                     d.kt,
                     adjustedDate`,
             ),
         ])
 
-        console.log('#', toClient)
+        const allMagazines = new Set()
 
-        const result = reports.map((report) => {
+        const fullReports = reports.map((report) => {
             const filterPredicate = (item) => dayjs(item.adjustedDate).isSame(dayjs(report.adjustedDate))
 
             const magazines = {}
 
             for (const item of fromClient.filter(filterPredicate)) {
                 magazines[item.name] = item.total
+                allMagazines.add(item.name)
+                console.log(item.name)
             }
 
             for (const item of toClient.filter(filterPredicate)) {
                 magazines[item.name] = -item.total
+                allMagazines.add(item.name)
+                console.log(item.name)
             }
 
             return {
@@ -292,7 +298,7 @@ class ReportController {
             }
         })
 
-        return res.json({ result })
+        return res.json({ fullReports, allMagazines: Array.from(allMagazines) })
     }
 
     async getRemainRawMaterials(req, res, next) {
