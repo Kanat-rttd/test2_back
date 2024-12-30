@@ -406,7 +406,7 @@ class DispatchController {
         const dateFrom = dayjs(startDate).add(-1, 'day').set('hours', 14).format('YYYY-MM-DD HH:mm:ss')
         const dateTo = dayjs(endDate).add(-1, 'day').set('hours', 14).format('YYYY-MM-DD HH:mm:ss')
 
-        await models.goodsDispatch.update(
+        const [affectedCount, returning] = await models.goodsDispatch.update(
             {
                 createdAt: dayjs(newDate).set('hours', 5).format('YYYY-MM-DD HH:mm:ss'),
             },
@@ -416,11 +416,14 @@ class DispatchController {
                         [Op.between]: [dateFrom, dateTo],
                     },
                 },
+                returning: true,
             },
         )
 
         return res.status(200).json({
             message: 'Вса данные успешно перенесены на новую дату',
+            affectedCount,
+            returning,
         })
     }
 }
