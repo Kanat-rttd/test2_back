@@ -226,7 +226,7 @@ class ReportController {
             where: filterOptions,
             attributes: ['adjustedDate', 'Sales', 'Returns', 'Overhead', 'Payments'],
         })
-        const [fromClient, toClient] = await Promise.all([
+        const [[fromClient], [toClient]] = await Promise.all([
             sequelize.query(`
                 SELECT
                     m.name AS name,
@@ -242,7 +242,6 @@ class ReportController {
                     JOIN magazines m ON m.id = c.mainId
                 WHERE
                     d.kt = 218
-                    d.
                 GROUP BY
                     d.dt,
                     adjustedDate`),
@@ -268,13 +267,20 @@ class ReportController {
             ),
         ])
 
-        const filterPredicate = (item) => (item.adjustedDate = report.adjustedDate)
+        console.log('#', toClient)
 
         const result = reports.map((report) => {
-            const magazines = [
-                ...fromClient.filter(filterPredicate).map((item) => ({ [item.name]: item.total })),
-                ...toClient.filter(filterPredicate).map((item) => ({ [item.name]: -item.total })),
-            ]
+            const filterPredicate = (item) => dayjs(item.adjustedDate).isSame(dayjs(report.adjustedDate))
+
+            const magazines = {}
+
+            for (const item of fromClient.filter(filterPredicate)) {
+                magazines[item.name] = item.total
+            }
+
+            for (const item of toClient.filter(filterPredicate)) {
+                magazines[item.name] = -item.total
+            }
 
             return {
                 adjustedDate: report.adjustedDate,
@@ -282,7 +288,7 @@ class ReportController {
                 returns: report.Returns,
                 overhead: report.Overhead,
                 payments: report.Payments,
-                ...magazines,
+                magazines,
             }
         })
 
