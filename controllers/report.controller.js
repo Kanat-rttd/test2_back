@@ -166,17 +166,7 @@ class ReportController {
         }
 
         const data = await models.reportView.findAll({
-            attributes: [
-                'ClientName',
-                'adjustedDate',
-                'Sales',
-                'Returns',
-                'Overhead',
-                'Expenses',
-                'Payments',
-                'Credit',
-                'Debt',
-            ],
+            attributes: ['ClientName', 'adjustedDate', 'Sales', 'Returns', 'Overhead', 'Payments', 'Credit', 'Debt'],
             where: filterOptions,
         })
 
@@ -185,7 +175,6 @@ class ReportController {
         let totalSales = 0
         let totalReturns = 0
         let totalOverhead = 0
-        let totalExpenses = 0
         let totalPayments = 0
         let totalCredit = 0
         let totalDebt = 0
@@ -194,7 +183,6 @@ class ReportController {
             totalSales += Number(item.Sales)
             totalReturns += Number(item.Returns)
             totalOverhead += Number(item.Overhead)
-            totalExpenses += Number(item.Expenses)
             totalPayments += Number(item.Payments)
             totalCredit += Number(item.Credit)
             totalDebt += Number(item.Debt)
@@ -205,7 +193,6 @@ class ReportController {
             totalSales,
             totalReturns,
             totalOverhead,
-            totalExpenses,
             totalPayments,
             totalCredit,
             totalDebt,
