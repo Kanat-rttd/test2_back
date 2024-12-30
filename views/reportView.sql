@@ -110,6 +110,7 @@ debtTransfers_dt as (
         adjustedDate
 )
 select
+    c.id AS ClientId,
     c.contragentName AS ClientName,
     main_dates.adjustedDate AS adjustedDate,
     coalesce(sum(gdd_dispatches.Sales), 0) AS Sales,
@@ -219,8 +220,10 @@ from
 where
     (c.contragentTypeId = 1)
 group by
+    c.id,
     c.contragentName,
     main_dates.adjustedDate
 order by
+    c.id,
     c.contragentName,
     main_dates.adjustedDate

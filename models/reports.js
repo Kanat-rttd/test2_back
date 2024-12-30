@@ -9,6 +9,7 @@ const breadReportView = sequelize.define('BreadReportViews', {
 const reportView = sequelize.define(
     'ReportView',
     {
+        ClientId: { type: DataTypes.INTEGER },
         ClientName: { type: DataTypes.STRING },
         adjustedDate: { type: DataTypes.DATE },
         Sales: { type: DataTypes.INTEGER },
