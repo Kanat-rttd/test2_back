@@ -1,6 +1,7 @@
 const models = require('../models')
 const { Op } = require('sequelize')
 const sequelize = require('../config/db')
+const dayjs = require('dayjs')
 
 class ReportController {
     async breadViewReport(req, res, next) {
@@ -201,7 +202,92 @@ class ReportController {
         return res.json(responseData)
     }
 
-    async getReconciliation(req, res, next) {}
+    /**
+     *
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
+    async getReconciliation(req, res, next) {
+        const { contragentId, startDate, endDate } = req.query
+
+        const filterOptions = {}
+
+        if (contragentId) {
+            filterOptions['ClientId'] = contragentId
+        }
+        if (startDate && endDate) {
+            filterOptions['adjustedDate'] = {
+                [Op.between]: [new Date(startDate).setHours(0, 0, 0, 0), new Date(endDate).setHours(23, 59, 59, 999)],
+            }
+        }
+
+        const reports = await models.reportView.findAll({
+            where: filterOptions,
+            attributes: ['adjustedDate', 'Sales', 'Returns', 'Overhead', 'Payments'],
+        })
+        const [fromClient, toClient] = await Promise.all([
+            sequelize.query(`
+                SELECT
+                    m.name AS name,
+                    SUM(d.amount) AS total,
+                    if(
+                        (hour(d.createdAt) < 14),
+                        cast(d.createdAt as date),
+                        cast((d.createdAt + interval 1 day) as date)
+                    ) AS adjustedDate
+                FROM
+                    debtTransfers d
+                    JOIN contragents c ON d.dt = c.id
+                    JOIN magazines m ON m.id = c.mainId
+                WHERE
+                    d.kt = 218
+                    d.
+                GROUP BY
+                    d.dt,
+                    adjustedDate`),
+            sequelize.query(
+                `
+                SELECT
+                    m.name AS name,
+                    SUM(d.amount) AS total,
+                    if(
+                        (hour(d.createdAt) < 14),
+                        cast(d.createdAt as date),
+                        cast((d.createdAt + interval 1 day) as date)
+                    ) AS adjustedDate
+                FROM
+                    debtTransfers d
+                    JOIN contragents c ON d.kt = c.id
+                    JOIN magazines m ON m.id = c.mainId
+                WHERE
+                    d.dt = 218
+                GROUP BY
+                    d.kt,
+                    adjustedDate`,
+            ),
+        ])
+
+        const filterPredicate = (item) => (item.adjustedDate = report.adjustedDate)
+
+        const result = reports.map((report) => {
+            const magazines = [
+                ...fromClient.filter(filterPredicate).map((item) => ({ [item.name]: item.total })),
+                ...toClient.filter(filterPredicate).map((item) => ({ [item.name]: -item.total })),
+            ]
+
+            return {
+                adjustedDate: report.adjustedDate,
+                sales: report.Sales,
+                returns: report.Returns,
+                overhead: report.Overhead,
+                payments: report.Payments,
+                ...magazines,
+            }
+        })
+
+        return res.json({ result })
+    }
 
     async getRemainRawMaterials(req, res, next) {
         console.log('query ', req.query)
