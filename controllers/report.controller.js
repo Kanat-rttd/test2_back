@@ -150,7 +150,7 @@ class ReportController {
         return res.json({ reportData: data, totals: responseData })
     }
 
-    async getReconciliationReportView(req, res, next) {
+    async getGeneralReconciliationReportView(req, res, next) {
         const { startDate, endDate, clientName } = req.query
 
         const filterOptions = {}
@@ -200,6 +200,8 @@ class ReportController {
 
         return res.json(responseData)
     }
+
+    async getReconciliation(req, res, next) {}
 
     async getRemainRawMaterials(req, res, next) {
         console.log('query ', req.query)
