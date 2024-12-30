@@ -288,6 +288,10 @@ class DispatchController {
     async deleteDispatch(req, res) {
         const { id } = req.params
 
+        await models.goodsDispatch.destroy({
+            where: { id },
+        })
+
         return res.status(200).json({ message: 'Поставщик товара успешно удален' })
     }
 
