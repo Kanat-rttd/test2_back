@@ -275,25 +275,27 @@ class ReportController {
             const filterPredicate = (item) => dayjs(item.adjustedDate).isSame(dayjs(report.adjustedDate))
 
             const magazines = {}
+            let debt = (+report.Sales || 0) - (+report.Returns || 0) + (+report.Overhead || 0) - (+report.Payments || 0)
 
             for (const item of fromClient.filter(filterPredicate)) {
-                magazines[item.name] = item.total
+                magazines[item.name] = Number(item.total)
                 allMagazines.add(item.name)
-                console.log(item.name)
+                debt += Number(item.total)
             }
 
             for (const item of toClient.filter(filterPredicate)) {
-                magazines[item.name] = -item.total
+                magazines[item.name] = Number(-item.total)
                 allMagazines.add(item.name)
-                console.log(item.name)
+                debt -= Number(item.total)
             }
 
             return {
                 adjustedDate: report.adjustedDate,
                 sales: report.Sales,
                 returns: report.Returns,
-                overhead: report.Overhead,
-                payments: report.Payments,
+                overhead: +report.Overhead,
+                payments: +report.Payments,
+                debt,
                 magazines,
             }
         })
