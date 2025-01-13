@@ -131,7 +131,12 @@ class DispatchController {
         })
 
         const dispatchDetails = products.map((sale) => {
-            const found = clientPrices.find((price) => +price.productId === +sale.productId)
+            const found = clientPrices.find((price) => {
+                console.log('CREATE_DISPATCH', JSON.stringify({ price: price.productId, sale: sale.productId }))
+                return +price.productId === +sale.productId
+            })
+
+            console.log('CREATE_DISPATCH', JSON.stringify({ found }))
             return {
                 goodsDispatchId: createdDispatch.id,
                 productId: sale.productId,
