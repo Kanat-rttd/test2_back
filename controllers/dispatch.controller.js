@@ -121,7 +121,7 @@ class DispatchController {
         const foundContragent = await models.contragent.findByPk(contragentId)
         const foundClient = await models.clients.findOne({
             where: {
-                name: foundContragent.contragentName,
+                id: foundContragent.mainId,
             },
         })
 
@@ -131,7 +131,7 @@ class DispatchController {
         })
 
         const dispatchDetails = products.map((sale) => {
-            const found = clientPrices.find((price) => price.productId == sale.productId)
+            const found = clientPrices.find((price) => +price.productId === +sale.productId)
             return {
                 goodsDispatchId: createdDispatch.id,
                 productId: sale.productId,
