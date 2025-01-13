@@ -118,25 +118,30 @@ class DispatchController {
             dispatch,
         })
 
-        const findedContragent = await models.contragent.findByPk(contragentId)
-        const findedClient = await models.clients.findOne({
+        const foundContragent = await models.contragent.findByPk(contragentId)
+        const foundClient = await models.clients.findOne({
             where: {
-                name: findedContragent.contragentName,
+                id: foundContragent.mainId,
             },
         })
 
         const clientPrices = await models.individualPrices.findAll({
-            where: { clientId: findedClient.id, isDeleted: false },
+            where: { clientId: foundClient.id, isDeleted: false },
             raw: true,
         })
 
         const dispatchDetails = products.map((sale) => {
-            const finded = clientPrices.find((price) => price.productId == sale.productId)
+            const found = clientPrices.find((price) => {
+                console.log('CREATE_DISPATCH', JSON.stringify({ price: price.productId, sale: sale.productId }))
+                return +price.productId === +sale.productId
+            })
+
+            console.log('CREATE_DISPATCH', JSON.stringify({ found }))
             return {
                 goodsDispatchId: createdDispatch.id,
                 productId: sale.productId,
                 quantity: sale.quantity,
-                price: finded ? finded.price : sale.productPrice,
+                price: found ? found.price : sale.productPrice,
             }
         })
 
