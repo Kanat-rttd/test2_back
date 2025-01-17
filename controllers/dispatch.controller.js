@@ -114,11 +114,11 @@ class DispatchController {
         const { contragentId, dispatch, products } = req.body
 
         const createdDispatch = await models.goodsDispatch.create({
-            contragentId,
-            dispatch,
+            contragentId: Number(contragentId),
+            dispatch: Number(dispatch),
         })
 
-        const foundContragent = await models.contragent.findByPk(contragentId)
+        const foundContragent = await models.contragent.findByPk(Number(contragentId))
         const foundClient = await models.clients.findOne({
             where: {
                 id: foundContragent.mainId,
@@ -131,19 +131,17 @@ class DispatchController {
         })
 
         const dispatchDetails = products.map((sale) => {
-            const found = clientPrices.find((price) => {
-                console.log('CREATE_DISPATCH', JSON.stringify({ price: price.productId, sale: sale.productId }))
-                return +price.productId === +sale.productId
-            })
+            const found = clientPrices.find((price) => Number(price.productId) === Number(sale.productId))
 
-            console.log('CREATE_DISPATCH', JSON.stringify({ found }))
             return {
                 goodsDispatchId: createdDispatch.id,
-                productId: sale.productId,
-                quantity: sale.quantity,
+                productId: Number(sale.productId),
+                quantity: Number(sale.quantity),
                 price: found ? found.price : sale.productPrice,
             }
         })
+
+        console.log(`DISPATCH_DETAILS: ${JSON.stringify(dispatchDetails)}`)
 
         await models.goodsDispatchDetails.bulkCreate(dispatchDetails)
 
