@@ -1,4 +1,4 @@
-const { col } = require('../config/db')
+const { col, Sequelize } = require('../config/db')
 const models = require('../models')
 const { Op } = require('sequelize')
 const dayjs = require('dayjs')
@@ -264,6 +264,11 @@ class DispatchController {
         res.status(200).json(result)
     }
 
+    /**
+     * @param {import('express').Request} req
+     * @param {import('express').Response} res
+     * @param {import('express').NextFunction} next
+     */
     async updateDispatch(req, res, next) {
         const { id } = req.params
 
@@ -276,12 +281,29 @@ class DispatchController {
             { where: { id } },
         )
 
-        const orderDetails = products.map((sale) => ({
-            goodsDispatchId: id,
-            productId: sale.productId,
-            quantity: sale.quantity,
-            price: sale.price,
-        }))
+        const foundContragent = await models.contragent.findByPk(Number(contragentId))
+        const foundClient = await models.clients.findOne({
+            where: {
+                id: foundContragent.mainId,
+            },
+        })
+
+        const clientPrices = await models.individualPrices.findAll({
+            where: { clientId: foundClient.id, isDeleted: false },
+            raw: true,
+        })
+
+        const orderDetails = products.map((sale) => {
+            const found = clientPrices.find((price) => Number(price.productId) === Number(sale.productId))
+
+            return {
+                goodsDispatchId: id,
+                productId: sale.productId,
+                quantity: sale.quantity,
+                price: found ? found.price : sale.price,
+            }
+        })
+
         await models.goodsDispatchDetails.destroy({ where: { goodsDispatchId: id } })
         await models.goodsDispatchDetails.bulkCreate(orderDetails)
 
